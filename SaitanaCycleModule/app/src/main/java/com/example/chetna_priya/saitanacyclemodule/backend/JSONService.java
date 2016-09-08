@@ -3,12 +3,10 @@ package com.example.chetna_priya.saitanacyclemodule.backend;
 import android.content.Context;
 
 import com.example.chetna_priya.saitanacyclemodule.CreditCardObj;
+import com.example.chetna_priya.saitanacyclemodule.User;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 

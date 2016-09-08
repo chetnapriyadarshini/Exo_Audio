@@ -34,12 +34,11 @@ public class CardWatcher implements TextWatcher {
             }
         }
         // Insert char where needed.
-        if (s.length() > 0 && (s.length() % desiredLength) == 0) {
+        if (s.length() > 0 && (s.length() > desiredLength-1))
+        {
             char c = s.charAt(s.length() - 1);
             // Only if its a digit where there should be a space we insert a space
-            if (Character.isDigit(c) && TextUtils.split(s.toString(), String.valueOf(space)).length <= 3) {
-                s.insert(s.length() - 1, String.valueOf(space));
-            }
+            s.delete(s.length()-1, s.length());
         }
     }
 }
