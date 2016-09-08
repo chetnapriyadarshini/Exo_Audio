@@ -2,6 +2,7 @@ package com.example.chetna_priya.saitanacyclemodule;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 /**
  * Created by chetna_priya on 9/8/2016.
@@ -13,7 +14,7 @@ public class CreditCardObj implements Parcelable{
     private String expirationDate;
     private String securityCode;
 
-    public CreditCardObj(String cardNumber, String name, String expirationDate, String securityCode){
+    public CreditCardObj(@NonNull String cardNumber, @NonNull String name, @NonNull String expirationDate, @NonNull String securityCode){
         this.cardNumber = cardNumber;
         this.name = name;
         this.expirationDate = expirationDate;

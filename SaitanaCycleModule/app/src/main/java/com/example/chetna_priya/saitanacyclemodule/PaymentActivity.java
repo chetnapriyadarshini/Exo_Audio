@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.Spinner;
 
 import com.example.chetna_priya.saitanacyclemodule.backend.JSONService;
 import com.example.chetna_priya.saitanacyclemodule.backend.NetClientPOST;
@@ -22,6 +22,7 @@ public class PaymentActivity extends AppCompatActivity implements NetClientPOST.
     private CreditCardObj creditCardObj;
     private int cardNumSize = 16;
     private int securitycodeSize = 4;
+    Spinner month, year;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +35,8 @@ public class PaymentActivity extends AppCompatActivity implements NetClientPOST.
         else if(savedInstanceState.containsKey(ACCESS_TOKEN_EXTRA)){
             accessToken = savedInstanceState.getString(ACCESS_TOKEN_EXTRA);
         }
+        month = (Spinner) findViewById(R.id.spinner_month);
+        year = (Spinner) findViewById(R.id.spinner_year);
         cardNum = (EditText) findViewById(R.id.enter_card_number);
         cardNum.addTextChangedListener(new CardWatcher(cardNumSize));
         name = (EditText) findViewById(R.id.enter_name);
@@ -43,16 +46,36 @@ public class PaymentActivity extends AppCompatActivity implements NetClientPOST.
         submitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                creditCardObj = new CreditCardObj("1234567890123456", "Chetna", "22/16","764");
                 if(accessToken != null) {
-                    JSONService jsonService = new JSONService();
-                    jsonService.authenticatePayment(accessToken, creditCardObj,PaymentActivity.this);
+                    String number = cardNum.getText().toString();
+                    String code = securitycode.getText().toString();
+                    String names = name.getText().toString();
+                    if(validate(names, number, code)) {
+                        creditCardObj = new CreditCardObj(number, name.getText().toString(),
+                                getExpiryDate(), code);
+                        JSONService jsonService = new JSONService();
+                        jsonService.authenticatePayment(accessToken, creditCardObj, PaymentActivity.this);
+                    }else
+                        Snackbar.make(submitBtn, getString(R.string.invalid_name_number_code), Snackbar.LENGTH_LONG).show();
                 }
             }
         });
 
 
+    }
+
+    private boolean validate(String name,String number, String code) {
+        if(name.length() == 0)
+            return false;
+        if(number.length() < 16)
+            return false;
+        if(code.length() < 4)
+            return false;
+        return true;
+    }
+
+    private String getExpiryDate() {
+        return String.format(month.getSelectedItem().toString()+"/"+year.getSelectedItem().toString());
     }
 
     @Override
