@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Exo_Audio</string>
+    <string name="error_querying_decoders">Unable to query device decoders</string>
+    <string name="error_no_secure_decoder"><![CDATA[This device does not provide a secure decoder for <xliff:g id=\"mime_type\">%1$s</xliff:g>]]></string>
+    <string name="error_no_decoder"><![CDATA[This device does not provide a decoder for <xliff:g id=\"mime_type\">%1$s</xliff:g>]]></string>
+    <string name="error_instantiating_decoder"><![CDATA[Unable to instantiate decoder <xliff:g id=\"decoder_name\">%1$s</xliff:g>]]></string>
 </resources>

@@ -12,7 +12,6 @@ import android.widget.TextView;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.R;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.util.Util;
 import java.util.Formatter;
@@ -21,23 +20,23 @@ import java.util.Locale;
 /**
  * A view to control video playback of an {@link ExoPlayer}.
  */
-public class PlaybackControlView extends FrameLayout {
+public class CustomPlaybackControlView extends FrameLayout {
 
     /**
      * Listener to be notified about changes of the visibility of the UI control.
      */
-    public interface VisibilityListener {
-        /**
+    /*public interface VisibilityListener {
+        *//**
          * Called when the visibility changes.
          *
          * @param visibility The new visibility. Either {@link View#VISIBLE} or {@link View#GONE}.
-         */
+         *//*
         void onVisibilityChange(int visibility);
-    }
+    }*/
 
-    public static final int DEFAULT_FAST_FORWARD_MS = 15000;
-    public static final int DEFAULT_REWIND_MS = 5000;
-    public static final int DEFAULT_SHOW_DURATION_MS = 5000;
+    public static final int DEFAULT_FAST_FORWARD_MS = 30000;
+    public static final int DEFAULT_REWIND_MS = 30000;
+  //  public static final int DEFAULT_SHOW_DURATION_MS = 5000;
 
     private static final int PROGRESS_BAR_MAX = 1000;
     private static final long MAX_POSITION_FOR_SEEK_TO_PREVIOUS = 3000;
@@ -56,12 +55,12 @@ public class PlaybackControlView extends FrameLayout {
     private final Timeline.Window currentWindow;
 
     private ExoPlayer player;
-    private VisibilityListener visibilityListener;
+    //private VisibilityListener visibilityListener;
 
     private boolean dragging;
     private int rewindMs = DEFAULT_REWIND_MS;
     private int fastForwardMs = DEFAULT_FAST_FORWARD_MS;
-    private int showDurationMs = DEFAULT_SHOW_DURATION_MS;
+  //  private int showDurationMs = DEFAULT_SHOW_DURATION_MS;
 
     private final Runnable updateProgressAction = new Runnable() {
         @Override
@@ -70,22 +69,22 @@ public class PlaybackControlView extends FrameLayout {
         }
     };
 
-    private final Runnable hideAction = new Runnable() {
+    /*private final Runnable hideAction = new Runnable() {
         @Override
         public void run() {
             hide();
         }
-    };
+    };*/
 
-    public PlaybackControlView(Context context) {
+    public CustomPlaybackControlView(Context context) {
         this(context, null);
     }
 
-    public PlaybackControlView(Context context, AttributeSet attrs) {
+    public CustomPlaybackControlView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public PlaybackControlView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public CustomPlaybackControlView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         currentWindow = new Timeline.Window();
@@ -93,21 +92,21 @@ public class PlaybackControlView extends FrameLayout {
         formatter = new Formatter(formatBuilder, Locale.getDefault());
         componentListener = new ComponentListener();
 
-        LayoutInflater.from(context).inflate(R.layout.exo_playback_control_view, this);
-        time = (TextView) findViewById(R.id.time);
-        timeCurrent = (TextView) findViewById(R.id.time_current);
-        progressBar = (SeekBar) findViewById(R.id.mediacontroller_progress);
+        LayoutInflater.from(context).inflate(R.layout.custom_exo_playback_control_view, this);
+        time = (TextView) findViewById(R.id.tv_time);
+        timeCurrent = (TextView) findViewById(R.id.tv_time_current);
+        progressBar = (SeekBar) findViewById(R.id.seek_mediacontroller_progress);
         progressBar.setOnSeekBarChangeListener(componentListener);
         progressBar.setMax(PROGRESS_BAR_MAX);
-        playButton = (ImageButton) findViewById(R.id.play);
+        playButton = (ImageButton) findViewById(R.id.btn_play);
         playButton.setOnClickListener(componentListener);
-        previousButton = findViewById(R.id.prev);
+        previousButton = findViewById(R.id.btn_prev);
         previousButton.setOnClickListener(componentListener);
-        nextButton = findViewById(R.id.next);
+        nextButton = findViewById(R.id.btn_next);
         nextButton.setOnClickListener(componentListener);
-        rewindButton = findViewById(R.id.rew);
+        rewindButton = findViewById(R.id.btn_rew);
         rewindButton.setOnClickListener(componentListener);
-        fastForwardButton = findViewById(R.id.ffwd);
+        fastForwardButton = findViewById(R.id.btn_ffwd);
         fastForwardButton.setOnClickListener(componentListener);
         updateAll();
     }
@@ -143,10 +142,10 @@ public class PlaybackControlView extends FrameLayout {
      *
      * @param listener The listener to be notified about visibility changes.
      */
-    public void setVisibilityListener(VisibilityListener listener) {
+    /*public void setVisibilityListener(VisibilityListener listener) {
         this.visibilityListener = listener;
     }
-
+*/
     /**
      * Sets the rewind increment in milliseconds.
      *
@@ -165,22 +164,22 @@ public class PlaybackControlView extends FrameLayout {
         this.fastForwardMs = fastForwardMs;
     }
 
-    /**
+  /*  *//**
      * Sets the duration to show the playback control in milliseconds.
      *
      * @param showDurationMs The duration in milliseconds.
-     */
+     *//*
     public void setShowDurationMs(int showDurationMs) {
         this.showDurationMs = showDurationMs;
     }
 
-    /**
+    *//**
      * Shows the controller for the duration last passed to {@link #setShowDurationMs(int)}, or for
      * {@link #DEFAULT_SHOW_DURATION_MS} if {@link #setShowDurationMs(int)} has not been called.
-     */
+     *//*
     public void show() {
         show(showDurationMs);
-    }
+    }*/
 
     /**
      * Shows the controller for the {@code durationMs}. If {@code durationMs} is 0 the controller is
@@ -188,7 +187,7 @@ public class PlaybackControlView extends FrameLayout {
      *
      * @param durationMs The duration in milliseconds.
      */
-    public void show(int durationMs) {
+   /* public void show(int durationMs) {
         setVisibility(VISIBLE);
         if (visibilityListener != null) {
             visibilityListener.onVisibilityChange(getVisibility());
@@ -198,9 +197,9 @@ public class PlaybackControlView extends FrameLayout {
         hideDeferred();
     }
 
-    /**
+    *//**
      * Hides the controller.
-     */
+     *//*
     public void hide() {
         setVisibility(GONE);
         if (visibilityListener != null) {
@@ -210,9 +209,9 @@ public class PlaybackControlView extends FrameLayout {
         removeCallbacks(hideAction);
     }
 
-    /**
+    *//**
      * Returns whether the controller is currently visible.
-     */
+     *//*
     public boolean isVisible() {
         return getVisibility() == VISIBLE;
     }
@@ -223,7 +222,7 @@ public class PlaybackControlView extends FrameLayout {
             postDelayed(hideAction, showDurationMs);
         }
     }
-
+*/
     private void updateAll() {
         updatePlayPauseButton();
         updateNavigation();
@@ -231,9 +230,9 @@ public class PlaybackControlView extends FrameLayout {
     }
 
     private void updatePlayPauseButton() {
-        if (!isVisible()) {
+       /* if (!isVisible()) {
             return;
-        }
+        }*/
         boolean playing = player != null && player.getPlayWhenReady();
         String contentDescription = getResources().getString(
                 playing ? R.string.exo_controls_pause_description : R.string.exo_controls_play_description);
@@ -243,9 +242,9 @@ public class PlaybackControlView extends FrameLayout {
     }
 
     private void updateNavigation() {
-        if (!isVisible()) {
+      /*  if (!isVisible()) {
             return;
-        }
+        }*/
         Timeline currentTimeline = player != null ? player.getCurrentTimeline() : null;
         boolean haveTimeline = currentTimeline != null;
         boolean isSeekable = false;
@@ -267,9 +266,9 @@ public class PlaybackControlView extends FrameLayout {
     }
 
     private void updateProgress() {
-        if (!isVisible()) {
+       /* if (!isVisible()) {
             return;
-        }
+        }*/
         long duration = player == null ? 0 : player.getDuration();
         long position = player == null ? 0 : player.getCurrentPosition();
         time.setText(stringForTime(duration));
@@ -401,7 +400,7 @@ public class PlaybackControlView extends FrameLayout {
             default:
                 return false;
         }
-        show();
+       // show();
         return true;
     }
 
@@ -410,7 +409,7 @@ public class PlaybackControlView extends FrameLayout {
 
         @Override
         public void onStartTrackingTouch(SeekBar seekBar) {
-            removeCallbacks(hideAction);
+         //   removeCallbacks(hideAction);
             dragging = true;
         }
 
@@ -425,7 +424,7 @@ public class PlaybackControlView extends FrameLayout {
         public void onStopTrackingTouch(SeekBar seekBar) {
             dragging = false;
             player.seekTo(positionValue(seekBar.getProgress()));
-            hideDeferred();
+            //hideDeferred();
         }
 
         @Override
@@ -470,7 +469,7 @@ public class PlaybackControlView extends FrameLayout {
             } else if (playButton == view) {
                 player.setPlayWhenReady(!player.getPlayWhenReady());
             }
-            hideDeferred();
+            //hideDeferred();
         }
 
     }
