@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">AudioModule</string>
+    <string name="rewind_podcast">Rewind podcast by 30 seconds</string>
+    <string name="advance_podcast">Advance podcast by 30 seconds</string>
+    <string name="play_podcast">Play Podcast</string>
+    <string name="seek_podcast">Seek podcast backward or forward</string>
+</resources>
