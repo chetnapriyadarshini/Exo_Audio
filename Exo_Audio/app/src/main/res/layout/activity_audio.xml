@@ -32,10 +32,11 @@
         android:layout_height="0dp"
         android:layout_weight="0.3">
 
-     <com.application.chetna_priya.exo_audio.CustomPlaybackControlView
-         android:id="@+id/exo_player_control"
+     <fragment
+         android:id="@+id/audio_fragment"
          android:layout_width="match_parent"
-         android:layout_height="match_parent"/>
+         android:layout_height="match_parent"
+         android:name="com.application.chetna_priya.exo_audio.AudioFragment"/>
 
     </FrameLayout>
 

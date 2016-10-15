@@ -2,7 +2,9 @@ package com.application.chetna_priya.exo_audio;
 
 import android.app.Activity;
 import android.content.Context;
+import android.media.PlaybackParams;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.widget.Toast;
@@ -45,7 +47,7 @@ import com.google.android.exoplayer2.util.Util;
  * Created by chetna_priya on 10/13/2016.
  */
 
-public class Player implements ExoPlayer.EventListener{
+public class Player implements ExoPlayer.EventListener, CustomPlaybackControlView.OnPlaybackParamsListener{
 
     private CustomPlaybackControlView exoPlayerView;
     private Context mContext;
@@ -87,6 +89,7 @@ public class Player implements ExoPlayer.EventListener{
         player.setAudioDebugListener(eventLogger);
         //4. Attach view
         exoPlayerView.setPlayer(player);
+        exoPlayerView.setPlaybackParamsListener(this);
         if (shouldRestorePosition) {
             if (playerPosition == C.TIME_UNSET) {
                 player.seekToDefaultPosition(playerWindow);
@@ -99,15 +102,6 @@ public class Player implements ExoPlayer.EventListener{
     }
 
     public void preparePlayer(Uri[] uris) {
-        // Produces DataSource instances through which media data is loaded.
-       /* DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(mContext,
-                Util.getUserAgent(mContext, mContext.getString(R.string.app_name)));
-       */ // Produces Extractor instances for parsing the media data.
-      //  ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
-        // This is the MediaSource representing the media to be played.
-       /* Uri contentUri = Uri.parse("http://feeds.soundcloud.com/stream/280380933-comedybangbang-442-andy-daly-jeremy-rowley.mp3");
-        MediaSource videoSource = new ExtractorMediaSource(contentUri,
-                dataSourceFactory, extractorsFactory, null, null);*/
         MediaSource[] mediaSources = new MediaSource[uris.length];
         for (int i = 0; i < uris.length; i++) {
             mediaSources[i] = buildMediaSource(uris[i], null);
@@ -118,6 +112,7 @@ public class Player implements ExoPlayer.EventListener{
         // Prepare the player with the source.
         player.prepare(mediaSource);
         player.setPlayWhenReady(true);
+
     }
 
     private MediaSource buildMediaSource(Uri uri, String overrideExtension) {
@@ -241,5 +236,10 @@ public class Player implements ExoPlayer.EventListener{
 
     private void showToast(String message) {
         Toast.makeText(mContext.getApplicationContext(), message, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void setPlaybackParams(PlaybackParams playbackParams) {
+        player.setPlaybackParams(playbackParams);
     }
 }

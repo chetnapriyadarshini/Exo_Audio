@@ -1,7 +1,10 @@
 package com.application.chetna_priya.exo_audio;
 
 import android.content.Context;
+import android.media.PlaybackParams;
+import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,6 +43,7 @@ public class CustomPlaybackControlView extends FrameLayout {
 
     private static final int PROGRESS_BAR_MAX = 1000;
     private static final long MAX_POSITION_FOR_SEEK_TO_PREVIOUS = 3000;
+    private static final String TAG = CustomPlaybackControlView.class.getSimpleName();
 
     private final ComponentListener componentListener;
     private final View previousButton;
@@ -47,15 +51,22 @@ public class CustomPlaybackControlView extends FrameLayout {
     private final ImageButton playButton;
     private final TextView time;
     private final TextView timeCurrent;
+    private final TextView speed;
     private final SeekBar progressBar;
     private final View fastForwardButton;
     private final View rewindButton;
     private final StringBuilder formatBuilder;
     private final Formatter formatter;
     private final Timeline.Window currentWindow;
+    private final boolean speedViewVisible;
+    private final float[] SPEED_ARR = {0.50f,0.60f,0.70f,0.80f,0.90f,1.00f,1.10f,1.20f,1.30f,1.40f,1.50f,
+                                        1.60f,1.70f,1.80f,1.90f,2.00f};
+    private final int STANDARD_INDEX = 5;//index of 1.00f
+    private int CURRENT_INDEX = STANDARD_INDEX;
 
     private ExoPlayer player;
     //private VisibilityListener visibilityListener;
+    private OnPlaybackParamsListener paramsListener;
 
     private boolean dragging;
     private int rewindMs = DEFAULT_REWIND_MS;
@@ -68,13 +79,6 @@ public class CustomPlaybackControlView extends FrameLayout {
             updateProgress();
         }
     };
-
-    /*private final Runnable hideAction = new Runnable() {
-        @Override
-        public void run() {
-            hide();
-        }
-    };*/
 
     public CustomPlaybackControlView(Context context) {
         this(context, null);
@@ -95,6 +99,19 @@ public class CustomPlaybackControlView extends FrameLayout {
         LayoutInflater.from(context).inflate(R.layout.custom_exo_playback_control_view, this);
         time = (TextView) findViewById(R.id.tv_time);
         timeCurrent = (TextView) findViewById(R.id.tv_time_current);
+        speed = (TextView) findViewById(R.id.tv_speed);
+        if(Util.SDK_INT < 23){
+            speedViewVisible = false;
+           // speedArr = context.getResources().getStringArray(R.array.speed_arr);
+            speed.setVisibility(View.GONE);
+        }else {
+            //speedArr = null;
+            CURRENT_INDEX = STANDARD_INDEX;
+            updateSpeedText();
+            speed.setOnClickListener(componentListener);
+            speedViewVisible = true;
+        }
+
         progressBar = (SeekBar) findViewById(R.id.seek_mediacontroller_progress);
         progressBar.setOnSeekBarChangeListener(componentListener);
         progressBar.setMax(PROGRESS_BAR_MAX);
@@ -164,65 +181,6 @@ public class CustomPlaybackControlView extends FrameLayout {
         this.fastForwardMs = fastForwardMs;
     }
 
-  /*  *//**
-     * Sets the duration to show the playback control in milliseconds.
-     *
-     * @param showDurationMs The duration in milliseconds.
-     *//*
-    public void setShowDurationMs(int showDurationMs) {
-        this.showDurationMs = showDurationMs;
-    }
-
-    *//**
-     * Shows the controller for the duration last passed to {@link #setShowDurationMs(int)}, or for
-     * {@link #DEFAULT_SHOW_DURATION_MS} if {@link #setShowDurationMs(int)} has not been called.
-     *//*
-    public void show() {
-        show(showDurationMs);
-    }*/
-
-    /**
-     * Shows the controller for the {@code durationMs}. If {@code durationMs} is 0 the controller is
-     * shown until {@link #hide()} is called.
-     *
-     * @param durationMs The duration in milliseconds.
-     */
-   /* public void show(int durationMs) {
-        setVisibility(VISIBLE);
-        if (visibilityListener != null) {
-            visibilityListener.onVisibilityChange(getVisibility());
-        }
-        updateAll();
-        showDurationMs = durationMs;
-        hideDeferred();
-    }
-
-    *//**
-     * Hides the controller.
-     *//*
-    public void hide() {
-        setVisibility(GONE);
-        if (visibilityListener != null) {
-            visibilityListener.onVisibilityChange(getVisibility());
-        }
-        removeCallbacks(updateProgressAction);
-        removeCallbacks(hideAction);
-    }
-
-    *//**
-     * Returns whether the controller is currently visible.
-     *//*
-    public boolean isVisible() {
-        return getVisibility() == VISIBLE;
-    }
-
-    private void hideDeferred() {
-        removeCallbacks(hideAction);
-        if (showDurationMs > 0) {
-            postDelayed(hideAction, showDurationMs);
-        }
-    }
-*/
     private void updateAll() {
         updatePlayPauseButton();
         updateNavigation();
@@ -262,6 +220,12 @@ public class CustomPlaybackControlView extends FrameLayout {
         setButtonEnabled(enableNext, nextButton);
         setButtonEnabled(isSeekable, fastForwardButton);
         setButtonEnabled(isSeekable, rewindButton);
+        if(speedViewVisible)
+            setButtonEnabled(isSeekable,speed);
+        Log.d(TAG, "Previous Button "+enablePrevious);
+        Log.d(TAG, "Next Button "+enablePrevious);
+        Log.d(TAG, "Forward Button "+enablePrevious);
+        Log.d(TAG, "Rewind Button "+enablePrevious);
         progressBar.setEnabled(isSeekable);
     }
 
@@ -368,6 +332,11 @@ public class CustomPlaybackControlView extends FrameLayout {
         player.seekTo(Math.min(player.getCurrentPosition() + fastForwardMs, player.getDuration()));
     }
 
+
+    private void updateSpeedText() {
+        speed.setText(SPEED_ARR[CURRENT_INDEX]+"x");
+    }
+
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         if (player == null || event.getAction() != KeyEvent.ACTION_DOWN) {
@@ -404,7 +373,16 @@ public class CustomPlaybackControlView extends FrameLayout {
         return true;
     }
 
-    private final class ComponentListener implements ExoPlayer.EventListener,
+    public void setPlaybackParamsListener(OnPlaybackParamsListener params){
+        this.paramsListener = params;
+
+    }
+
+    public interface OnPlaybackParamsListener {
+        void setPlaybackParams(PlaybackParams playbackParams);
+    }
+
+    final class ComponentListener implements ExoPlayer.EventListener,
             SeekBar.OnSeekBarChangeListener, OnClickListener {
 
         @Override
@@ -468,6 +446,18 @@ public class CustomPlaybackControlView extends FrameLayout {
                 rewind();
             } else if (playButton == view) {
                 player.setPlayWhenReady(!player.getPlayWhenReady());
+            }else if(speed == view){
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    PlaybackParams playbackParams = new PlaybackParams();
+                    if(CURRENT_INDEX+1 == SPEED_ARR.length)
+                        CURRENT_INDEX = 0;
+                    else
+                        CURRENT_INDEX++;
+                    updateSpeedText();
+                    playbackParams.setSpeed(SPEED_ARR[CURRENT_INDEX]);
+                    if(paramsListener != null)
+                        paramsListener.setPlaybackParams(playbackParams);
+                }
             }
             //hideDeferred();
         }
