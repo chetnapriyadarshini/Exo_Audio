@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.application.chetna_priya.exo_audio.AudioActivity">
+    tools:context="com.application.chetna_priya.exo_audio.ExoPlayer.AudioActivity">
 
     <ImageView
         android:layout_width="match_parent"
@@ -36,7 +36,7 @@
          android:id="@+id/audio_fragment"
          android:layout_width="match_parent"
          android:layout_height="match_parent"
-         android:name="com.application.chetna_priya.exo_audio.AudioFragment"/>
+         android:name="com.application.chetna_priya.exo_audio.ExoPlayer.AudioFragment"/>
 
     </FrameLayout>
 

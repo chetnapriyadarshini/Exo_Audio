@@ -1,24 +1,24 @@
-package com.application.chetna_priya.exo_audio;
+package com.application.chetna_priya.exo_audio.ExoPlayer;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.media.PlaybackParams;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Handler;
-import android.text.TextUtils;
+import android.os.IBinder;
+import android.util.Log;
 import android.widget.Toast;
 
+import com.application.chetna_priya.exo_audio.R;
 import com.google.android.exoplayer2.C;
-import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
-import com.google.android.exoplayer2.extractor.ExtractorsFactory;
 import com.google.android.exoplayer2.mediacodec.MediaCodecRenderer;
 import com.google.android.exoplayer2.mediacodec.MediaCodecUtil;
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
@@ -29,89 +29,148 @@ import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
 import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource;
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
-import com.google.android.exoplayer2.trackselection.AdaptiveVideoTrackSelection;
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
-import com.google.android.exoplayer2.trackselection.MappingTrackSelector;
-import com.google.android.exoplayer2.trackselection.TrackSelection;
-import com.google.android.exoplayer2.trackselection.TrackSelector;
-import com.google.android.exoplayer2.ui.PlaybackControlView;
-import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
-import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.HttpDataSource;
 import com.google.android.exoplayer2.util.Util;
+
+import java.util.ArrayList;
 
 /**
  * Created by chetna_priya on 10/13/2016.
  */
 
-public class Player implements ExoPlayer.EventListener, CustomPlaybackControlView.OnPlaybackParamsListener{
+public class PlayerImpl implements ExoPlayer.EventListener, CustomPlaybackControlView.OnPlaybackParamsListener, ExoPlayerService.PlayerListener {
 
-    private CustomPlaybackControlView exoPlayerView;
+    private static final String TAG = PlayerImpl.class.getSimpleName();
+    private AbstractPlaybackControlView exoPlayerView;
     private Context mContext;
-    private static boolean isCreated = false;
     private DataSource.Factory mediaDataSourceFactory;
-    private SimpleExoPlayer player;
+    private SimpleExoPlayer exoPlayer;
     private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
     private EventLogger eventLogger;
-    private Handler mainHandler;
+    private Handler mainHandler = new Handler();
+    //TODO remember to look into these variables once you implement content provider and database
     private boolean shouldRestorePosition = false;
     private long playerPosition;
     private int playerWindow;
-    private boolean shouldAutoPlay;
+    //TODO remember to look into these variables once you implement content provider and database
 
-    public Player(Context context, CustomPlaybackControlView exoPlayerView){
+    private ExoPlayerService mService = null;
+    private boolean mIsBound;
+
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder)
+        {
+            Log.d(TAG, "SERVICE CONNECTED AND CONNECTION OBJECT RECEIVED");
+            mService = ((ExoPlayerService.LocalBinder)iBinder).getInstance();
+            mService.setHandler(mainHandler);
+            mService.setListener(PlayerImpl.this);
+
+            Intent serviceIntent = new Intent(mContext, ExoPlayerService.class);
+            mContext.startService(serviceIntent);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName)
+        {
+            Log.d(TAG, "SERVICE DISCONNECTED AND CONNECTION OBJECT RECEIVED ");
+            mService = null;
+        }
+    };
+
+    public PlayerImpl(Context context, CustomPlaybackControlView exoPlayerView){
+        Log.d(TAG, "PLAYER CLASS INITILIAZED BY AUDIO ACTIVITY");
         mContext = context;
         this.exoPlayerView = exoPlayerView;
-        createPlayer(false);
+        initializeAndCheckForService();
     }
 
-    private void createPlayer(boolean autoPlayWhenReady) {
-        mainHandler = new Handler();
-        eventLogger = new EventLogger();
-        mediaDataSourceFactory = buildDataSourceFactory(true);
-        BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
-        TrackSelection.Factory videoTrackSelectionFactory =
-                new AdaptiveVideoTrackSelection.Factory(bandwidthMeter);
-        TrackSelector trackSelector =
-                new DefaultTrackSelector(mainHandler, videoTrackSelectionFactory);
+    public PlayerImpl(Context context, SmallPlaybackControlView exoPlayerView){
+        Log.d(TAG, "PLAYER CLASS INITIALIZED BY MAIN ACTIVITY");
+        mContext = context;
+        this.exoPlayerView = exoPlayerView;
+        initializeAndCheckForService();
+    }
 
-        // 2. Create a default LoadControl
-        LoadControl loadControl = new DefaultLoadControl();
+    private void initializeAndCheckForService() {
+        //First bind with the service and start it
+        Log.d(TAG, "Start IntentService calleddddd");
+        Intent serviceIntent = new Intent(mContext, ExoPlayerService.class);
+        mContext.bindService(serviceIntent, mConnection, Context.BIND_AUTO_CREATE);
+        mIsBound = true;
+    }
 
-        // 3. Create the player
-        player = ExoPlayerFactory.newSimpleInstance(mContext, trackSelector, loadControl);
-        // Listen to player events
-        player.addListener(this);
+
+    @Override
+    public void onPlayerInstatiated(SimpleExoPlayer exoPlayer) {
+        createPlayer(exoPlayer);
+    }
+
+    private void createPlayer(SimpleExoPlayer exoPlayer) {
+      //  mainHandler = new Handler();
+        this.exoPlayer = exoPlayer;
+        // Listen to exoPlayer events
+        exoPlayer.addListener(this);
         //Set Event Logger as the Audio Debug Listener
-        player.setAudioDebugListener(eventLogger);
+        exoPlayer.setAudioDebugListener(eventLogger);
         //4. Attach view
-        exoPlayerView.setPlayer(player);
+        exoPlayerView.setPlayer(exoPlayer);
         exoPlayerView.setPlaybackParamsListener(this);
         if (shouldRestorePosition) {
             if (playerPosition == C.TIME_UNSET) {
-                player.seekToDefaultPosition(playerWindow);
+                exoPlayer.seekToDefaultPosition(playerWindow);
             } else {
-                player.seekTo(playerWindow, playerPosition);
+                exoPlayer.seekTo(playerWindow, playerPosition);
             }
         }
-        player.setPlayWhenReady(autoPlayWhenReady);
-        isCreated = true;
+
+        eventLogger = new EventLogger();
+        mediaDataSourceFactory = buildDataSourceFactory(true);
+
     }
 
-    public void preparePlayer(Uri[] uris) {
-        MediaSource[] mediaSources = new MediaSource[uris.length];
-        for (int i = 0; i < uris.length; i++) {
-            mediaSources[i] = buildMediaSource(uris[i], null);
+
+    private void doUnbindService()
+    {
+        if (mIsBound)
+        {
+            mService.foreground();
+            // Detach our existing connection.
+            mContext.unbindService(mConnection);
+            mIsBound = false;
+        }
+    }
+
+    public void onPause(){
+        Log.d(TAG, "ON PAUSE CALLED IN PLAYER CLASS UNBIND");
+        doUnbindService();;
+    }
+
+    public void onResume(){
+        if(!mIsBound) {
+            Log.d(TAG, "ON RESUME CALLED IN PLAYER CLASS BIND AGAIN");
+            initializeAndCheckForService();
+        }
+    }
+
+
+    public void preparePlayer() {
+        MediaSource[] mediaSources = new MediaSource[1];
+       // for (int i = 0; i < albumArrayList.size(); i++)
+        {
+            mediaSources[0] = buildMediaSource(Playlist.getPlaylistInstance().getCurrentAlbumToPlay().getAlbum_uri(), null);
         }
         MediaSource mediaSource = mediaSources.length == 1 ? mediaSources[0]
                 : new ConcatenatingMediaSource(mediaSources);
-        player.prepare(mediaSource, !shouldRestorePosition);
-        // Prepare the player with the source.
-        player.prepare(mediaSource);
-        player.setPlayWhenReady(true);
+        exoPlayer.prepare(mediaSource, !shouldRestorePosition);
+        // Prepare the exoPlayer with the source.
+        exoPlayer.prepare(mediaSource);
+        exoPlayer.setPlayWhenReady(true);
+
 
     }
 
@@ -152,32 +211,23 @@ public class Player implements ExoPlayer.EventListener, CustomPlaybackControlVie
                 .buildHttpDataSourceFactory(useBandwidthMeter ? BANDWIDTH_METER : null);
     }
 
-    public void play(Uri[] uris){
-        if(isCreated)
-            preparePlayer(uris);
-        else
-            createPlayer(true);
-    }
-
-    private void releasePlayer() {
-        if (player != null) {
-            shouldAutoPlay = player.getPlayWhenReady();
+    @Override
+    public void releasePlayer(SimpleExoPlayer exoPlayer) {
+        if (exoPlayer != null) {
             shouldRestorePosition = false;
-            Timeline timeline = player.getCurrentTimeline();
+            Timeline timeline = exoPlayer.getCurrentTimeline();
             if (timeline != null) {
-                playerWindow = player.getCurrentWindowIndex();
+                playerWindow = exoPlayer.getCurrentWindowIndex();
                 Timeline.Window window = timeline.getWindow(playerWindow, new Timeline.Window());
                 if (!window.isDynamic) {
                     shouldRestorePosition = true;
-                    playerPosition = window.isSeekable ? player.getCurrentPosition() : C.TIME_UNSET;
+                    playerPosition = window.isSeekable ? exoPlayer.getCurrentPosition() : C.TIME_UNSET;
                 }
             }
-            player.release();
-            player = null;
+            exoPlayer.release();
             eventLogger = null;
         }
     }
-
 
     @Override
     public void onLoadingChanged(boolean isLoading) {
@@ -186,7 +236,17 @@ public class Player implements ExoPlayer.EventListener, CustomPlaybackControlVie
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-
+        if(playWhenReady && playbackState != ExoPlayer.STATE_BUFFERING) {
+            Log.d(TAG, "PLAYER SHOULD BE PREPARED");
+            if(Playlist.getPlaylistInstance().isPlaylistEmpty())
+                try {
+                    throw new Exception("Something went wrong, the playlist is empty");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            else
+                preparePlayer();
+        }
     }
 
     @Override
@@ -240,6 +300,6 @@ public class Player implements ExoPlayer.EventListener, CustomPlaybackControlVie
 
     @Override
     public void setPlaybackParams(PlaybackParams playbackParams) {
-        player.setPlaybackParams(playbackParams);
+        exoPlayer.setPlaybackParams(playbackParams);
     }
 }

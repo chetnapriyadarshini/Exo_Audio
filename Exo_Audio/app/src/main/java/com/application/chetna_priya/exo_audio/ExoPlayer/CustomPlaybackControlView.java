@@ -1,4 +1,4 @@
-package com.application.chetna_priya.exo_audio;
+package com.application.chetna_priya.exo_audio.ExoPlayer;
 
 import android.content.Context;
 import android.media.PlaybackParams;
@@ -8,22 +8,27 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import com.application.chetna_priya.exo_audio.R;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.util.Util;
 import java.util.Formatter;
 import java.util.Locale;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * A view to control video playback of an {@link ExoPlayer}.
  */
-public class CustomPlaybackControlView extends FrameLayout {
+public class CustomPlaybackControlView extends AbstractPlaybackControlView {
 
     /**
      * Listener to be notified about changes of the visibility of the UI control.
@@ -39,22 +44,24 @@ public class CustomPlaybackControlView extends FrameLayout {
 
     public static final int DEFAULT_FAST_FORWARD_MS = 30000;
     public static final int DEFAULT_REWIND_MS = 30000;
-  //  public static final int DEFAULT_SHOW_DURATION_MS = 5000;
 
     private static final int PROGRESS_BAR_MAX = 1000;
     private static final long MAX_POSITION_FOR_SEEK_TO_PREVIOUS = 3000;
     private static final String TAG = CustomPlaybackControlView.class.getSimpleName();
 
     private final ComponentListener componentListener;
-    private final View previousButton;
-    private final View nextButton;
-    private final ImageButton playButton;
-    private final TextView time;
-    private final TextView timeCurrent;
-    private final TextView speed;
-    private final SeekBar progressBar;
-    private final View fastForwardButton;
-    private final View rewindButton;
+
+    @BindView(R.id.tv_time) TextView time;
+    @BindView(R.id.tv_time_current) TextView timeCurrent;
+    @BindView(R.id.tv_speed) TextView speed;
+    @BindView(R.id.btn_play) ImageButton playButton;
+    @BindView(R.id.btn_prev) View previousButton;
+    @BindView(R.id.btn_next) View nextButton;
+    @BindView(R.id.btn_rew) View rewindButton;
+    @BindView(R.id.btn_ffwd) View fastForwardButton;
+    @BindView(R.id.seek_mediacontroller_progress) SeekBar progressBar;
+
+
     private final StringBuilder formatBuilder;
     private final Formatter formatter;
     private final Timeline.Window currentWindow;
@@ -64,14 +71,14 @@ public class CustomPlaybackControlView extends FrameLayout {
     private final int STANDARD_INDEX = 5;//index of 1.00f
     private int CURRENT_INDEX = STANDARD_INDEX;
 
-    private ExoPlayer player;
+    private SimpleExoPlayer player;
     //private VisibilityListener visibilityListener;
     private OnPlaybackParamsListener paramsListener;
+
 
     private boolean dragging;
     private int rewindMs = DEFAULT_REWIND_MS;
     private int fastForwardMs = DEFAULT_FAST_FORWARD_MS;
-  //  private int showDurationMs = DEFAULT_SHOW_DURATION_MS;
 
     private final Runnable updateProgressAction = new Runnable() {
         @Override
@@ -79,6 +86,7 @@ public class CustomPlaybackControlView extends FrameLayout {
             updateProgress();
         }
     };
+    private PlayerImpl playerImpl;
 
     public CustomPlaybackControlView(Context context) {
         this(context, null);
@@ -96,43 +104,29 @@ public class CustomPlaybackControlView extends FrameLayout {
         formatter = new Formatter(formatBuilder, Locale.getDefault());
         componentListener = new ComponentListener();
 
-        LayoutInflater.from(context).inflate(R.layout.custom_exo_playback_control_view, this);
-        time = (TextView) findViewById(R.id.tv_time);
-        timeCurrent = (TextView) findViewById(R.id.tv_time_current);
-        speed = (TextView) findViewById(R.id.tv_speed);
+        View view  = LayoutInflater.from(context).inflate(R.layout.custom_exo_playback_control_view, this);
+        ButterKnife.bind(this, view);
         if(Util.SDK_INT < 23){
             speedViewVisible = false;
-           // speedArr = context.getResources().getStringArray(R.array.speed_arr);
             speed.setVisibility(View.GONE);
         }else {
-            //speedArr = null;
             CURRENT_INDEX = STANDARD_INDEX;
             updateSpeedText();
             speed.setOnClickListener(componentListener);
             speedViewVisible = true;
         }
 
-        progressBar = (SeekBar) findViewById(R.id.seek_mediacontroller_progress);
+        playButton.setOnClickListener(componentListener);
+        previousButton.setOnClickListener(componentListener);
+        nextButton.setOnClickListener(componentListener);
+        rewindButton.setOnClickListener(componentListener);
+        fastForwardButton.setOnClickListener(componentListener);
         progressBar.setOnSeekBarChangeListener(componentListener);
         progressBar.setMax(PROGRESS_BAR_MAX);
-        playButton = (ImageButton) findViewById(R.id.btn_play);
-        playButton.setOnClickListener(componentListener);
-        previousButton = findViewById(R.id.btn_prev);
-        previousButton.setOnClickListener(componentListener);
-        nextButton = findViewById(R.id.btn_next);
-        nextButton.setOnClickListener(componentListener);
-        rewindButton = findViewById(R.id.btn_rew);
-        rewindButton.setOnClickListener(componentListener);
-        fastForwardButton = findViewById(R.id.btn_ffwd);
-        fastForwardButton.setOnClickListener(componentListener);
-        updateAll();
-    }
 
-    /**
-     * Returns the player currently being controlled by this view, or null if no player is set.
-     */
-    public ExoPlayer getPlayer() {
-        return player;
+        playerImpl = new PlayerImpl(context, CustomPlaybackControlView.this);
+       //   stateClass = new StateClass();
+        updateAll();
     }
 
     /**
@@ -140,7 +134,8 @@ public class CustomPlaybackControlView extends FrameLayout {
      *
      * @param player the {@code ExoPlayer} to control.
      */
-    public void setPlayer(ExoPlayer player) {
+    @Override
+    public void setPlayer(SimpleExoPlayer player) {
         if (this.player == player) {
             return;
         }
@@ -192,11 +187,36 @@ public class CustomPlaybackControlView extends FrameLayout {
             return;
         }*/
         boolean playing = player != null && player.getPlayWhenReady();
+        Log.d(TAG, "IN UPDATE PLAY PAUSE BUTTON, PLAYER IS PLAYING "+playing+" IS PLAYER NULL "+player);
         String contentDescription = getResources().getString(
                 playing ? R.string.exo_controls_pause_description : R.string.exo_controls_play_description);
         playButton.setContentDescription(contentDescription);
         playButton.setImageResource(
                 playing ? R.drawable.exo_controls_pause : R.drawable.exo_controls_play);
+
+    }
+
+
+    @Override
+    public boolean isPlaying() {
+        return player != null && player.getPlayWhenReady();
+    }
+
+    @Override
+    public void onPause() {
+        if(playerImpl != null)
+           playerImpl.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        if(playerImpl != null)
+            playerImpl.onResume();
+    }
+
+    @Override
+    public void onDestroy() {
+        playerImpl = null;
     }
 
     private void updateNavigation() {
@@ -222,10 +242,10 @@ public class CustomPlaybackControlView extends FrameLayout {
         setButtonEnabled(isSeekable, rewindButton);
         if(speedViewVisible)
             setButtonEnabled(isSeekable,speed);
-        Log.d(TAG, "Previous Button "+enablePrevious);
-        Log.d(TAG, "Next Button "+enablePrevious);
-        Log.d(TAG, "Forward Button "+enablePrevious);
-        Log.d(TAG, "Rewind Button "+enablePrevious);
+    //    Log.d(TAG, "Previous Button "+enablePrevious);
+     //   Log.d(TAG, "Next Button "+enablePrevious);
+      //  Log.d(TAG, "Forward Button "+enablePrevious);
+       // Log.d(TAG, "Rewind Button "+enablePrevious);
         progressBar.setEnabled(isSeekable);
     }
 
@@ -308,6 +328,7 @@ public class CustomPlaybackControlView extends FrameLayout {
             player.seekToDefaultPosition(currentWindowIndex - 1);
         } else {
             player.seekTo(0);
+
         }
     }
 
@@ -336,7 +357,6 @@ public class CustomPlaybackControlView extends FrameLayout {
     private void updateSpeedText() {
         speed.setText(SPEED_ARR[CURRENT_INDEX]+"x");
     }
-
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         if (player == null || event.getAction() != KeyEvent.ACTION_DOWN) {
@@ -373,13 +393,10 @@ public class CustomPlaybackControlView extends FrameLayout {
         return true;
     }
 
+    @Override
     public void setPlaybackParamsListener(OnPlaybackParamsListener params){
         this.paramsListener = params;
 
-    }
-
-    public interface OnPlaybackParamsListener {
-        void setPlaybackParams(PlaybackParams playbackParams);
     }
 
     final class ComponentListener implements ExoPlayer.EventListener,
@@ -387,7 +404,6 @@ public class CustomPlaybackControlView extends FrameLayout {
 
         @Override
         public void onStartTrackingTouch(SeekBar seekBar) {
-         //   removeCallbacks(hideAction);
             dragging = true;
         }
 
@@ -435,7 +451,9 @@ public class CustomPlaybackControlView extends FrameLayout {
 
         @Override
         public void onClick(View view) {
-            Timeline currentTimeline = player.getCurrentTimeline();
+            Timeline currentTimeline = null;
+            if(player != null)
+            currentTimeline = player.getCurrentTimeline();
             if (nextButton == view) {
                 next();
             } else if (previousButton == view) {
@@ -446,6 +464,8 @@ public class CustomPlaybackControlView extends FrameLayout {
                 rewind();
             } else if (playButton == view) {
                 player.setPlayWhenReady(!player.getPlayWhenReady());
+                boolean playing =  player.getPlayWhenReady();
+                Log.d(TAG, "ON CLICK ON PLAY BUTTON isPlaying "+playing);
             }else if(speed == view){
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     PlaybackParams playbackParams = new PlaybackParams();

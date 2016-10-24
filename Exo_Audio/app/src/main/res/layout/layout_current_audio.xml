@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/current_audio_backgr">
+
+    <ImageView
+        android:id="@+id/img_album_img"
+        android:layout_width="@dimen/current_audio_album_img"
+        android:layout_height="@dimen/current_audio_album_img"
+        android:src="@mipmap/ic_launcher"/>
+
+    <LinearLayout
+        android:id="@+id/layout_audio_detail"
+        android:layout_width="wrap_content"
+        android:orientation="vertical"
+        android:layout_toRightOf="@id/img_album_img"
+        android:layout_toEndOf="@id/img_album_img"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/padding_albumimg_and_desc"
+        android:layout_marginStart="@dimen/padding_albumimg_and_desc"
+        android:layout_centerVertical="true">
+
+        <TextView
+            android:id="@+id/tv_album_episode_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/Base.TextAppearance.AppCompat.Large"
+            android:textColor="@android:color/white"
+            android:text="@string/app_name"/>
+<!--            android:maxLength="@I"-->
+
+        <TextView
+            android:id="@+id/tv_album_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/padding_albumimg_and_desc"
+            style="@style/Base.TextAppearance.AppCompat.Medium"
+            android:textColor="@android:color/white"
+            android:text="@string/app_name"
+            android:maxLength="@integer/max_text_length"/>
+
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/imgbtn_play_pause"
+        android:layout_height="@dimen/play_btn_current_audio"
+        android:layout_width="@dimen/play_btn_current_audio"
+        android:src="@drawable/exo_controls_play"
+        android:layout_gravity="center_vertical"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="@dimen/margin_play_current_audio"
+        android:layout_marginEnd="@dimen/margin_play_current_audio"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true" />
+
+</RelativeLayout>

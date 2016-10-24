@@ -2,4 +2,10 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="current_audio_album_img">100dp</dimen>
+    <dimen name="current_audio_layout_height">100dp</dimen>
+    <dimen name="play_btn_current_audio">50dp</dimen>
+    <dimen name="margin_play_current_audio">@dimen/activity_horizontal_margin</dimen>
+    <dimen name="padding_albumimg_and_desc">10dp</dimen>
+    <integer name="max_text_length">80</integer>
 </resources>
