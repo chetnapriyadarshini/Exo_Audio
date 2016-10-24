@@ -41,22 +41,14 @@ public class ExoPlayerService extends Service {
 
     private Handler mHandler = new Handler();
     private SimpleExoPlayer exoPlayer = null;
-    PlayerListener playerListener;
-    public static boolean isServiceRunning = false;
-    private boolean isPlayerInstantiated = false;
+ //   PlayerListener playerListener;
+   // public static boolean isServiceRunning = false;
+  //  private boolean isPlayerInstantiated = false;
 
     public ExoPlayerService() {
         super();
     }
 
-    public void setListener(PlayerListener playerListener) {
-        this.playerListener = playerListener;
-        if(!isPlayerInstantiated)
-        {
-            isPlayerInstantiated = true;
-            playerListener.onPlayerInstatiated(exoPlayer);
-        }
-    }
 
     public interface PlayerListener{
         void releasePlayer(SimpleExoPlayer exoPlayer);
@@ -73,11 +65,6 @@ public class ExoPlayerService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "ON START COMMAND CALLEDDDDDDD");
-        if(isServiceRunning){
-            /* Service creation is done and the listener should proceed
-            * with rest of initializations on there part*/
-            notifyListener();
-        }
         foreground();
         return super.onStartCommand(intent, flags, startId);
     }
@@ -102,19 +89,10 @@ public class ExoPlayerService extends Service {
 
         // 3. Create the exoPlayer
         exoPlayer = ExoPlayerFactory.newSimpleInstance(getApplicationContext(), trackSelector, loadControl);
-        notifyListener();
-        isServiceRunning = true;
-        Log.d(TAG, "EXO PLAYER CREATED IN SERVICE "+playerListener);
+        Log.d(TAG, "EXO PLAYER CREATED IN SERVICE ");
 
     }
 
-    private void notifyListener() {
-        if(playerListener != null) {
-            isPlayerInstantiated = true;
-            playerListener.onPlayerInstatiated(exoPlayer);
-        }else
-            isPlayerInstantiated = false;
-    }
 
     public void setHandler(Handler handler)
     {
@@ -158,7 +136,7 @@ public class ExoPlayerService extends Service {
         Log.d(TAG, "Service on destroy called !!!!!!!!!!!!");
         /*Set this to false as the player unbinds from the service on being destroyed
         this allows for a new instance of the player to be instantiated again */
-        isPlayerInstantiated = false;
+        
 
        /* if(mHandler != null)
         {
