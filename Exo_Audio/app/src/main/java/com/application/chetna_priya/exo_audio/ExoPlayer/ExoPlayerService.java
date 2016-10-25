@@ -13,10 +13,16 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
+import android.view.View;
+import android.widget.RemoteViews;
+import android.widget.Toast;
 
+import com.application.chetna_priya.exo_audio.R;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
@@ -36,17 +42,24 @@ import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 public class ExoPlayerService extends Service {
 
     private static final String TAG = ExoPlayerService.class.getSimpleName();
-    private static final int NOTIFICATION_ID = 1;
     private final IBinder mIBinder = new LocalBinder();
 
     private Handler mHandler = new Handler();
     private SimpleExoPlayer exoPlayer = null;
- //   PlayerListener playerListener;
-   // public static boolean isServiceRunning = false;
-  //  private boolean isPlayerInstantiated = false;
+    //MyPlayerListener playerListener;
+    PlayerListener playerListener;
+    private boolean isPlayerInstantiated = false;
 
     public ExoPlayerService() {
         super();
+    }
+
+    public void setListener(PlayerListener listener) {
+        this.playerListener = listener;
+        if(!isPlayerInstantiated){
+            isPlayerInstantiated = true;
+            listener.onPlayerInstatiated(exoPlayer);
+        }
     }
 
 
@@ -64,13 +77,26 @@ public class ExoPlayerService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG, "ON START COMMAND CALLEDDDDDDD");
-        foreground();
-        return super.onStartCommand(intent, flags, startId);
-    }
-
-    public SimpleExoPlayer getPlayerInstance(){
-        return exoPlayer;
+        if (intent.getAction().equals(Constants.ACTION.STARTFOREGROUND_ACTION)) {
+            createNotification();
+            Toast.makeText(this, "Service Started", Toast.LENGTH_SHORT).show();
+        } else if (intent.getAction().equals(Constants.ACTION.PREV_ACTION)) {
+            Toast.makeText(this, "Clicked Previous", Toast.LENGTH_SHORT).show();
+            Log.i(TAG, "Clicked Previous");
+        } else if (intent.getAction().equals(Constants.ACTION.PLAY_ACTION)) {
+            Toast.makeText(this, "Clicked Play", Toast.LENGTH_SHORT).show();
+            Log.i(TAG, "Clicked Play");
+        } else if (intent.getAction().equals(Constants.ACTION.NEXT_ACTION)) {
+            Toast.makeText(this, "Clicked Next", Toast.LENGTH_SHORT).show();
+            Log.i(TAG, "Clicked Next");
+        } else if (intent.getAction().equals(
+                Constants.ACTION.STOPFOREGROUND_ACTION)) {
+            Log.i(TAG, "Received Stop Foreground Intent");
+            Toast.makeText(this, "Service Stoped", Toast.LENGTH_SHORT).show();
+            stopForeground(true);
+            stopSelf();
+        }
+        return START_STICKY;
     }
 
 
@@ -90,7 +116,12 @@ public class ExoPlayerService extends Service {
         // 3. Create the exoPlayer
         exoPlayer = ExoPlayerFactory.newSimpleInstance(getApplicationContext(), trackSelector, loadControl);
         Log.d(TAG, "EXO PLAYER CREATED IN SERVICE ");
-
+        if(playerListener != null){
+            isPlayerInstantiated = true;
+            playerListener.onPlayerInstatiated(exoPlayer);
+        }else{
+            isPlayerInstantiated = false;
+        }
     }
 
 
@@ -99,35 +130,98 @@ public class ExoPlayerService extends Service {
         mHandler = handler;
     }
 
-    public void background(boolean removeNotification){
-        stopForeground(removeNotification);
-    }
 
-    public void foreground(){
-      //  if(!isforeground)
-        {
-            Log.d(TAG, "!!!!!!!!!!!!!!!!!Put Service in foreground!!!!!!!!!!!!!!!!!!");
-       //     startForeground(NOTIFICATION_ID, createNotification());
-        }
-    }
+    private NotificationCompat.Builder createNotification() {
+        // Using RemoteViews to bind custom layouts into Notification
+        RemoteViews views = new RemoteViews(getPackageName(), R.layout.status_bar);
+        RemoteViews bigViews = new RemoteViews(getPackageName(), R.layout.status_bar_expanded);
 
-    private Notification createNotification() {
+        // showing default album image
+        views.setViewVisibility(R.id.status_bar_icon, View.VISIBLE);
+        views.setViewVisibility(R.id.status_bar_album_art, View.GONE);
+        bigViews.setImageViewBitmap(R.id.status_bar_album_art, Constants.getDefaultAlbumArt(this));
+        views.setImageViewResource(R.id.status_bar_play, R.drawable.apollo_holo_dark_pause);
+        bigViews.setImageViewResource(R.id.status_bar_play, R.drawable.apollo_holo_dark_pause);
+
+        Intent previousIntent = new Intent(this, ExoPlayerService.class);
+        previousIntent.setAction(Constants.ACTION.PREV_ACTION);
+        PendingIntent ppreviousIntent = PendingIntent.getService(this, 0,
+                previousIntent, 0);
+
+        Intent playIntent = new Intent(this, ExoPlayerService.class);
+        playIntent.setAction(Constants.ACTION.PLAY_ACTION);
+        PendingIntent pplayIntent = PendingIntent.getService(this, 0,
+                playIntent, 0);
+
+        Intent nextIntent = new Intent(this, ExoPlayerService.class);
+        nextIntent.setAction(Constants.ACTION.NEXT_ACTION);
+        PendingIntent pnextIntent = PendingIntent.getService(this, 0,
+                nextIntent, 0);
+
+        Intent closeIntent = new Intent(this, ExoPlayerService.class);
+        closeIntent.setAction(Constants.ACTION.STOPFOREGROUND_ACTION);
+        PendingIntent pcloseIntent = PendingIntent.getService(this, 0,
+                closeIntent, 0);
+
+
+        views.setOnClickPendingIntent(R.id.status_bar_play, pplayIntent);
+        bigViews.setOnClickPendingIntent(R.id.status_bar_play, pplayIntent);
+
+        views.setOnClickPendingIntent(R.id.status_bar_next, pnextIntent);
+        bigViews.setOnClickPendingIntent(R.id.status_bar_next, pnextIntent);
+
+        views.setOnClickPendingIntent(R.id.status_bar_prev, ppreviousIntent);
+        bigViews.setOnClickPendingIntent(R.id.status_bar_prev, ppreviousIntent);
+
+        views.setOnClickPendingIntent(R.id.status_bar_collapse, pcloseIntent);
+        bigViews.setOnClickPendingIntent(R.id.status_bar_collapse, pcloseIntent);
+
+        views.setImageViewResource(R.id.status_bar_play, R.drawable.apollo_holo_dark_pause);
+        bigViews.setImageViewResource(R.id.status_bar_play, R.drawable.apollo_holo_dark_pause);
+
+        views.setTextViewText(R.id.status_bar_track_name, "Song Title");
+        bigViews.setTextViewText(R.id.status_bar_track_name, "Song Title");
+
+        views.setTextViewText(R.id.status_bar_artist_name, "Artist Name");
+        bigViews.setTextViewText(R.id.status_bar_artist_name, "Artist Name");
+
+        bigViews.setTextViewText(R.id.status_bar_album_name, "Album Name");
+
         Intent intent = new Intent(this, AudioActivity.class);
-        intent.putExtra("from_notification", true);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent pendIntent = PendingIntent.getActivity(this, 0, intent, 0);
+   //     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(getApplicationContext())
-                        .setSmallIcon(android.R.drawable.ic_dialog_alert)
-                        .setContentTitle("Ticker Title")
-                        .setContentText("Ticker Content")
-                        .setContentIntent(pendIntent);
+        // The stack builder object will contain an artificial back stack for the
+// started Activity.
+// This ensures that navigating backward from the Activity leads out of
+// your application to the Home screen.
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+// Adds the back stack for the Intent (but not the Intent itself)
+        stackBuilder.addParentStack(AudioActivity.class);
+// Adds the Intent that starts the Activity to the top of the stack
+        stackBuilder.addNextIntent(intent);
 
-        Notification notification = mBuilder.build();
-        notification.flags |= Notification.FLAG_NO_CLEAR;
+        PendingIntent resultPendingIntent =
+                stackBuilder.getPendingIntent(
+                        0,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
 
-        return notification;
+        NotificationCompat.Builder status =
+                new NotificationCompat.Builder(getApplicationContext());
+        status.setContent(views);
+        status.setContentIntent(resultPendingIntent);
+        status.setCustomBigContentView(bigViews);
+        status.setSmallIcon(R.drawable.ic_launcher);
+      //  status.flags |= Notification.FLAG_NO_CLEAR;
+        /*status.contentView = views;
+        status.bigContentView = bigViews;
+        status.flags = Notification.FLAG_ONGOING_EVENT;
+        status.icon = R.drawable.ic_launcher;
+        status.contentIntent = pendIntent;
+
+        status.flags |= Notification.FLAG_NO_CLEAR;*/
+        startForeground(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, status.build());
+        return status;
     }
 
     @Override
@@ -136,9 +230,10 @@ public class ExoPlayerService extends Service {
         Log.d(TAG, "Service on destroy called !!!!!!!!!!!!");
         /*Set this to false as the player unbinds from the service on being destroyed
         this allows for a new instance of the player to be instantiated again */
-        
 
-       /* if(mHandler != null)
+        isPlayerInstantiated = false;
+
+        if(mHandler != null)
         {
             mHandler = null;
         }
@@ -146,12 +241,20 @@ public class ExoPlayerService extends Service {
         if(playerListener != null)
             playerListener.releasePlayer(exoPlayer);
         exoPlayer = null;
-*/
     }
 
     @Override
     public IBinder onBind(Intent intent)
     {
         return mIBinder;
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+
+        /* Set isPlayerInstantiated = false, as this service does not get destroyed on unbinding, we want all the clients
+         * binding to it to go ahead and use already create exoplayer instance */
+        isPlayerInstantiated = false;
+        return super.onUnbind(intent);
     }
 }

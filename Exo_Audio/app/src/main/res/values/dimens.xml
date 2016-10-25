@@ -8,4 +8,25 @@
     <dimen name="margin_play_current_audio">@dimen/activity_horizontal_margin</dimen>
     <dimen name="padding_albumimg_and_desc">10dp</dimen>
     <integer name="max_text_length">80</integer>
+
+    <!-- Notification related dimens -->
+
+    <!-- Text sizes -->
+    <dimen name="text_size_extra_micro">10sp</dimen>
+    <dimen name="text_size_micro">12sp</dimen>
+    <dimen name="text_size_small">14sp</dimen>
+    <dimen name="text_size_medium">16sp</dimen>
+    <dimen name="text_size_large">18sp</dimen>
+
+    <!-- Nofication bar button -->
+    <dimen name="status_bar_button_width_height">48dp</dimen>
+    <dimen name="status_bar_album_art">64dp</dimen>
+    <dimen name="status_bar_button_info_container_padding_left">11dp</dimen>
+    <dimen name="notification_expanded_height">128.0dip</dimen>
+    <dimen name="play_controls_notification">48.0dip</dimen>
+    <dimen name="notification_padding">8.0dip</dimen>
+
+    <!-- Notification related dimens -->
+
+
 </resources>

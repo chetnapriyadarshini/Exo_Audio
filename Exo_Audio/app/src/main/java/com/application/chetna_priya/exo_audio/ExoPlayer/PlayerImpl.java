@@ -71,6 +71,7 @@ public class PlayerImpl implements ExoPlayer.EventListener, CustomPlaybackContro
             mService.setListener(PlayerImpl.this);
 
             Intent serviceIntent = new Intent(mContext, ExoPlayerService.class);
+            serviceIntent.setAction(Constants.ACTION.STARTFOREGROUND_ACTION);
             mContext.startService(serviceIntent);
         }
 
@@ -107,6 +108,7 @@ public class PlayerImpl implements ExoPlayer.EventListener, CustomPlaybackContro
 
     @Override
     public void onPlayerInstatiated(SimpleExoPlayer exoPlayer) {
+        Log.d(TAG, "Player instantiated----- PROCEDDDDDDDDDDDDDDD");
         createPlayer(exoPlayer);
     }
 
@@ -138,7 +140,7 @@ public class PlayerImpl implements ExoPlayer.EventListener, CustomPlaybackContro
     {
         if (mIsBound)
         {
-            mService.foreground();
+          //  mService.foreground();
             // Detach our existing connection.
             mContext.unbindService(mConnection);
             mIsBound = false;
