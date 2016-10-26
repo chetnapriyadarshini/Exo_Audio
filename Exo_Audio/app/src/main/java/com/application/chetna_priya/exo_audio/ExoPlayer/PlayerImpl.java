@@ -236,7 +236,7 @@ public class PlayerImpl implements ExoPlayer.EventListener, CustomPlaybackContro
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-        if(playerNeedsMediaSource() && playWhenReady/* && playbackState != ExoPlayer.STATE_BUFFERING*/) {
+        if(playWhenReady && exoPlayerView.playerNeedsMediaSourceAndFocus(exoPlayer)/* && playbackState != ExoPlayer.STATE_BUFFERING*/) {
             Log.d(TAG, "PLAYER SHOULD BE PREPARED");
             {
                 Intent serviceIntent = new Intent(mContext, ExoPlayerService.class);
@@ -247,18 +247,6 @@ public class PlayerImpl implements ExoPlayer.EventListener, CustomPlaybackContro
         }
     }
 
-    private boolean playerNeedsMediaSource() {
-        /* If the player has finished playing a media and there is another media in the
-         * playlist waiting to be played */
-        if(exoPlayer.getPlaybackState() == ExoPlayer.STATE_ENDED &&
-                !Playlist.getPlaylistInstance().isPlaylistEmpty())
-            return true;
-        /* If the player does not have any media source set up and, is initialized and ready for its
-         * first media source */
-        if(exoPlayer.getCurrentTimeline() == null)
-            return true;
-        return false;
-    }
 
     @Override
     public void onTimelineChanged(Timeline timeline, Object manifest) {
