@@ -69,10 +69,10 @@ public class PlayerImpl implements ExoPlayer.EventListener, CustomPlaybackContro
             mService = ((ExoPlayerService.LocalBinder)iBinder).getInstance();
             mService.setHandler(mainHandler);
             mService.setListener(PlayerImpl.this);
-
+/*
             Intent serviceIntent = new Intent(mContext, ExoPlayerService.class);
             serviceIntent.setAction(Constants.ACTION.STARTFOREGROUND_ACTION);
-            mContext.startService(serviceIntent);
+            mContext.startService(serviceIntent);*/
         }
 
         @Override
@@ -172,8 +172,6 @@ public class PlayerImpl implements ExoPlayer.EventListener, CustomPlaybackContro
         // Prepare the exoPlayer with the source.
         exoPlayer.prepare(mediaSource);
         exoPlayer.setPlayWhenReady(true);
-
-
     }
 
     private MediaSource buildMediaSource(Uri uri, String overrideExtension) {
@@ -238,17 +236,28 @@ public class PlayerImpl implements ExoPlayer.EventListener, CustomPlaybackContro
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-        if(playWhenReady && playbackState != ExoPlayer.STATE_BUFFERING) {
+        if(playerNeedsMediaSource() && playWhenReady/* && playbackState != ExoPlayer.STATE_BUFFERING*/) {
             Log.d(TAG, "PLAYER SHOULD BE PREPARED");
-            if(Playlist.getPlaylistInstance().isPlaylistEmpty())
-                try {
-                    throw new Exception("Something went wrong, the playlist is empty");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            else
+            {
+                Intent serviceIntent = new Intent(mContext, ExoPlayerService.class);
+                serviceIntent.setAction(Constants.ACTION.STARTFOREGROUND_ACTION);
+                mContext.startService(serviceIntent);
                 preparePlayer();
+            }
         }
+    }
+
+    private boolean playerNeedsMediaSource() {
+        /* If the player has finished playing a media and there is another media in the
+         * playlist waiting to be played */
+        if(exoPlayer.getPlaybackState() == ExoPlayer.STATE_ENDED &&
+                !Playlist.getPlaylistInstance().isPlaylistEmpty())
+            return true;
+        /* If the player does not have any media source set up and, is initialized and ready for its
+         * first media source */
+        if(exoPlayer.getCurrentTimeline() == null)
+            return true;
+        return false;
     }
 
     @Override
