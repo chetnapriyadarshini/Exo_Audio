@@ -1,6 +1,7 @@
 package com.application.chetna_priya.exo_audio.ExoPlayer;
 
 import android.content.Context;
+import android.media.AudioManager;
 import android.media.PlaybackParams;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
@@ -11,7 +12,7 @@ import com.google.android.exoplayer2.SimpleExoPlayer;
  * Created by chetna_priya on 10/23/2016.
  */
 
-public abstract class AbstractPlaybackControlView extends FrameLayout {
+public abstract class AbstractPlaybackControlView extends FrameLayout implements AudioManager.OnAudioFocusChangeListener {
 
 
     public interface OnPlaybackParamsListener {
