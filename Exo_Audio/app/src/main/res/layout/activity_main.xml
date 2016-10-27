@@ -30,7 +30,7 @@
         android:layout_gravity="bottom">
 
 
-        <com.application.chetna_priya.exo_audio.ExoPlayer.SmallPlaybackControlView
+        <com.application.chetna_priya.exo_audio.PlaybackControlView.SmallPlaybackControlView
             android:id="@+id/current_audio_view"
             layout="@layout/layout_current_audio"
             android:layout_gravity="bottom"

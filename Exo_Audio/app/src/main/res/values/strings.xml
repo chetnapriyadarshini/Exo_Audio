@@ -16,4 +16,7 @@
     <string name="cd_previous">Skip backwards</string>
     <string name="cd_play">Play and pause</string>
     <string name="cd_next">Skip forwards</string>
+    <string name="favorite">Favorite</string>
+    <string name="search_queue_title">Search results</string>
+    <string name="browse_podcast_by_genre_subtitle">%1$s songs</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.application.chetna_priya.exo_audio.ExoPlayer;
+package com.application.chetna_priya.exo_audio.PlaybackControlView;
 
 import android.content.Context;
 import android.media.PlaybackParams;
@@ -12,6 +12,7 @@ import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.application.chetna_priya.exo_audio.ExoPlayer.PlayerImpl;
 import com.application.chetna_priya.exo_audio.R;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -372,13 +373,16 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView {
                 rewind();
                 break;
             case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
-                player.setPlayWhenReady(!player.getPlayWhenReady());
+                if(hasAudioFocus(player))
+                    player.setPlayWhenReady(!player.getPlayWhenReady());
                 break;
             case KeyEvent.KEYCODE_MEDIA_PLAY:
-                player.setPlayWhenReady(true);
+                if(hasAudioFocus(player))
+                    player.setPlayWhenReady(true);
                 break;
             case KeyEvent.KEYCODE_MEDIA_PAUSE:
-                player.setPlayWhenReady(false);
+                if(hasAudioFocus(player))
+                    player.setPlayWhenReady(false);
                 break;
             case KeyEvent.KEYCODE_MEDIA_NEXT:
                 next();
@@ -463,7 +467,8 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView {
             } else if (rewindButton == view && currentTimeline != null) {
                 rewind();
             } else if (playButton == view) {
-                player.setPlayWhenReady(!player.getPlayWhenReady());
+                if(hasAudioFocus(player))
+                    player.setPlayWhenReady(!player.getPlayWhenReady());
                 boolean playing =  player.getPlayWhenReady();
                 Log.d(TAG, "ON CLICK ON PLAY BUTTON isPlaying "+playing);
             }else if(speed == view){

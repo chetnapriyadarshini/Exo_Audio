@@ -1,7 +1,5 @@
-package com.application.chetna_priya.exo_audio.ExoPlayer;
+package com.application.chetna_priya.exo_audio;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -9,7 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.application.chetna_priya.exo_audio.R;
+import com.application.chetna_priya.exo_audio.PlaybackControlView.CustomPlaybackControlView;
 
 public class AudioFragment extends Fragment {
     private static final String TAG = AudioFragment.class.getSimpleName();

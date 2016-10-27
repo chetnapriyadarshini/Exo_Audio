@@ -1,11 +1,7 @@
-package com.application.chetna_priya.exo_audio.ExoPlayer;
+package com.application.chetna_priya.exo_audio;
 
-import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-
-import com.application.chetna_priya.exo_audio.R;
 
 public class AudioActivity extends AppCompatActivity {
 

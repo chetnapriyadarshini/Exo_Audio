@@ -2,9 +2,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.application.chetna_priya.exo_audio.ExoPlayer.AudioFragment">
+    tools:context="com.application.chetna_priya.exo_audio.AudioFragment">
 
-    <com.application.chetna_priya.exo_audio.ExoPlayer.CustomPlaybackControlView
+    <com.application.chetna_priya.exo_audio.PlaybackControlView.CustomPlaybackControlView
         android:id="@+id/exo_player_control"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

@@ -12,6 +12,9 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.application.chetna_priya.exo_audio.PlaybackControlView.AbstractPlaybackControlView;
+import com.application.chetna_priya.exo_audio.PlaybackControlView.CustomPlaybackControlView;
+import com.application.chetna_priya.exo_audio.PlaybackControlView.SmallPlaybackControlView;
 import com.application.chetna_priya.exo_audio.R;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -33,8 +36,6 @@ import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.HttpDataSource;
 import com.google.android.exoplayer2.util.Util;
-
-import java.util.ArrayList;
 
 /**
  * Created by chetna_priya on 10/13/2016.

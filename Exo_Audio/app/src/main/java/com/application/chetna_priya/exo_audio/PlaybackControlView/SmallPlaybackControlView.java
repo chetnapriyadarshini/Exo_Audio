@@ -1,4 +1,4 @@
-package com.application.chetna_priya.exo_audio.ExoPlayer;
+package com.application.chetna_priya.exo_audio.PlaybackControlView;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
 
+import com.application.chetna_priya.exo_audio.ExoPlayer.PlayerImpl;
 import com.application.chetna_priya.exo_audio.R;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;

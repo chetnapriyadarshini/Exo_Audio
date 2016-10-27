@@ -7,15 +7,23 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.media.Rating;
+import android.media.session.MediaSession;
+import android.media.session.MediaSessionManager;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.RemoteException;
 import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
+import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
+import android.widget.MediaController;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
@@ -49,6 +57,20 @@ public class ExoPlayerService extends Service {
     //MyPlayerListener playerListener;
     PlayerListener playerListener;
     private boolean isPlayerInstantiated = false;
+    private RemoteViews views;
+    private RemoteViews bigViews;
+
+    public static final String ACTION_PLAY = "action_play";
+    public static final String ACTION_PAUSE = "action_pause";
+    public static final String ACTION_REWIND = "action_rewind";
+    public static final String ACTION_FAST_FORWARD = "action_fast_foward";
+    public static final String ACTION_NEXT = "action_next";
+    public static final String ACTION_PREVIOUS = "action_previous";
+    public static final String ACTION_STOP = "action_stop";
+
+    private MediaSessionManager mManager;
+    private MediaSessionCompat mSession;
+    private MediaControllerCompat mController;
 
     public ExoPlayerService() {
         super();
@@ -77,13 +99,14 @@ public class ExoPlayerService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent.getAction().equals(Constants.ACTION.STARTFOREGROUND_ACTION)) {
+        /*if (intent.getAction().equals(Constants.ACTION.STARTFOREGROUND_ACTION)) {
             createNotification();
             Toast.makeText(this, "Service Started", Toast.LENGTH_SHORT).show();
         } else if (intent.getAction().equals(Constants.ACTION.PREV_ACTION)) {
             Toast.makeText(this, "Clicked Previous", Toast.LENGTH_SHORT).show();
             Log.i(TAG, "Clicked Previous");
         } else if (intent.getAction().equals(Constants.ACTION.PLAY_ACTION)) {
+            playPause();
             Toast.makeText(this, "Clicked Play", Toast.LENGTH_SHORT).show();
             Log.i(TAG, "Clicked Play");
         } else if (intent.getAction().equals(Constants.ACTION.NEXT_ACTION)) {
@@ -96,9 +119,90 @@ public class ExoPlayerService extends Service {
             stopForeground(true);
             stopSelf();
         }
-        return START_STICKY;
+        return START_STICKY;*/
+
+        if( mManager == null ) {
+            initMediaSessions();
+        }
+
+        handleIntent( intent );
+        return super.onStartCommand(intent, flags, startId);
     }
 
+    private void initMediaSessions() {
+        mSession = new MediaSessionCompat(getApplicationContext(), "simple player session");
+        try {
+            mController =new MediaControllerCompat(getApplicationContext(), mSession.getSessionToken());
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+        mSession.setCallback(new ComponentListener());
+    }
+
+    private class ComponentListener extends MediaSessionCompat.Callback {
+
+        @Override
+        public void onPlay() {
+            super.onPlay();
+            Log.e( "MediaPlayerService", "onPlay");
+         //   buildNotification( generateAction( android.R.drawable.ic_media_pause, "Pause", ACTION_PAUSE ) );
+        }
+
+        @Override
+        public void onPause() {
+            super.onPause();
+            Log.e( "MediaPlayerService", "onPause");
+        //    buildNotification(generateAction(android.R.drawable.ic_media_play, "Play", ACTION_PLAY));
+        }
+
+        @Override
+        public void onSkipToNext() {
+            super.onSkipToNext();
+            Log.e( "MediaPlayerService", "onSkipToNext");
+            //Change media here
+        //    buildNotification( generateAction( android.R.drawable.ic_media_pause, "Pause", ACTION_PAUSE ) );
+        }
+
+        @Override
+        public void onSkipToPrevious() {
+            super.onSkipToPrevious();
+            Log.e( "MediaPlayerService", "onSkipToPrevious");
+            //Change media here
+          //  buildNotification( generateAction( android.R.drawable.ic_media_pause, "Pause", ACTION_PAUSE ) );
+        }
+
+        @Override
+        public void onFastForward() {
+            super.onFastForward();
+            Log.e( "MediaPlayerService", "onFastForward");
+            //Manipulate current media here
+        }
+
+        @Override
+        public void onRewind() {
+            super.onRewind();
+            Log.e( "MediaPlayerService", "onRewind");
+            //Manipulate current media here
+        }
+
+        @Override
+        public void onStop() {
+            super.onStop();
+            Log.e( "MediaPlayerService", "onStop");
+            //Stop media player here
+           /* NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.cancel( 1 );
+            Intent intent = new Intent( getApplicationContext(), ExoPlayerService.class );
+            stopService( intent );*/
+        }
+
+        @Override
+        public void onSeekTo(long pos) {
+            super.onSeekTo(pos);
+        }
+
+    }
 
     @Override
     public void onCreate() {
@@ -124,104 +228,68 @@ public class ExoPlayerService extends Service {
         }
     }
 
+    private void handleIntent( Intent intent ) {
+        if( intent == null || intent.getAction() == null )
+            return;
+
+        String action = intent.getAction();
+
+        if( action.equalsIgnoreCase( ACTION_PLAY ) ) {
+            mController.getTransportControls().play();
+        } else if( action.equalsIgnoreCase( ACTION_PAUSE ) ) {
+            mController.getTransportControls().pause();
+        } else if( action.equalsIgnoreCase( ACTION_FAST_FORWARD ) ) {
+            mController.getTransportControls().fastForward();
+        } else if( action.equalsIgnoreCase( ACTION_REWIND ) ) {
+            mController.getTransportControls().rewind();
+        } else if( action.equalsIgnoreCase( ACTION_PREVIOUS ) ) {
+            mController.getTransportControls().skipToPrevious();
+        } else if( action.equalsIgnoreCase( ACTION_NEXT ) ) {
+            mController.getTransportControls().skipToNext();
+        } else if( action.equalsIgnoreCase( ACTION_STOP ) ) {
+            mController.getTransportControls().stop();
+        }
+    }
+
+    private NotificationCompat.Action generateAction(int icon, String title, String intentAction ) {
+        Intent intent = new Intent( getApplicationContext(), ExoPlayerService.class );
+        intent.setAction( intentAction );
+        PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
+        return new NotificationCompat.Action.Builder( icon, title, pendingIntent ).build();
+    }
+
+    private void buildNotification( NotificationCompat.Action action ) {
+        NotificationCompat.MediaStyle style = new NotificationCompat.MediaStyle();
+
+        Intent intent = new Intent( getApplicationContext(), ExoPlayerService.class );
+        intent.setAction( ACTION_STOP );
+        PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+        builder.setSmallIcon(R.drawable.ic_launcher);
+        builder.setContentTitle( "Media Title" );
+        builder.setContentText( "Media Artist" );
+        builder.setDeleteIntent(pendingIntent);
+        builder.setStyle(style);
+
+
+        builder.addAction( generateAction( android.R.drawable.ic_media_previous, "Previous", ACTION_PREVIOUS ) );
+        builder.addAction( generateAction( android.R.drawable.ic_media_rew, "Rewind", ACTION_REWIND ) );
+        builder.addAction( action );
+        builder.addAction( generateAction( android.R.drawable.ic_media_ff, "Fast Foward", ACTION_FAST_FORWARD ) );
+        builder.addAction( generateAction( android.R.drawable.ic_media_next, "Next", ACTION_NEXT ) );
+        style.setShowActionsInCompactView(0,1,2,3,4);
+
+        startForeground(1, builder.build());
+
+    //    NotificationManager notificationManager = (NotificationManager) getSystemService( Context.NOTIFICATION_SERVICE );
+     //   notificationManager.notify( 1, builder.build() );
+    }
+
 
     public void setHandler(Handler handler)
     {
         mHandler = handler;
-    }
-
-
-    private NotificationCompat.Builder createNotification() {
-        // Using RemoteViews to bind custom layouts into Notification
-        RemoteViews views = new RemoteViews(getPackageName(), R.layout.status_bar);
-        RemoteViews bigViews = new RemoteViews(getPackageName(), R.layout.status_bar_expanded);
-
-        // showing default album image
-        views.setViewVisibility(R.id.status_bar_icon, View.VISIBLE);
-        views.setViewVisibility(R.id.status_bar_album_art, View.GONE);
-        bigViews.setImageViewBitmap(R.id.status_bar_album_art, Constants.getDefaultAlbumArt(this));
-        views.setImageViewResource(R.id.status_bar_play, R.drawable.apollo_holo_dark_pause);
-        bigViews.setImageViewResource(R.id.status_bar_play, R.drawable.apollo_holo_dark_pause);
-
-        Intent previousIntent = new Intent(this, ExoPlayerService.class);
-        previousIntent.setAction(Constants.ACTION.PREV_ACTION);
-        PendingIntent ppreviousIntent = PendingIntent.getService(this, 0,
-                previousIntent, 0);
-
-        Intent playIntent = new Intent(this, ExoPlayerService.class);
-        playIntent.setAction(Constants.ACTION.PLAY_ACTION);
-        PendingIntent pplayIntent = PendingIntent.getService(this, 0,
-                playIntent, 0);
-
-        Intent nextIntent = new Intent(this, ExoPlayerService.class);
-        nextIntent.setAction(Constants.ACTION.NEXT_ACTION);
-        PendingIntent pnextIntent = PendingIntent.getService(this, 0,
-                nextIntent, 0);
-
-        Intent closeIntent = new Intent(this, ExoPlayerService.class);
-        closeIntent.setAction(Constants.ACTION.STOPFOREGROUND_ACTION);
-        PendingIntent pcloseIntent = PendingIntent.getService(this, 0,
-                closeIntent, 0);
-
-
-        views.setOnClickPendingIntent(R.id.status_bar_play, pplayIntent);
-        bigViews.setOnClickPendingIntent(R.id.status_bar_play, pplayIntent);
-
-        views.setOnClickPendingIntent(R.id.status_bar_next, pnextIntent);
-        bigViews.setOnClickPendingIntent(R.id.status_bar_next, pnextIntent);
-
-        views.setOnClickPendingIntent(R.id.status_bar_prev, ppreviousIntent);
-        bigViews.setOnClickPendingIntent(R.id.status_bar_prev, ppreviousIntent);
-
-        views.setOnClickPendingIntent(R.id.status_bar_collapse, pcloseIntent);
-        bigViews.setOnClickPendingIntent(R.id.status_bar_collapse, pcloseIntent);
-
-        views.setImageViewResource(R.id.status_bar_play, R.drawable.apollo_holo_dark_pause);
-        bigViews.setImageViewResource(R.id.status_bar_play, R.drawable.apollo_holo_dark_pause);
-
-        views.setTextViewText(R.id.status_bar_track_name, "Song Title");
-        bigViews.setTextViewText(R.id.status_bar_track_name, "Song Title");
-
-        views.setTextViewText(R.id.status_bar_artist_name, "Artist Name");
-        bigViews.setTextViewText(R.id.status_bar_artist_name, "Artist Name");
-
-        bigViews.setTextViewText(R.id.status_bar_album_name, "Album Name");
-
-        Intent intent = new Intent(this, AudioActivity.class);
-   //     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-        // The stack builder object will contain an artificial back stack for the
-// started Activity.
-// This ensures that navigating backward from the Activity leads out of
-// your application to the Home screen.
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-// Adds the back stack for the Intent (but not the Intent itself)
-        stackBuilder.addParentStack(AudioActivity.class);
-// Adds the Intent that starts the Activity to the top of the stack
-        stackBuilder.addNextIntent(intent);
-
-        PendingIntent resultPendingIntent =
-                stackBuilder.getPendingIntent(
-                        0,
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                );
-
-        NotificationCompat.Builder status =
-                new NotificationCompat.Builder(getApplicationContext());
-        status.setContent(views);
-        status.setContentIntent(resultPendingIntent);
-        status.setCustomBigContentView(bigViews);
-        status.setSmallIcon(R.drawable.ic_launcher);
-      //  status.flags |= Notification.FLAG_NO_CLEAR;
-        /*status.contentView = views;
-        status.bigContentView = bigViews;
-        status.flags = Notification.FLAG_ONGOING_EVENT;
-        status.icon = R.drawable.ic_launcher;
-        status.contentIntent = pendIntent;
-
-        status.flags |= Notification.FLAG_NO_CLEAR;*/
-        startForeground(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, status.build());
-        return status;
     }
 
     @Override
