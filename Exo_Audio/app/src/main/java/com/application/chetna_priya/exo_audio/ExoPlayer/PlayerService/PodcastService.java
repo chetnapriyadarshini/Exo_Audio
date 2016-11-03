@@ -16,9 +16,8 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
 import com.application.chetna_priya.exo_audio.ExoPlayer.Playback.PlayerImpl;
-import com.application.chetna_priya.exo_audio.PlaybackControlView.AbstractPlaybackControlView;
-import com.application.chetna_priya.exo_audio.PlaybackControlView.CustomPlaybackControlView;
-import com.application.chetna_priya.exo_audio.PlaybackControlView.SmallPlaybackControlView;
+import com.application.chetna_priya.exo_audio.ExoPlayer.PlaybackControlView.CustomPlaybackControlView;
+import com.application.chetna_priya.exo_audio.ExoPlayer.PlaybackControlView.SmallPlaybackControlView;
 import com.application.chetna_priya.exo_audio.Ui.AudioActivity;
 import com.application.chetna_priya.exo_audio.ExoPlayer.Playback.PlaybackListener;
 import com.application.chetna_priya.exo_audio.Model.PodcastProvider;

@@ -1,24 +1,15 @@
 package com.application.chetna_priya.exo_audio.ExoPlayer.Playback;
 
 import android.app.Activity;
-import android.content.ComponentName;
 import android.content.Context;
 import android.media.PlaybackParams;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.media.MediaBrowserCompat;
-import android.support.v4.media.MediaMetadataCompat;
-import android.support.v4.media.session.MediaControllerCompat;
-import android.support.v4.media.session.MediaSessionCompat;
-import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
-import com.application.chetna_priya.exo_audio.ExoPlayer.PlayerService.PodcastService;
 import com.application.chetna_priya.exo_audio.ExoPlayer.Playlist;
-import com.application.chetna_priya.exo_audio.PlaybackControlView.AbstractPlaybackControlView;
-import com.application.chetna_priya.exo_audio.PlaybackControlView.CustomPlaybackControlView;
-import com.application.chetna_priya.exo_audio.PlaybackControlView.SmallPlaybackControlView;
+import com.application.chetna_priya.exo_audio.ExoPlayer.PlaybackControlView.AbstractPlaybackControlView;
+import com.application.chetna_priya.exo_audio.ExoPlayer.PlaybackControlView.CustomPlaybackControlView;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlayerFactory;

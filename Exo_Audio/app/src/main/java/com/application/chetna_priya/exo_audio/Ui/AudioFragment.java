@@ -14,8 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.application.chetna_priya.exo_audio.ExoPlayer.PlayerService.PodcastService;
-import com.application.chetna_priya.exo_audio.PlaybackControlView.AbstractPlaybackControlView;
-import com.application.chetna_priya.exo_audio.PlaybackControlView.CustomPlaybackControlView;
+import com.application.chetna_priya.exo_audio.ExoPlayer.PlaybackControlView.AbstractPlaybackControlView;
+import com.application.chetna_priya.exo_audio.ExoPlayer.PlaybackControlView.CustomPlaybackControlView;
 import com.application.chetna_priya.exo_audio.R;
 
 import static android.content.Context.BIND_AUTO_CREATE;

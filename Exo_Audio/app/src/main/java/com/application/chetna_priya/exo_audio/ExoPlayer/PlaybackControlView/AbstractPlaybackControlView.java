@@ -1,21 +1,12 @@
-package com.application.chetna_priya.exo_audio.PlaybackControlView;
+package com.application.chetna_priya.exo_audio.ExoPlayer.PlaybackControlView;
 
-import android.content.ComponentName;
 import android.content.Context;
-import android.media.AudioManager;
-import android.media.PlaybackParams;
-import android.os.Bundle;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
-import com.application.chetna_priya.exo_audio.ExoPlayer.PlayerService.PodcastService;
-import com.application.chetna_priya.exo_audio.ExoPlayer.Playlist;
-import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.SimpleExoPlayer;
-
-import static android.media.AudioManager.AUDIOFOCUS_LOSS_TRANSIENT;
 
 /**
  * Created by chetna_priya on 10/23/2016.

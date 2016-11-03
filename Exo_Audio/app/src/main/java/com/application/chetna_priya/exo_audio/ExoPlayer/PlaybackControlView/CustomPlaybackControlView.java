@@ -1,6 +1,5 @@
-package com.application.chetna_priya.exo_audio.PlaybackControlView;
+package com.application.chetna_priya.exo_audio.ExoPlayer.PlaybackControlView;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.media.PlaybackParams;
@@ -15,18 +14,15 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.application.chetna_priya.exo_audio.ExoPlayer.Playback.PlayerImpl;
 import com.application.chetna_priya.exo_audio.ExoPlayer.PlayerService.PodcastService;
 import com.application.chetna_priya.exo_audio.R;
 import com.google.android.exoplayer2.C;
-import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
