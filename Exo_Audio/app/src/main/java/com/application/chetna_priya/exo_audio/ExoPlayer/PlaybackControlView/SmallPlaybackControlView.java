@@ -18,8 +18,10 @@ import android.widget.ImageButton;
 
 import com.application.chetna_priya.exo_audio.ExoPlayer.PlayerService.PodcastService;
 import com.application.chetna_priya.exo_audio.R;
+import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.Timeline;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -74,7 +76,14 @@ public class SmallPlaybackControlView extends AbstractPlaybackControlView {
         if (this.player == player) {
             return;
         }
+        if (this.player != null) {
+            this.player.removeListener(componentListener);
+        }
         this.player = player;
+        if (player != null) {
+            player.addListener(componentListener);
+        }
+
         updatePlayPauseButton();
     }
 
@@ -179,7 +188,7 @@ public class SmallPlaybackControlView extends AbstractPlaybackControlView {
     }
 
 
-    final class ComponentListener implements OnClickListener {
+    final class ComponentListener implements OnClickListener, ExoPlayer.EventListener {
 
         @Override
         public void onClick(View view) {
@@ -197,6 +206,30 @@ public class SmallPlaybackControlView extends AbstractPlaybackControlView {
                 controls.play();
         }
 
+        @Override
+        public void onLoadingChanged(boolean isLoading) {
+            //Do Nothing
+        }
+
+        @Override
+        public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+            updatePlayPauseButton();
+        }
+
+        @Override
+        public void onTimelineChanged(Timeline timeline, Object manifest) {
+            //Do Nothing
+        }
+
+        @Override
+        public void onPlayerError(ExoPlaybackException error) {
+            //Do Nothing
+        }
+
+        @Override
+        public void onPositionDiscontinuity() {
+            //Do Nothing
+        }
     }
 
 }

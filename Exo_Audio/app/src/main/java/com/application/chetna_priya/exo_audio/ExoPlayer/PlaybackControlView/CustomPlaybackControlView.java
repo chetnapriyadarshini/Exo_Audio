@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.application.chetna_priya.exo_audio.ExoPlayer.PlayerService.PodcastService;
 import com.application.chetna_priya.exo_audio.R;
 import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
@@ -230,13 +231,13 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
         if (this.player == player) {
             return;
         }
-      /*  if (this.player != null) {
+        if (this.player != null) {
             this.player.removeListener(componentListener);
-        }*/
+        }
         this.player = player;
-        /*if (player != null) {
+        if (player != null) {
             player.addListener(componentListener);
-        }*/
+        }
         updateAll();
     }
 
@@ -466,7 +467,8 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
     }
 */
 
-    final class ComponentListener implements  SeekBar.OnSeekBarChangeListener, OnClickListener {
+    final class ComponentListener implements  SeekBar.OnSeekBarChangeListener, OnClickListener,
+            ExoPlayer.EventListener{
 
         @Override
         public void onStartTrackingTouch(SeekBar seekBar) {
@@ -491,7 +493,7 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
             //hideDeferred();
         }
 
-    /*    @Override
+        @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
             updatePlayPauseButton();
             updateProgress();
@@ -518,7 +520,6 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
         public void onPlayerError(ExoPlaybackException error) {
             // Do nothing.
         }
-*/
         @Override
         public void onClick(View view) {
             Timeline currentTimeline = null;
