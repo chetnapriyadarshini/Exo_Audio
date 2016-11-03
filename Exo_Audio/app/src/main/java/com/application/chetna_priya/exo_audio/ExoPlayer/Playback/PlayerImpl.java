@@ -38,7 +38,7 @@ import com.google.android.exoplayer2.util.Util;
  * Created by chetna_priya on 10/13/2016.
  */
 
-public class PlayerImpl implements /*ExoPlayer.EventListener,*/ CustomPlaybackControlView.OnPlaybackParamsListener,
+public class PlayerImpl implements /*ExoPlayer.EventListener,*/
         Playback{
 
     private static final String TAG = PlayerImpl.class.getSimpleName();
@@ -240,7 +240,6 @@ public class PlayerImpl implements /*ExoPlayer.EventListener,*/ CustomPlaybackCo
         Toast.makeText(mContext.getApplicationContext(), message, Toast.LENGTH_LONG).show();
     }*/
 
-    @Override
     public void setPlaybackParams(PlaybackParams playbackParams) {
         exoPlayer.setPlaybackParams(playbackParams);
     }

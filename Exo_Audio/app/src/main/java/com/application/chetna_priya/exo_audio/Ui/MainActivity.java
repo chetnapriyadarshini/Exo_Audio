@@ -62,6 +62,10 @@ public class MainActivity extends AppCompatActivity implements AbstractPlaybackC
             mService = binder.getService();
             mService.setViewForPlayer(playbackControlView);
             mBound = true;
+            mMediaBrowser.connect();
+            /* move mMediaBrowser.connect here because
+            we want the view class to have the player reference before we start
+            avoiding the null pointer exception*/
         }
 
         @Override
@@ -76,7 +80,6 @@ public class MainActivity extends AppCompatActivity implements AbstractPlaybackC
         Intent serviceIntent = new Intent(this, PodcastService.class);
         if(PodcastService.isServiceRunning)
             bindService(serviceIntent, mConnection, BIND_AUTO_CREATE);
-        mMediaBrowser.connect();
     }
 
     @Override
