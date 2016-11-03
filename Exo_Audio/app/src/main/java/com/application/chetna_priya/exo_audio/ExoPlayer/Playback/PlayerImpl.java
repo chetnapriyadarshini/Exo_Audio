@@ -2,20 +2,29 @@ package com.application.chetna_priya.exo_audio.ExoPlayer.Playback;
 
 import android.app.Activity;
 import android.content.Context;
+import android.media.AudioManager;
 import android.media.PlaybackParams;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.application.chetna_priya.exo_audio.ExoPlayer.Playlist;
 import com.application.chetna_priya.exo_audio.ExoPlayer.PlaybackControlView.AbstractPlaybackControlView;
-import com.application.chetna_priya.exo_audio.ExoPlayer.PlaybackControlView.CustomPlaybackControlView;
+import com.application.chetna_priya.exo_audio.R;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.ExoPlaybackException;
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
+import com.google.android.exoplayer2.mediacodec.MediaCodecRenderer;
+import com.google.android.exoplayer2.mediacodec.MediaCodecUtil;
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -38,10 +47,11 @@ import com.google.android.exoplayer2.util.Util;
  * Created by chetna_priya on 10/13/2016.
  */
 
-public class PlayerImpl implements /*ExoPlayer.EventListener,*/
-        Playback{
+public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudioFocusChangeListener, Playback{
 
     private static final String TAG = PlayerImpl.class.getSimpleName();
+    private final AudioManager mAudioManager;
+    private int mState;
     private AbstractPlaybackControlView exoPlayerView;
     private Context mContext;
     private DataSource.Factory mediaDataSourceFactory;
@@ -49,17 +59,36 @@ public class PlayerImpl implements /*ExoPlayer.EventListener,*/
     private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
     private EventLogger eventLogger;
     private Handler mainHandler = new Handler();
+
     //TODO remember to look into these variables once you implement content provider and database
     private boolean shouldRestorePosition = false;
-    private long playerPosition;
+    private long mCurrentPosition;
     private int playerWindow;
     //TODO remember to look into these variables once you implement content provider and database
+    private Callback mCallback;
+    // we don't have audio focus, and can't duck (play at a low volume)
+    private static final int AUDIO_NO_FOCUS = 0;
+    // we have full audio focus
+    private static final int AUDIO_FOCUSED  = 1;
+    // Type of audio focus we have:
+    private int mAudioFocus = AUDIO_NO_FOCUS;
+    public static final float VOLUME_NORMAL = 1.0f;
+    private boolean mPlayOnFocusGain;
+
+    public final int DEFAULT_FAST_FORWARD_MS = 30000;
+    public final int DEFAULT_REWIND_MS = 30000;
+
+
+    private int rewindMs = DEFAULT_REWIND_MS;
+    private int fastForwardMs = DEFAULT_FAST_FORWARD_MS;
 
 
 
     public PlayerImpl(Context context){
         Log.d(TAG, "PLAYER CLASS INITILIAZED BY PODCAST SERVICE");
         mContext = context;
+        this.mAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        this.mState = PlaybackStateCompat.STATE_NONE;
     }
 
     public void attachView(AbstractPlaybackControlView playbackControlView){
@@ -70,36 +99,37 @@ public class PlayerImpl implements /*ExoPlayer.EventListener,*/
 
 
     private void createPlayerIfNeeded() {
-        mainHandler = new Handler();
-        BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
-        TrackSelection.Factory videoTrackSelectionFactory =
-                new AdaptiveVideoTrackSelection.Factory(bandwidthMeter);
-        TrackSelector trackSelector =
-                new DefaultTrackSelector(mainHandler, videoTrackSelectionFactory);
+        if(exoPlayer == null) {
+            mainHandler = new Handler();
+            BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
+            TrackSelection.Factory videoTrackSelectionFactory =
+                    new AdaptiveVideoTrackSelection.Factory(bandwidthMeter);
+            TrackSelector trackSelector =
+                    new DefaultTrackSelector(mainHandler, videoTrackSelectionFactory);
 
-        // 2. Create a default LoadControl
-        LoadControl loadControl = new DefaultLoadControl();
+            // 2. Create a default LoadControl
+            LoadControl loadControl = new DefaultLoadControl();
 
-        // 3. Create the exoPlayer
-        exoPlayer = ExoPlayerFactory.newSimpleInstance(mContext, trackSelector, loadControl);
+            // 3. Create the exoPlayer
+            exoPlayer = ExoPlayerFactory.newSimpleInstance(mContext, trackSelector, loadControl);
 
-        // Listen to exoPlayer events
-        //TODO fix this
-        //exoPlayer.addListener(this);
-        //Set Event Logger as the Audio Debug Listener
-        exoPlayer.setAudioDebugListener(eventLogger);
-        //4. Attach view
-        exoPlayerView.setPlayer(exoPlayer);
-        if (shouldRestorePosition) {
-            if (playerPosition == C.TIME_UNSET) {
-                exoPlayer.seekToDefaultPosition(playerWindow);
-            } else {
-                exoPlayer.seekTo(playerWindow, playerPosition);
+            // Listen to exoPlayer events
+            exoPlayer.addListener(this);
+            //Set Event Logger as the Audio Debug Listener
+            exoPlayer.setAudioDebugListener(eventLogger);
+            //4. Attach view
+            exoPlayerView.setPlayer(exoPlayer);
+            if (shouldRestorePosition) {
+                if (mCurrentPosition == C.TIME_UNSET) {
+                    exoPlayer.seekToDefaultPosition(playerWindow);
+                } else {
+                    exoPlayer.seekTo(playerWindow, mCurrentPosition);
+                }
             }
-        }
 
-        eventLogger = new EventLogger();
-        mediaDataSourceFactory = buildDataSourceFactory(true);
+            eventLogger = new EventLogger();
+            mediaDataSourceFactory = buildDataSourceFactory(true);
+        }
 
     }
 
@@ -154,9 +184,9 @@ public class PlayerImpl implements /*ExoPlayer.EventListener,*/
                 .buildHttpDataSourceFactory(useBandwidthMeter ? BANDWIDTH_METER : null);
     }
 
-   /* @Override
-    public void releasePlayer(SimpleExoPlayer exoPlayer) {
-        if (exoPlayer != null) {
+    public void relaxResources(boolean releaseExoPlayer) {
+        if (releaseExoPlayer && exoPlayer != null)
+        {
             shouldRestorePosition = false;
             Timeline timeline = exoPlayer.getCurrentTimeline();
             if (timeline != null) {
@@ -164,36 +194,28 @@ public class PlayerImpl implements /*ExoPlayer.EventListener,*/
                 Timeline.Window window = timeline.getWindow(playerWindow, new Timeline.Window());
                 if (!window.isDynamic) {
                     shouldRestorePosition = true;
-                    playerPosition = window.isSeekable ? exoPlayer.getCurrentPosition() : C.TIME_UNSET;
+                    mCurrentPosition = window.isSeekable ? exoPlayer.getCurrentPosition() : C.TIME_UNSET;
                 }
             }
             exoPlayer.release();
             eventLogger = null;
         }
-    }*/
+    }
 
-    /*@Override
+    @Override
     public void onLoadingChanged(boolean isLoading) {
-
+        //Do Nothing
     }
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-        if(playWhenReady && exoPlayerView.playerNeedsMediaSourceAndFocus(exoPlayer)*//* && playbackState != ExoPlayer.STATE_BUFFERING*//*) {
-            Log.d(TAG, "PLAYER SHOULD BE PREPARED");
-            {
-                Intent serviceIntent = new Intent(mContext, PodcastService.class);
-                serviceIntent.setAction(Constants.ACTION.STARTFOREGROUND_ACTION);
-                mContext.startService(serviceIntent);
-                preparePlayer();
-            }
-        }
+        //Do Nothing, it is handled in playback controlview classes
     }
 
 
     @Override
     public void onTimelineChanged(Timeline timeline, Object manifest) {
-
+        //Do Nothing, it is handled in playback controlview classes
     }
 
     @Override
@@ -228,7 +250,7 @@ public class PlayerImpl implements /*ExoPlayer.EventListener,*/
 
     @Override
     public void onPositionDiscontinuity() {
-
+        //Do Nothing, it is handled in playback controlview classes
     }
 
 
@@ -238,39 +260,268 @@ public class PlayerImpl implements /*ExoPlayer.EventListener,*/
 
     private void showToast(String message) {
         Toast.makeText(mContext.getApplicationContext(), message, Toast.LENGTH_LONG).show();
-    }*/
+    }
 
     public void setPlaybackParams(PlaybackParams playbackParams) {
         exoPlayer.setPlaybackParams(playbackParams);
     }
 
     @Override
-    public void play() {
-        createPlayerIfNeeded();
+    public void setCallback(Callback callback) {
+        this.mCallback = callback;
     }
 
-    @Override
-    public void pause() {
 
+    @Override
+    public void stop(boolean notifyListeners) {
+        mState = PlaybackStateCompat.STATE_STOPPED;
+        if (notifyListeners && mCallback != null) {
+            mCallback.onPlaybackStatusChanged(mState);
+        }
+        mCurrentPosition = getCurrentStreamPosition();
+        // Give up Audio focus
+        giveUpAudioFocus();
+        // Relax all resources
+        relaxResources(true);
+    }
+
+    private void giveUpAudioFocus() {
+        Log.d(TAG, "giveUpAudioFocus");
+        if (mAudioFocus == AUDIO_FOCUSED) {
+            if (mAudioManager.abandonAudioFocus(this) == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                mAudioFocus = AUDIO_NO_FOCUS;
+            }
+
+        }
     }
 
     @Override
     public void setState(int state) {
-
+        this.mState = state;
     }
 
     @Override
     public int getState() {
-        return 0;
+        return mState;
     }
 
     @Override
     public void start() {
+        exoPlayer.setPlayWhenReady(true);
+    }
+
+    @Override
+    public boolean isConnected() {
+        return true;
+    }
+
+    @Override
+    public boolean isPlaying() {
+        return mPlayOnFocusGain || (exoPlayer != null && exoPlayer.getPlayWhenReady());
+    }
+
+
+    @Override
+    public long getCurrentStreamPosition() {
+        return exoPlayer != null ?
+                exoPlayer.getCurrentPosition() : mCurrentPosition;
+    }
+
+    @Override
+    public float getPlaybackSpeed() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return exoPlayer != null ? exoPlayer.getPlaybackParams().getSpeed() : 1.0f;
+        }
+        return 1.0f;
+    }
+
+    @Override
+    public void updateLastKnownStreamPosition() {
+        if (exoPlayer != null) {
+            mCurrentPosition = exoPlayer.getCurrentPosition();
+        }
+    }
+
+    @Override
+    public void play(/*TODO QueueItem item */) {
+        mPlayOnFocusGain = true;
+        tryToGetAudioFocus();
+
+    /*    String mediaId = item.getDescription().getMediaId();
+        boolean mediaHasChanged = !TextUtils.equals(mediaId, mCurrentMediaId);
+        if (mediaHasChanged) {
+            mCurrentPosition = 0;
+            mCurrentMediaId = mediaId;
+        }
+
+        if (mState == PlaybackStateCompat.STATE_PAUSED && !mediaHasChanged && mMediaPlayer != null) {
+            configMediaPlayerState();
+        } else {
+            mState = PlaybackStateCompat.STATE_STOPPED;
+            relaxResources(false); // release everything except MediaPlayer
+            MediaMetadataCompat track = mMusicProvider.getMusic(
+                    MediaIDHelper.extractMusicIDFromMediaID(item.getDescription().getMediaId()));
+
+            //noinspection ResourceType
+            String source = track.getString(PodcastProvider.CUSTOM_METADATA_TRACK_SOURCE);
+    */
+        boolean mediaHasChanged = false;/* Dummy implementation */
+
+        if (mState == PlaybackStateCompat.STATE_PAUSED && !mediaHasChanged && exoPlayer != null) {
+            configMediaPlayerState();
+        } else {
+            createPlayerIfNeeded();
+            mState = PlaybackStateCompat.STATE_BUFFERING;
+            preparePlayer();
+            if(mCallback != null)
+                mCallback.onPlaybackStatusChanged(mState);
+        }
 
     }
 
     @Override
-    public void stop(boolean notifyListeners) {
+    public void pause() {
+        if (mState == PlaybackStateCompat.STATE_PLAYING) {
+            // Pause media player and cancel the 'foreground service' state.
+            if (exoPlayer != null && exoPlayer.getPlayWhenReady()) {
+                exoPlayer.setPlayWhenReady(false);
+                mCurrentPosition = exoPlayer.getCurrentPosition();
+            }
+            // while paused, retain the MediaPlayer but give up audio focus
+            relaxResources(false);
+            giveUpAudioFocus();
+        }
+        mState = PlaybackStateCompat.STATE_PAUSED;
+        if (mCallback != null) {
+            mCallback.onPlaybackStatusChanged(mState);
+        }
+    }
 
+    @Override
+    public void seekTo(long position) {
+        Log.d(TAG, "seekTo called with "+ position);
+
+        if (exoPlayer == null) {
+            // If we do not have a current media player, simply update the current position
+            mCurrentPosition = position;
+        } else {
+            if (exoPlayer.getPlayWhenReady()) {
+                mState = PlaybackStateCompat.STATE_BUFFERING;
+            }
+            exoPlayer.seekTo(position);
+            if (mCallback != null) {
+                mCallback.onPlaybackStatusChanged(mState);
+            }
+        }
+    }
+
+    @Override
+    public void changeSpeed(float speed) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+        {
+            PlaybackParams playbackParams = new PlaybackParams();
+            playbackParams.setSpeed(speed);
+            exoPlayer.setPlaybackParams(playbackParams);
+        }
+    }
+
+    @Override
+    public void setCurrentStreamPosition(int pos) {
+        this.mCurrentPosition = pos;
+    }
+
+    private void tryToGetAudioFocus() {
+        Log.d(TAG, "tryToGetAudioFocus");
+        if (mAudioFocus != AUDIO_FOCUSED) {
+            int result = mAudioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC,
+                    AudioManager.AUDIOFOCUS_GAIN);
+            if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                mAudioFocus = AUDIO_FOCUSED;
+            }
+        }
+    }
+
+    private void configMediaPlayerState(){
+        if (mAudioFocus == AUDIO_NO_FOCUS) {
+            // If we don't have audio focus and can't duck, we have to pause,
+            if (mState == PlaybackStateCompat.STATE_PLAYING) {
+                pause();
+            }
+        } else {  // we have audio focus:
+            exoPlayer.setVolume(VOLUME_NORMAL);
+
+            // If we were playing when we lost focus, we need to resume playing.
+            if (mPlayOnFocusGain) {
+                if (exoPlayer != null && !exoPlayer.getPlayWhenReady()) {
+                    Log.d(TAG,"configMediaPlayerState startMediaPlayer. seeking to "+
+                            mCurrentPosition);
+                    if (mCurrentPosition == exoPlayer.getCurrentPosition()) {
+                        exoPlayer.setPlayWhenReady(true);
+                        mState = PlaybackStateCompat.STATE_PLAYING;
+                    } else {
+                        exoPlayer.seekTo(mCurrentPosition);
+                        mState = PlaybackStateCompat.STATE_BUFFERING;
+                    }
+                }
+                mPlayOnFocusGain = false;
+            }
+        }
+
+        if (mCallback != null) {
+            mCallback.onPlaybackStatusChanged(mState);
+        }
+    }
+
+    @Override
+    public void onAudioFocusChange(int focusChange) {
+
+        Log.d(TAG, "onAudioFocusChange. focusChange="+ focusChange);
+        if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
+            // We have gained focus:
+            mAudioFocus = AUDIO_FOCUSED;
+
+        } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS ||
+                focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT){
+
+            // If we are playing, we need to reset media player by calling configMediaPlayerState
+            // with mAudioFocus properly set.
+            if (mState == PlaybackStateCompat.STATE_PLAYING) {
+                // If we don't have audio focus and can't duck, we save the information that
+                // we were playing, so that we can resume playback once we get the focus back.
+                mPlayOnFocusGain = true;
+            }
+        }
+        configMediaPlayerState();
+    }
+
+    @Override
+    public void rewind() {
+
+       seekTo(Math.max(exoPlayer.getCurrentPosition() - rewindMs, 0));
+    }
+
+    @Override
+    public void fastForward() {
+
+        seekTo(Math.min(exoPlayer.getCurrentPosition() + fastForwardMs, exoPlayer.getDuration()));
+    }
+
+
+    /**
+     * Sets the rewind increment in milliseconds.
+     *
+     * @param rewindMs The rewind increment in milliseconds.
+     */
+    public void setRewindIncrementMs(int rewindMs) {
+        this.rewindMs = rewindMs;
+    }
+
+    /**
+     * Sets the fast forward increment in milliseconds.
+     *
+     * @param fastForwardMs The fast forward increment in milliseconds.
+     */
+    public void setFastForwardIncrementMs(int fastForwardMs) {
+        this.fastForwardMs = fastForwardMs;
     }
 }

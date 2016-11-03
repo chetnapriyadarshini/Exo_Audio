@@ -6,7 +6,7 @@ package com.application.chetna_priya.exo_audio.ExoPlayer.Playback;
 
 public interface Playback  {
 
-    void play();
+    void play(/*TODO QueueItem item */);
 
     /**
      * Pause the current playing item
@@ -36,6 +36,26 @@ public interface Playback  {
      *                        the state.
      */
     void stop(boolean notifyListeners);
+
+    void rewind();
+
+    void fastForward();
+
+    boolean isPlaying();
+
+    boolean isConnected();
+
+    long getCurrentStreamPosition();
+
+    float getPlaybackSpeed();
+
+    void seekTo(long position);
+
+    void changeSpeed(float speed);
+
+    void updateLastKnownStreamPosition();
+
+    void setCurrentStreamPosition(int pos);
 
     interface Callback {
         /**

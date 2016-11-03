@@ -22,7 +22,7 @@ public class AudioActivity extends AppCompatActivity {
     //TODO Check launch mode singleTop and onIntent method
         /*@Override
     public void onNewIntent(Intent intent) {
-        releasePlayer();
+        relaxResources();
         shouldRestorePosition = false;
         setIntent(intent);
     }*/

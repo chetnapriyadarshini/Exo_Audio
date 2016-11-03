@@ -51,9 +51,6 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
         void onVisibilityChange(int visibility);
     }*/
 
-    public static final int DEFAULT_FAST_FORWARD_MS = 30000;
-    public static final int DEFAULT_REWIND_MS = 30000;
-
     private static final int PROGRESS_BAR_MAX = 1000;
     private static final long MAX_POSITION_FOR_SEEK_TO_PREVIOUS = 3000;
     private static final String TAG = CustomPlaybackControlView.class.getSimpleName();
@@ -87,8 +84,6 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
 
 
     private boolean dragging;
-    private int rewindMs = DEFAULT_REWIND_MS;
-    private int fastForwardMs = DEFAULT_FAST_FORWARD_MS;
 
     private final Runnable updateProgressAction = new Runnable() {
         @Override
@@ -250,23 +245,6 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
         this.visibilityListener = listener;
     }
 */
-    /**
-     * Sets the rewind increment in milliseconds.
-     *
-     * @param rewindMs The rewind increment in milliseconds.
-     */
-    public void setRewindIncrementMs(int rewindMs) {
-        this.rewindMs = rewindMs;
-    }
-
-    /**
-     * Sets the fast forward increment in milliseconds.
-     *
-     * @param fastForwardMs The fast forward increment in milliseconds.
-     */
-    public void setFastForwardIncrementMs(int fastForwardMs) {
-        this.fastForwardMs = fastForwardMs;
-    }
 
     private void updateAll() {
         updatePlayPauseButton();
@@ -414,15 +392,6 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
             player.seekToDefaultPosition();
         }
     }
-
-    private void rewind() {
-        player.seekTo(Math.max(player.getCurrentPosition() - rewindMs, 0));
-    }
-
-    private void fastForward() {
-        player.seekTo(Math.min(player.getCurrentPosition() + fastForwardMs, player.getDuration()));
-    }
-
 
     private void updateSpeedText() {
         speed.setText(SPEED_ARR[CURRENT_INDEX]+"x");
