@@ -1,29 +1,30 @@
-package com.application.chetna_priya.exo_audio.ExoPlayer;
+package com.application.chetna_priya.exo_audio.ExoPlayer.Playback;
 
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.media.PlaybackParams;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
+import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
-import android.widget.Toast;
 
+import com.application.chetna_priya.exo_audio.ExoPlayer.PlayerService.PodcastService;
+import com.application.chetna_priya.exo_audio.ExoPlayer.Playlist;
 import com.application.chetna_priya.exo_audio.PlaybackControlView.AbstractPlaybackControlView;
 import com.application.chetna_priya.exo_audio.PlaybackControlView.CustomPlaybackControlView;
 import com.application.chetna_priya.exo_audio.PlaybackControlView.SmallPlaybackControlView;
-import com.application.chetna_priya.exo_audio.R;
 import com.google.android.exoplayer2.C;
-import com.google.android.exoplayer2.ExoPlaybackException;
-import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
-import com.google.android.exoplayer2.mediacodec.MediaCodecRenderer;
-import com.google.android.exoplayer2.mediacodec.MediaCodecUtil;
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -32,6 +33,11 @@ import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
 import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource;
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
+import com.google.android.exoplayer2.trackselection.AdaptiveVideoTrackSelection;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelection;
+import com.google.android.exoplayer2.trackselection.TrackSelector;
+import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.HttpDataSource;
@@ -41,7 +47,8 @@ import com.google.android.exoplayer2.util.Util;
  * Created by chetna_priya on 10/13/2016.
  */
 
-public class PlayerImpl implements ExoPlayer.EventListener, CustomPlaybackControlView.OnPlaybackParamsListener, ExoPlayerService.PlayerListener {
+public class PlayerImpl implements /*ExoPlayer.EventListener,*/ CustomPlaybackControlView.OnPlaybackParamsListener,
+        Playback{
 
     private static final String TAG = PlayerImpl.class.getSimpleName();
     private AbstractPlaybackControlView exoPlayerView;
@@ -57,72 +64,41 @@ public class PlayerImpl implements ExoPlayer.EventListener, CustomPlaybackContro
     private int playerWindow;
     //TODO remember to look into these variables once you implement content provider and database
 
-    private ExoPlayerService mService = null;
-    private boolean mIsBound;
 
 
-    private ServiceConnection mConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder)
-        {
-            Log.d(TAG, "SERVICE CONNECTED AND CONNECTION OBJECT RECEIVED");
-            mService = ((ExoPlayerService.LocalBinder)iBinder).getInstance();
-            mService.setHandler(mainHandler);
-            mService.setListener(PlayerImpl.this);
-/*
-            Intent serviceIntent = new Intent(mContext, ExoPlayerService.class);
-            serviceIntent.setAction(Constants.ACTION.STARTFOREGROUND_ACTION);
-            mContext.startService(serviceIntent);*/
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName)
-        {
-            Log.d(TAG, "SERVICE DISCONNECTED AND CONNECTION OBJECT RECEIVED ");
-            mService = null;
-        }
-    };
-
-    public PlayerImpl(Context context, CustomPlaybackControlView exoPlayerView){
-        Log.d(TAG, "PLAYER CLASS INITILIAZED BY AUDIO ACTIVITY");
+    public PlayerImpl(Context context){
+        Log.d(TAG, "PLAYER CLASS INITILIAZED BY PODCAST SERVICE");
         mContext = context;
-        this.exoPlayerView = exoPlayerView;
-        initializeAndCheckForService();
     }
 
-    public PlayerImpl(Context context, SmallPlaybackControlView exoPlayerView){
-        Log.d(TAG, "PLAYER CLASS INITIALIZED BY MAIN ACTIVITY");
-        mContext = context;
-        this.exoPlayerView = exoPlayerView;
-        initializeAndCheckForService();
-    }
-
-    private void initializeAndCheckForService() {
-        //First bind with the service and start it
-        Log.d(TAG, "Start IntentService calleddddd");
-        Intent serviceIntent = new Intent(mContext, ExoPlayerService.class);
-        mContext.bindService(serviceIntent, mConnection, Context.BIND_AUTO_CREATE);
-        mIsBound = true;
+    public void attachView(AbstractPlaybackControlView playbackControlView){
+        this.exoPlayerView = playbackControlView;
+        if(exoPlayer != null)
+            playbackControlView.setPlayer(exoPlayer);
     }
 
 
-    @Override
-    public void onPlayerInstatiated(SimpleExoPlayer exoPlayer) {
-        Log.d(TAG, "Player instantiated----- PROCEDDDDDDDDDDDDDDD");
-        createPlayer(exoPlayer);
-    }
+    private void createPlayerIfNeeded() {
+        mainHandler = new Handler();
+        BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
+        TrackSelection.Factory videoTrackSelectionFactory =
+                new AdaptiveVideoTrackSelection.Factory(bandwidthMeter);
+        TrackSelector trackSelector =
+                new DefaultTrackSelector(mainHandler, videoTrackSelectionFactory);
 
-    private void createPlayer(SimpleExoPlayer exoPlayer) {
-      //  mainHandler = new Handler();
-        this.exoPlayer = exoPlayer;
+        // 2. Create a default LoadControl
+        LoadControl loadControl = new DefaultLoadControl();
+
+        // 3. Create the exoPlayer
+        exoPlayer = ExoPlayerFactory.newSimpleInstance(mContext, trackSelector, loadControl);
+
         // Listen to exoPlayer events
-        exoPlayer.addListener(this);
+        //TODO fix this
+        //exoPlayer.addListener(this);
         //Set Event Logger as the Audio Debug Listener
         exoPlayer.setAudioDebugListener(eventLogger);
         //4. Attach view
         exoPlayerView.setPlayer(exoPlayer);
-        exoPlayerView.setPlaybackParamsListener(this);
         if (shouldRestorePosition) {
             if (playerPosition == C.TIME_UNSET) {
                 exoPlayer.seekToDefaultPosition(playerWindow);
@@ -135,31 +111,6 @@ public class PlayerImpl implements ExoPlayer.EventListener, CustomPlaybackContro
         mediaDataSourceFactory = buildDataSourceFactory(true);
 
     }
-
-
-    private void doUnbindService()
-    {
-        if (mIsBound)
-        {
-          //  mService.foreground();
-            // Detach our existing connection.
-            mContext.unbindService(mConnection);
-            mIsBound = false;
-        }
-    }
-
-    public void onPause(){
-        Log.d(TAG, "ON PAUSE CALLED IN PLAYER CLASS UNBIND");
-        doUnbindService();;
-    }
-
-    public void onResume(){
-        if(!mIsBound) {
-            Log.d(TAG, "ON RESUME CALLED IN PLAYER CLASS BIND AGAIN");
-            initializeAndCheckForService();
-        }
-    }
-
 
     public void preparePlayer() {
         MediaSource[] mediaSources = new MediaSource[1];
@@ -212,7 +163,7 @@ public class PlayerImpl implements ExoPlayer.EventListener, CustomPlaybackContro
                 .buildHttpDataSourceFactory(useBandwidthMeter ? BANDWIDTH_METER : null);
     }
 
-    @Override
+   /* @Override
     public void releasePlayer(SimpleExoPlayer exoPlayer) {
         if (exoPlayer != null) {
             shouldRestorePosition = false;
@@ -228,19 +179,19 @@ public class PlayerImpl implements ExoPlayer.EventListener, CustomPlaybackContro
             exoPlayer.release();
             eventLogger = null;
         }
-    }
+    }*/
 
-    @Override
+    /*@Override
     public void onLoadingChanged(boolean isLoading) {
 
     }
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-        if(playWhenReady && exoPlayerView.playerNeedsMediaSourceAndFocus(exoPlayer)/* && playbackState != ExoPlayer.STATE_BUFFERING*/) {
+        if(playWhenReady && exoPlayerView.playerNeedsMediaSourceAndFocus(exoPlayer)*//* && playbackState != ExoPlayer.STATE_BUFFERING*//*) {
             Log.d(TAG, "PLAYER SHOULD BE PREPARED");
             {
-                Intent serviceIntent = new Intent(mContext, ExoPlayerService.class);
+                Intent serviceIntent = new Intent(mContext, PodcastService.class);
                 serviceIntent.setAction(Constants.ACTION.STARTFOREGROUND_ACTION);
                 mContext.startService(serviceIntent);
                 preparePlayer();
@@ -296,10 +247,40 @@ public class PlayerImpl implements ExoPlayer.EventListener, CustomPlaybackContro
 
     private void showToast(String message) {
         Toast.makeText(mContext.getApplicationContext(), message, Toast.LENGTH_LONG).show();
-    }
+    }*/
 
     @Override
     public void setPlaybackParams(PlaybackParams playbackParams) {
         exoPlayer.setPlaybackParams(playbackParams);
+    }
+
+    @Override
+    public void play() {
+        createPlayerIfNeeded();
+    }
+
+    @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public void setState(int state) {
+
+    }
+
+    @Override
+    public int getState() {
+        return 0;
+    }
+
+    @Override
+    public void start() {
+
+    }
+
+    @Override
+    public void stop(boolean notifyListeners) {
+
     }
 }

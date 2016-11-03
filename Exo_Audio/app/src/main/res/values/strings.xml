@@ -19,4 +19,8 @@
     <string name="favorite">Favorite</string>
     <string name="search_queue_title">Search results</string>
     <string name="browse_podcast_by_genre_subtitle">%1$s songs</string>
+    <string name="label_previous">Previous</string>
+    <string name="label_next">Next</string>
+    <string name="label_pause">Pause</string>
+    <string name="label_play">Play</string>
 </resources>

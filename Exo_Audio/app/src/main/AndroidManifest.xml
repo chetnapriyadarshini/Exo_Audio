@@ -6,23 +6,21 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name=".ExoPlayer.DemoApplication"
+        android:name=".ExoPlayer.Playback.DemoApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".AudioActivity">
+        <activity android:name=".Ui.AudioActivity">
         </activity>
-        <activity android:name=".MainActivity">
+        <activity android:name=".Ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".ExoPlayer.ExoPlayerService" android:enabled="true"
-            android:exported="false"/>
         <!-- A receiver that will receive media buttons and send as
             intents to your MediaBrowserServiceCompat implementation.
             Required on pre-Lollipop. More information at
@@ -36,7 +34,7 @@
         consumers through MediaBrowserService and MediaSession. Consumers connect to it through
         MediaBrowser (for browsing) and MediaController (for play session control) -->
         <service
-            android:name=".ExoPlayer.PodcastService"
+            android:name=".ExoPlayer.PlayerService.PodcastService"
             android:exported="true"
             tools:ignore="ExportedService">
             <intent-filter>

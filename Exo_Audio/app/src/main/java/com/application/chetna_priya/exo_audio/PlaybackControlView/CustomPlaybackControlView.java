@@ -1,8 +1,18 @@
 package com.application.chetna_priya.exo_audio.PlaybackControlView;
 
+import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.media.PlaybackParams;
 import android.os.Build;
+import android.os.Bundle;
+import android.os.RemoteException;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -12,7 +22,8 @@ import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.application.chetna_priya.exo_audio.ExoPlayer.PlayerImpl;
+import com.application.chetna_priya.exo_audio.ExoPlayer.Playback.PlayerImpl;
+import com.application.chetna_priya.exo_audio.ExoPlayer.PlayerService.PodcastService;
 import com.application.chetna_priya.exo_audio.R;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -29,7 +40,7 @@ import butterknife.ButterKnife;
 /**
  * A view to control video playback of an {@link ExoPlayer}.
  */
-public class CustomPlaybackControlView extends AbstractPlaybackControlView {
+public class CustomPlaybackControlView extends AbstractPlaybackControlView{
 
     /**
      * Listener to be notified about changes of the visibility of the UI control.
@@ -51,6 +62,7 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView {
     private static final String TAG = CustomPlaybackControlView.class.getSimpleName();
 
     private final ComponentListener componentListener;
+    private final MediaBrowserCompat mMediaBrowser;
 
     @BindView(R.id.tv_time) TextView time;
     @BindView(R.id.tv_time_current) TextView timeCurrent;
@@ -72,9 +84,9 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView {
     private final int STANDARD_INDEX = 5;//index of 1.00f
     private int CURRENT_INDEX = STANDARD_INDEX;
 
-    private SimpleExoPlayer player;
+   // private SimpleExoPlayer player;
     //private VisibilityListener visibilityListener;
-    private OnPlaybackParamsListener paramsListener;
+   // private OnPlaybackParamsListener paramsListener;
 
 
     private boolean dragging;
@@ -87,7 +99,8 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView {
             updateProgress();
         }
     };
-    private PlayerImpl playerImpl;
+    private Context mContext;
+    private SimpleExoPlayer player;
 
     public CustomPlaybackControlView(Context context) {
         this(context, null);
@@ -99,7 +112,7 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView {
 
     public CustomPlaybackControlView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-
+        mContext = context;
         currentWindow = new Timeline.Window();
         formatBuilder = new StringBuilder();
         formatter = new Formatter(formatBuilder, Locale.getDefault());
@@ -125,9 +138,90 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView {
         progressBar.setOnSeekBarChangeListener(componentListener);
         progressBar.setMax(PROGRESS_BAR_MAX);
 
-        playerImpl = new PlayerImpl(context, CustomPlaybackControlView.this);
        //   stateClass = new StateClass();
+
+        mMediaBrowser = new MediaBrowserCompat(mContext,
+                new ComponentName(mContext, PodcastService.class), mConnectionCallback, null);
+        activityCallbacks.setMediaBrowser(mMediaBrowser);
         updateAll();
+    }
+
+
+    private final MediaControllerCompat.Callback mCallback = new MediaControllerCompat.Callback() {
+
+        @Override
+        public void onMetadataChanged(MediaMetadataCompat metadata) {
+            if (metadata != null) {
+                // updateMediaDescription(metadata.getDescription());
+                // updateDuration(metadata);
+            }
+        }
+
+        @Override
+        public void onPlaybackStateChanged(PlaybackStateCompat state) {
+            super.onPlaybackStateChanged(state);
+            updatePlayPauseButton();
+            updateProgress();
+        }
+
+        @Override
+        public void onSessionEvent(String event, Bundle extras) {
+            super.onSessionEvent(event, extras);
+            switch (event){
+                case EVENT_POSITION_DISCONTINUITY:
+                    updateNavigation();
+                    updateProgress();
+                    break;
+                case EVENT_SPEED_CHANGE:
+                    updateNavigation();
+                    updateProgress();
+                    break;
+                case EVENT_TIME_LINE_CHANGED:
+                    updateNavigation();
+                    updateProgress();
+                    break;
+                case EVENT_PLAYER_CHANGED:
+                    updatePlayPauseButton();
+                    updateProgress();
+                    break;
+            }
+        }
+    };
+
+    private final MediaBrowserCompat.ConnectionCallback mConnectionCallback =
+            new MediaBrowserCompat.ConnectionCallback() {
+                @Override
+                public void onConnected() {
+                    Log.d(TAG, "onConnected");
+                    try {
+                        connectToSession(mMediaBrowser.getSessionToken());
+                    } catch (RemoteException e) {
+                        Log.e(TAG, e+ "could not connect media controller");
+                    }
+                }
+            };
+
+    private void connectToSession(MediaSessionCompat.Token token) throws RemoteException {
+        MediaControllerCompat mediaController = new MediaControllerCompat(
+                mContext, token);
+        if (mediaController.getMetadata() == null) {
+            activityCallbacks.finishActivity();
+            return;
+        }
+        activityCallbacks.setSupportMediaControllerForActivity(mediaController);
+        mediaController.registerCallback(mCallback);
+        updateProgress();
+        PlaybackStateCompat state = mediaController.getPlaybackState();
+        MediaMetadataCompat metadata = mediaController.getMetadata();
+        if (metadata != null) {
+            //   updateMediaDescription(metadata.getDescription());
+            // updateDuration(metadata);
+        }/*
+        updateProgress();
+        if (state != null && (state.getState() == PlaybackStateCompat.STATE_PLAYING ||
+                state.getState() == PlaybackStateCompat.STATE_BUFFERING)) {
+            scheduleSeekbarUpdate();
+        }*/
     }
 
     /**
@@ -140,13 +234,13 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView {
         if (this.player == player) {
             return;
         }
-        if (this.player != null) {
+      /*  if (this.player != null) {
             this.player.removeListener(componentListener);
-        }
+        }*/
         this.player = player;
-        if (player != null) {
+        /*if (player != null) {
             player.addListener(componentListener);
-        }
+        }*/
         updateAll();
     }
 
@@ -197,28 +291,6 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView {
 
     }
 
-
-    @Override
-    public boolean isPlaying() {
-        return player != null && player.getPlayWhenReady();
-    }
-
-    @Override
-    public void onPause() {
-        if(playerImpl != null)
-           playerImpl.onPause();
-    }
-
-    @Override
-    public void onResume() {
-        if(playerImpl != null)
-            playerImpl.onResume();
-    }
-
-    @Override
-    public void onDestroy() {
-        playerImpl = null;
-    }
 
     private void updateNavigation() {
       /*  if (!isVisible()) {
@@ -358,7 +430,7 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView {
     private void updateSpeedText() {
         speed.setText(SPEED_ARR[CURRENT_INDEX]+"x");
     }
-    @Override
+   /* @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         if (player == null || event.getAction() != KeyEvent.ACTION_DOWN) {
             return super.dispatchKeyEvent(event);
@@ -396,15 +468,9 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView {
        // show();
         return true;
     }
+*/
 
-    @Override
-    public void setPlaybackParamsListener(OnPlaybackParamsListener params){
-        this.paramsListener = params;
-
-    }
-
-    final class ComponentListener implements ExoPlayer.EventListener,
-            SeekBar.OnSeekBarChangeListener, OnClickListener {
+    final class ComponentListener implements  SeekBar.OnSeekBarChangeListener, OnClickListener {
 
         @Override
         public void onStartTrackingTouch(SeekBar seekBar) {
@@ -421,11 +487,15 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView {
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
             dragging = false;
-            player.seekTo(positionValue(seekBar.getProgress()));
+
+            MediaControllerCompat.TransportControls controls =
+                    ((FragmentActivity)mContext).getSupportMediaController().getTransportControls();
+            controls.seekTo(positionValue(seekBar.getProgress()));
+           // player.seekTo(positionValue(seekBar.getProgress()));
             //hideDeferred();
         }
 
-        @Override
+    /*    @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
             updatePlayPauseButton();
             updateProgress();
@@ -452,26 +522,35 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView {
         public void onPlayerError(ExoPlaybackException error) {
             // Do nothing.
         }
-
+*/
         @Override
         public void onClick(View view) {
             Timeline currentTimeline = null;
+            MediaControllerCompat.TransportControls controls =
+                    ((FragmentActivity)mContext).getSupportMediaController().getTransportControls();
             if(player != null)
             currentTimeline = player.getCurrentTimeline();
             if (nextButton == view) {
-                next();
+                controls.skipToNext();
+               // next();
             } else if (previousButton == view) {
-                previous();
+                controls.skipToPrevious();
+              //  previous();
             } else if (fastForwardButton == view) {
-                fastForward();
+                controls.fastForward();
+             //   fastForward();
             } else if (rewindButton == view && currentTimeline != null) {
-                rewind();
+                controls.rewind();
+               // rewind();
             } else if (playButton == view) {
-                if(hasAudioFocus(player))
-                    player.setPlayWhenReady(!player.getPlayWhenReady());
-                boolean playing =  player.getPlayWhenReady();
-                Log.d(TAG, "ON CLICK ON PLAY BUTTON isPlaying "+playing);
+                PlaybackStateCompat state = ((FragmentActivity)mContext).getSupportMediaController().getPlaybackState();
+                if(state.getState() == PlaybackStateCompat.STATE_PAUSED)
+                    controls.play();
+                else
+                    controls.pause();
+
             }else if(speed == view){
+                //TODO move this implementation to player class
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     PlaybackParams playbackParams = new PlaybackParams();
                     if(CURRENT_INDEX+1 == SPEED_ARR.length)
@@ -479,9 +558,10 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView {
                     else
                         CURRENT_INDEX++;
                     updateSpeedText();
-                    playbackParams.setSpeed(SPEED_ARR[CURRENT_INDEX]);
-                    if(paramsListener != null)
-                        paramsListener.setPlaybackParams(playbackParams);
+                    controls.sendCustomAction(CUSTOM_ACTION_SPEED_CHANGE, null);
+                  /*  playbackParams.setSpeed(SPEED_ARR[CURRENT_INDEX]);
+
+                    player.setPlaybackParams(playbackParams);*/
                 }
             }
             //hideDeferred();

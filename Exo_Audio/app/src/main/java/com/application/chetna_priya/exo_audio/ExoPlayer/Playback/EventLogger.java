@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.application.chetna_priya.exo_audio.ExoPlayer;
+package com.application.chetna_priya.exo_audio.ExoPlayer.Playback;
 
 import android.os.SystemClock;
 import android.util.Log;

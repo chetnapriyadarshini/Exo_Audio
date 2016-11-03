@@ -1,4 +1,4 @@
-package com.application.chetna_priya.exo_audio.ExoPlayer;
+package com.application.chetna_priya.exo_audio.ExoPlayer.Playback;
 
 import android.app.Application;
 import com.google.android.exoplayer2.upstream.DataSource;

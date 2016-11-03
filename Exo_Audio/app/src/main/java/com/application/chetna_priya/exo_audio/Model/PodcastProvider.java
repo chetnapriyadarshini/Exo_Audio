@@ -1,4 +1,4 @@
-package com.application.chetna_priya.exo_audio.data;
+package com.application.chetna_priya.exo_audio.Model;
 
 import android.graphics.Bitmap;
 import android.support.v4.media.MediaMetadataCompat;
@@ -17,7 +17,12 @@ public class PodcastProvider {
     }
 
     public MediaMetadataCompat getPodcast(String currentPlayingId) {
-        return null;
+        //TODO Create a proper implementation here, dummy implementation for now
+        return new MediaMetadataCompat.Builder()
+                .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, "1234")
+                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, "Comedy Bang Bang")
+                .putString(MediaMetadataCompat.METADATA_KEY_GENRE, "Comedy")
+                .build();
     }
 
     public Iterable<MediaMetadataCompat> getPodcastsByGenre(String categoryValue) {

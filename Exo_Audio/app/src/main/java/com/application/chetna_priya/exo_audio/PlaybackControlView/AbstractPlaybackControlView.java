@@ -1,11 +1,16 @@
 package com.application.chetna_priya.exo_audio.PlaybackControlView;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.PlaybackParams;
+import android.os.Bundle;
+import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.session.MediaControllerCompat;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
+import com.application.chetna_priya.exo_audio.ExoPlayer.PlayerService.PodcastService;
 import com.application.chetna_priya.exo_audio.ExoPlayer.Playlist;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.SimpleExoPlayer;
@@ -16,17 +21,23 @@ import static android.media.AudioManager.AUDIOFOCUS_LOSS_TRANSIENT;
  * Created by chetna_priya on 10/23/2016.
  */
 
-public abstract class AbstractPlaybackControlView extends FrameLayout implements AudioManager.OnAudioFocusChangeListener {
+public abstract class AbstractPlaybackControlView extends FrameLayout /*implements AudioManager.OnAudioFocusChangeListener */{
 
 
     private Context mContext;
-    private static final int AUDIO_FOCUS_REQUEST_CODE = 1;
-    AudioManager audioManager;
-    public boolean needsTorequestAudioFocus = true;
+    ActivityCallbacks activityCallbacks;
+    public static final String EVENT_POSITION_DISCONTINUITY = "event_position_discontinuity";
+    public static final String EVENT_SPEED_CHANGE = "event_speed_change";
+    public static final String EVENT_TIME_LINE_CHANGED = "event_timeline_changed";
+    public static final String EVENT_PLAYER_CHANGED = "event_player_changed";
+    public static final String CUSTOM_ACTION_SPEED_CHANGE = "custom_action_speed_changed";
 
-    public interface OnPlaybackParamsListener {
-        void setPlaybackParams(PlaybackParams playbackParams);
+    public interface ActivityCallbacks {
+        void finishActivity();
+        void setSupportMediaControllerForActivity(MediaControllerCompat mediaController);
+        void setMediaBrowser(MediaBrowserCompat mediaBrowser);
     }
+
 
     public AbstractPlaybackControlView(Context context) {
         super(context);
@@ -35,13 +46,15 @@ public abstract class AbstractPlaybackControlView extends FrameLayout implements
     public AbstractPlaybackControlView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         this.mContext = context;
-        audioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+        activityCallbacks = (ActivityCallbacks) mContext;/*
+        audioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);*/
     }
+
 
     public AbstractPlaybackControlView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
-
+/*
     protected boolean needCheckAudioFocus(SimpleExoPlayer exoPlayer){
         if(exoPlayer.getPlayWhenReady())//Player is in playing state and needs to pause we do not need to check for audio focus
             return false;
@@ -77,35 +90,35 @@ public abstract class AbstractPlaybackControlView extends FrameLayout implements
                 AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
 
         if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-          /*  MediaSessionCompat mSession = new MediaSessionCompat(mContext, mContext.getPackageName());
+          *//*  MediaSessionCompat mSession = new MediaSessionCompat(mContext, mContext.getPackageName());
             Intent intent = new Intent(mContext, RemoteControlReceiver.class);
             PendingIntent pintent = PendingIntent.getBroadcast(mContext, AUDIO_FOCUS_REQUEST_CODE, intent,
                     PendingIntent.FLAG_UPDATE_CURRENT);
             mSession.setMediaButtonReceiver(pintent);
             mSession.setCallback(this);
-            mSession.setActive(true);*/
+            mSession.setActive(true);*//*
             return true;
         }
         return false;
-    }
-
+    }*/
+/*
     public boolean playerNeedsMediaSourceAndFocus(SimpleExoPlayer exoPlayer) {
-        /* If the player has finished playing a media and there is another media in the
-         * playlist waiting to be played */
+        *//* If the player has finished playing a media and there is another media in the
+         * playlist waiting to be played *//*
         if(exoPlayer.getPlaybackState() == ExoPlayer.STATE_ENDED &&
                 !Playlist.getPlaylistInstance().isPlaylistEmpty())
             return true;
-        /* If the player does not have any media source set up and, is initialized and ready for its
-         * first media source */
+        *//* If the player does not have any media source set up and, is initialized and ready for its
+         * first media source *//*
         if(exoPlayer.getCurrentTimeline() == null)
             return true;
         return false;
-    }
+    }*/
 
     public abstract void setPlayer(SimpleExoPlayer exoPlayer);
-    public abstract void setPlaybackParamsListener(OnPlaybackParamsListener params);
-    public abstract boolean isPlaying();
-    public abstract void onPause();
-    public abstract void onResume();
-    public abstract void onDestroy();
+   // public abstract void setPlaybackParamsListener(OnPlaybackParamsListener params);
+   // public abstract boolean isPlaying();
+  //  public abstract void onPause();
+  //  public abstract void onResume();
+  //  public abstract void onDestroy();
 }

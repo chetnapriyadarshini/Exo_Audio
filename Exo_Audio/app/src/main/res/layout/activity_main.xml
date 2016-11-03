@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center|bottom"
-    tools:context="com.application.chetna_priya.exo_audio.MainActivity">
+    tools:context="com.application.chetna_priya.exo_audio.Ui.MainActivity">
 
     <Button
         android:id="@+id/btn_initQueue"
