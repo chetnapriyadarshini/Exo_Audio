@@ -66,6 +66,9 @@ public class PodcastService extends MediaBrowserServiceCompat implements Playbac
         //TODO put forth a proper implementation for metadata
         mSession.setMetadata(new PodcastProvider().getPodcast("1234"));
 
+        mPlaybackListener = new PlaybackListener(this, getApplicationContext(), new PodcastProvider(), player);
+        mSession.setCallback(mPlaybackListener.getMediaSessionCallback());
+
         mSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
                 MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
 
@@ -96,8 +99,6 @@ public class PodcastService extends MediaBrowserServiceCompat implements Playbac
 
     @Override
     public void onPlaybackStart() {
-        mPlaybackListener = new PlaybackListener(this, getApplicationContext(), player);
-        mSession.setCallback(mPlaybackListener.getMediaSessionCallback());
         if (!mSession.isActive()) {
             mSession.setActive(true);
         }
