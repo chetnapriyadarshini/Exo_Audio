@@ -280,6 +280,17 @@ public class PlaybackListener implements Playback.Callback {
         }
 
         @Override
+        public void onRewind() {
+            mPlayback.rewind();
+        }
+
+        @Override
+        public void onFastForward() {
+            mPlayback.fastForward();
+        }
+
+
+        @Override
         public void onCustomAction(@NonNull String action, Bundle extras) {
             if(action.equals(AbstractPlaybackControlView.CUSTOM_ACTION_SPEED_CHANGE)){
                 mPlayback.changeSpeed((Float) extras.get(AbstractPlaybackControlView.SPEED));
