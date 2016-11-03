@@ -63,7 +63,7 @@ public class PlaybackListener implements Playback.Callback {
       //  if (currentMusic != null)
         {
             mServiceCallback.onPlaybackStart();
-            mPlayback.play(/*currentMusic*/);
+            mPlayback.play(/* TODO currentMusic*/);
         }
     }
 
@@ -282,7 +282,7 @@ public class PlaybackListener implements Playback.Callback {
         @Override
         public void onCustomAction(@NonNull String action, Bundle extras) {
             if(action.equals(AbstractPlaybackControlView.CUSTOM_ACTION_SPEED_CHANGE)){
-                mPlayback.changeSpeed();
+                mPlayback.changeSpeed((Float) extras.get(AbstractPlaybackControlView.SPEED));
             }
         }
     }

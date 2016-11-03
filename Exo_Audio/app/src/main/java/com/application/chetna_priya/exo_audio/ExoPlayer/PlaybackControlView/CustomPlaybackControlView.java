@@ -547,19 +547,16 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
                     controls.pause();
 
             }else if(speed == view){
-                //TODO move this implementation to player class
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    PlaybackParams playbackParams = new PlaybackParams();
                     if(CURRENT_INDEX+1 == SPEED_ARR.length)
                         CURRENT_INDEX = 0;
                     else
                         CURRENT_INDEX++;
                     updateSpeedText();
+                    Bundle speedBundle = new Bundle();
+                    speedBundle.putFloat(SPEED, SPEED_ARR[CURRENT_INDEX]);
                     controls.sendCustomAction(CUSTOM_ACTION_SPEED_CHANGE, null);
-                  /*  playbackParams.setSpeed(SPEED_ARR[CURRENT_INDEX]);
-
-                    player.setPlaybackParams(playbackParams);*/
-                }
+                  }
             }
             //hideDeferred();
         }

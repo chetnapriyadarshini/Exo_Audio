@@ -22,6 +22,7 @@ public abstract class AbstractPlaybackControlView extends FrameLayout /*implemen
     public static final String EVENT_TIME_LINE_CHANGED = "event_timeline_changed";
     public static final String EVENT_PLAYER_CHANGED = "event_player_changed";
     public static final String CUSTOM_ACTION_SPEED_CHANGE = "custom_action_speed_changed";
+    public static final String SPEED = "speed";
 
     public interface ActivityCallbacks {
         void finishActivity();
