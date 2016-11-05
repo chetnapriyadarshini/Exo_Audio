@@ -4,10 +4,13 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.service.media.MediaBrowserService;
 import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.MediaBrowserServiceCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -62,7 +65,8 @@ public class MainActivity extends AppCompatActivity implements AbstractPlaybackC
             mService = binder.getService();
             mService.setViewForPlayer(playbackControlView);
             mBound = true;
-            mMediaBrowser.connect();
+            Log.d(TAG, "SERVICEEEEEE CONNNNNNNECCCCTTTTTTEEEEEDDDDDDD");
+
             /* move mMediaBrowser.connect here because
             we want the view class to have the player reference before we start
             avoiding the null pointer exception*/
@@ -71,21 +75,31 @@ public class MainActivity extends AppCompatActivity implements AbstractPlaybackC
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
             mBound = false;
+            Log.d(TAG, "SERVICE NEVER GOT DISCONNECTEDDDDDDDDDDDD");
         }
+
+
     };
 
     @Override
     protected void onStart() {
-        super.onStart();
+        super.onStart();/*
+        if(mMediaBrowser!= null && !mMediaBrowser.isConnected())
+            mMediaBrowser.connect();*/
+        Log.d(TAG, "ON START TRY TO BINDDDDDDDDDDDDDDDDDDD");
         Intent serviceIntent = new Intent(this, PodcastService.class);
-        if(PodcastService.isServiceRunning)
+        serviceIntent.setAction(MediaBrowserServiceCompat.SERVICE_INTERFACE);
+     //   if(PodcastService.isServiceRunning)
+        startService(serviceIntent);
             bindService(serviceIntent, mConnection, BIND_AUTO_CREATE);
+
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        mMediaBrowser.disconnect();
+        if(mMediaBrowser!= null && mMediaBrowser.isConnected())
+            mMediaBrowser.disconnect();
         if (mBound) {
             unbindService(mConnection);
             mBound = false;

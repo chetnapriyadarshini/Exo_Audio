@@ -60,7 +60,10 @@ public class SmallPlaybackControlView extends AbstractPlaybackControlView {
 
         mMediaBrowser = new MediaBrowserCompat(mContext,
                 new ComponentName(mContext, PodcastService.class), mConnectionCallback, null);
+
         activityCallbacks.setMediaBrowser(mMediaBrowser);
+
+        /*mMediaBrowser.connect();*/
 /*
         playerImpl = new PlayerImpl(context, SmallPlaybackControlView.this);*/
 
@@ -156,7 +159,7 @@ public class SmallPlaybackControlView extends AbstractPlaybackControlView {
             new MediaBrowserCompat.ConnectionCallback() {
                 @Override
                 public void onConnected() {
-                    Log.d(TAG, "onConnected");
+                    Log.d(TAG, "!!!!!!!!!!!!!!!!!!!!!onConnected!!!!!!!!!!!!!!!!!!!!!!!!");
                     try {
                         connectToSession(mMediaBrowser.getSessionToken());
                     } catch (RemoteException e) {

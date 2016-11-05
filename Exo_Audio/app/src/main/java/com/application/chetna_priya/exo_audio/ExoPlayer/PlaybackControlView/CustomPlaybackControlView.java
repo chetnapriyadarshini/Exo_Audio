@@ -236,16 +236,6 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
         updateAll();
     }
 
-    /**
-     * Sets the {@link VisibilityListener}.
-     *
-     * @param listener The listener to be notified about visibility changes.
-     */
-    /*public void setVisibilityListener(VisibilityListener listener) {
-        this.visibilityListener = listener;
-    }
-*/
-
     private void updateAll() {
         updatePlayPauseButton();
         updateNavigation();
@@ -271,6 +261,9 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
       /*  if (!isVisible()) {
             return;
         }*/
+
+        MediaControllerCompat.TransportControls controls =
+                ((FragmentActivity)mContext).getSupportMediaController().getTransportControls();
         Timeline currentTimeline = player != null ? player.getCurrentTimeline() : null;
         boolean haveTimeline = currentTimeline != null;
         boolean isSeekable = false;

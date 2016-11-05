@@ -14,6 +14,7 @@ import android.support.v4.media.MediaBrowserServiceCompat;
 import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
 
 import com.application.chetna_priya.exo_audio.ExoPlayer.Playback.PlayerImpl;
 import com.application.chetna_priya.exo_audio.ExoPlayer.PlaybackControlView.CustomPlaybackControlView;
@@ -31,6 +32,7 @@ import java.util.List;
  */
 public class PodcastService extends MediaBrowserServiceCompat implements PlaybackListener.PlaybackServiceCallback {
 
+    private static final String TAG = PodcastService.class.getSimpleName();
     public static boolean isServiceRunning = false;
     private MediaSessionCompat mSession;
     private MediaNotificationManager mMediaNotificationManager;
@@ -38,11 +40,18 @@ public class PodcastService extends MediaBrowserServiceCompat implements Playbac
     private IBinder mBinder = new LocalBinder();
     private PlayerImpl player = null;
 
+    @Override
+    public IBinder onBind(Intent intent) {
+     //   Log.d(TAG, "ON BIND RETURNINGGGGG    "+super.onBind(intent));
+        return mBinder;
+
+    }
 
     /**
      * Class used for the client Binder.  Because we know this service always
      * runs in the same process as its clients, we don't need to deal with IPC.
      */
+/*
     public class LocalBinder extends Binder {
         public PodcastService getService() {
             // Return this instance of LocalService so clients can call public methods
@@ -53,6 +62,15 @@ public class PodcastService extends MediaBrowserServiceCompat implements Playbac
     @Override
     public IBinder onBind(Intent intent) {
         return mBinder;
+    }
+*/
+
+
+    public class LocalBinder extends Binder {
+        public PodcastService getService() {
+            // Return this instance of LocalService so clients can call public methods
+            return PodcastService.this;
+        }
     }
 
 

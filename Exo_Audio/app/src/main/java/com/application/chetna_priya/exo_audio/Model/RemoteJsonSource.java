@@ -18,7 +18,7 @@ import static android.content.ContentValues.TAG;
  * Created by chetna_priya on 11/1/2016.
  */
 
-public class RemoteJSONSource implements MediaProviderSource {
+public class RemoteJsonSource implements MediaProviderSource {
 
     private static final String JSON_MUSIC = "music";
     private static final String JSON_TITLE = "title";

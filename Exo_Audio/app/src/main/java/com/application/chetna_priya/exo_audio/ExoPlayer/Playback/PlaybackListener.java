@@ -1,6 +1,7 @@
 package com.application.chetna_priya.exo_audio.ExoPlayer.Playback;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -295,6 +296,11 @@ public class PlaybackListener implements Playback.Callback {
             if(action.equals(AbstractPlaybackControlView.CUSTOM_ACTION_SPEED_CHANGE)){
                 mPlayback.changeSpeed((Float) extras.get(AbstractPlaybackControlView.SPEED));
             }
+        }
+
+        @Override
+        public boolean onMediaButtonEvent(Intent mediaButtonEvent) {
+            return super.onMediaButtonEvent(mediaButtonEvent);
         }
     }
 

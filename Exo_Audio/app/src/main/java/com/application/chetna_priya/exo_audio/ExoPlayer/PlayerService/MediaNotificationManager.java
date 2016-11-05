@@ -18,7 +18,6 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
-import com.application.chetna_priya.exo_audio.AlbumArtCache;
 import com.application.chetna_priya.exo_audio.Ui.AudioActivity;
 import com.application.chetna_priya.exo_audio.R;
 
@@ -225,16 +224,15 @@ public class MediaNotificationManager extends BroadcastReceiver {
 
     private Notification createNotification() {
         Log.d(TAG, "updateNotificationMetadata. mMetadata=" + mMetadata);
-        //TODO uncomment it later
-       /* if (mMetadata == null || mPlaybackState == null) {
+        if (mMetadata == null || mPlaybackState == null) {
             return null;
-        }*/
+        }
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(mService);
         int playPauseButtonPosition = 0;
 
         // If skip to previous action is enabled
-        //if ((mPlaybackState.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS) != 0)
+        if ((mPlaybackState.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS) != 0)
         {
             notificationBuilder.addAction(R.drawable.ic_skip_previous_white_24dp,
                     mService.getString(R.string.label_previous), mPreviousIntent);
@@ -249,7 +247,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
         addPlayPauseAction(notificationBuilder);
 
         // If skip to next action is enabled
-        //if ((mPlaybackState.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_NEXT) != 0)
+        if ((mPlaybackState.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_NEXT) != 0)
         {
             notificationBuilder.addAction(R.drawable.ic_skip_next_white_24dp,
                     mService.getString(R.string.label_next), mNextIntent);
@@ -312,11 +310,11 @@ public class MediaNotificationManager extends BroadcastReceiver {
         String label;
         int icon;
         PendingIntent intent;
-        /*if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
+        if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
             label = mService.getString(R.string.label_pause);
             icon = R.drawable.uamp_ic_pause_white_24dp;
             intent = mPauseIntent;
-        } else*/ {
+        } else {
             label = mService.getString(R.string.label_play);
             icon = R.drawable.uamp_ic_play_arrow_white_24dp;
             intent = mPlayIntent;
@@ -350,7 +348,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
         // Make sure that the notification can be dismissed by the user when we are not playing:
         builder.setOngoing(mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING);
     }
-
+/*
     private void fetchBitmapFromURLAsync(final String bitmapUrl,
                                          final NotificationCompat.Builder builder) {
         AlbumArtCache.getInstance().fetch(bitmapUrl, new AlbumArtCache.FetchListener() {
@@ -365,5 +363,5 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 }
             }
         });
-    }
+    }*/
 }
