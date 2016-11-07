@@ -98,6 +98,8 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
     }
 
 
+
+
     private void createPlayerIfNeeded() {
         if(exoPlayer == null) {
             mainHandler = new Handler();
@@ -496,8 +498,9 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
 
     @Override
     public void rewind() {
-
-       seekTo(Math.max(exoPlayer.getCurrentPosition() - rewindMs, 0));
+        Timeline currentTimeline = exoPlayer.getCurrentTimeline();
+        if(currentTimeline != null)
+            seekTo(Math.max(exoPlayer.getCurrentPosition() - rewindMs, 0));
     }
 
     @Override
