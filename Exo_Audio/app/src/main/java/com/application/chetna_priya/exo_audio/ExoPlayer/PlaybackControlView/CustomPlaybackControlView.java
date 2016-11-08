@@ -6,6 +6,7 @@ import android.media.PlaybackParams;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.os.SystemClock;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -27,7 +28,6 @@ import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
-import com.google.android.exoplayer2.util.SystemClock;
 import com.google.android.exoplayer2.util.Util;
 import java.util.Formatter;
 import java.util.Locale;
@@ -55,6 +55,7 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
     @BindView(R.id.btn_ffwd) View fastForwardButton;
     @BindView(R.id.seek_mediacontroller_progress) SeekBar progressBar;
 
+    private PlaybackStateCompat mLastPlaybackState;
 
     private final StringBuilder formatBuilder;
     private final Formatter formatter;
@@ -131,6 +132,7 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
         @Override
         public void onPlaybackStateChanged(PlaybackStateCompat state) {
             super.onPlaybackStateChanged(state);
+            mLastPlaybackState = state;
             updateAll();
         }
 
@@ -180,7 +182,8 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
         }
         activityCallbacks.setSupportMediaControllerForActivity(mediaController);
         mediaController.registerCallback(mCallback);
-        updateProgress();
+        mLastPlaybackState = mediaController.getPlaybackState();
+        updateAll();
         MediaMetadataCompat metadata = mediaController.getMetadata();
         if (metadata != null) {
             //   updateMediaDescription(metadata.getDescription());
@@ -256,26 +259,43 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
 
     private void updateProgress() {
 
+        if (mLastPlaybackState == null) {
+            return;
+        }
+        long currentPosition = mLastPlaybackState.getPosition();
         MediaControllerCompat mediaControllerCompat= ((FragmentActivity)mContext).getSupportMediaController();
-        PlaybackStateCompat state = mediaControllerCompat.getPlaybackState();
+
+        if (mLastPlaybackState.getState() != PlaybackStateCompat.STATE_PAUSED) {
+            // Calculate the elapsed time between the last position update and now and unless
+            // paused, we can assume (delta * speed) + current position is approximately the
+            // latest position. This ensure that we do not repeatedly call the getPlaybackState()
+            // on MediaControllerCompat.
+            long timeDelta = SystemClock.elapsedRealtime() -
+                    mLastPlaybackState.getLastPositionUpdateTime();
+            currentPosition += (int) timeDelta * mLastPlaybackState.getPlaybackSpeed();
+        }
 
         time.setText(stringForTime(mediaControllerCompat.getMetadata().getLong(MediaMetadataCompat.METADATA_KEY_DURATION)));
+        Log.d(TAG, "UPDATE TIME TEXT; dragging "+dragging+" POSITION : "+currentPosition);
         if (!dragging) {
-            timeCurrent.setText(stringForTime(state.getPosition()));
+            timeCurrent.setText(stringForTime(currentPosition));
         }
         if (!dragging) {
-            progressBar.setProgress(progressBarValue(state.getPosition()));
+            progressBar.setProgress(progressBarValue(currentPosition));
         }
-        progressBar.setSecondaryProgress(progressBarValue(state.getBufferedPosition()));
+      //  progressBar.setSecondaryProgress(progressBarValue(currentPosition+mLastPlaybackState.getBufferedPosition()));
         // Remove scheduled updates.
         removeCallbacks(updateProgressAction);
         // Schedule an update if necessary.
      //   int playbackState = player == null ? ExoPlayer.STATE_IDLE : player.getPlaybackState();
-        if (state.getState() != PlaybackStateCompat.STATE_NONE && state.getState() != PlaybackStateCompat.STATE_STOPPED &&
-                state.getPosition() != PlaybackStateCompat.STATE_ERROR) {
+        if (mLastPlaybackState.getState() != PlaybackStateCompat.STATE_NONE
+                && mLastPlaybackState.getState() != PlaybackStateCompat.STATE_PAUSED
+                && mLastPlaybackState.getState() != PlaybackStateCompat.STATE_STOPPED &&
+                mLastPlaybackState.getState() != PlaybackStateCompat.STATE_ERROR) {
             long delayMs;
-            if (state.getState() == PlaybackStateCompat.STATE_PLAYING/* && state.getState() == ExoPlayer.STATE_READY*/) {
-                delayMs = 1000 - (state.getPosition() % 1000);
+            if (mLastPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING
+                /* && state.getState() == ExoPlayer.STATE_READY*/) {
+                delayMs = 1000 - (mLastPlaybackState.getPosition() % 1000);
                 if (delayMs < 200) {
                     delayMs += 1000;
                 }
