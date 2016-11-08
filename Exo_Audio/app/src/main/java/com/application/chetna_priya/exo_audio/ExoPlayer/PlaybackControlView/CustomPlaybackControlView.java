@@ -232,14 +232,15 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
         if (haveTimeline) {
           //  int currentWindowIndex = player.getCurrentWindowIndex();
            // currentTimeline.getWindow(currentWindowIndex, currentWindow);
-            isSeekable = currentPosition > 30000 &&
-                    currentPosition < duration - 30000 /*&&
+            isSeekable = currentPosition < duration /*&&
                     android.os.SystemClock.elapsedRealtime() - state.getLastPositionUpdateTime()<= 30000*/;
             /*currentWindow.isSeekable*/;
          //   enablePrevious = currentWindowIndex > 0 || isSeekable || !currentWindow.isDynamic;
           //  enableNext = (currentWindowIndex < currentTimeline.getWindowCount() - 1)
             //        || currentWindow.isDynamic;
         }
+        Log.d(TAG, "TIMELINEEEEEEE "+haveTimeline+" isSeekable "+isSeekable);
+        Log.d(TAG, "CURRENT POSITIONNNN "+currentPosition+" currentPosition < duration - 30000 "+duration);
         setButtonEnabled(enablePrevious , previousButton);
         setButtonEnabled(enableNext, nextButton);
         setButtonEnabled(isSeekable, fastForwardButton);
