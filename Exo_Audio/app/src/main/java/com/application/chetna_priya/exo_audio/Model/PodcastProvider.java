@@ -15,13 +15,13 @@ public class PodcastProvider {
     public void setFavorite(String podcastId, boolean isFavorite) {
 
     }
-
     public MediaMetadataCompat getPodcast(String currentPlayingId) {
         //TODO Create a proper implementation here, dummy implementation for now
         return new MediaMetadataCompat.Builder()
                 .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, "1234")
                 .putString(MediaMetadataCompat.METADATA_KEY_TITLE, "Comedy Bang Bang")
                 .putString(MediaMetadataCompat.METADATA_KEY_GENRE, "Comedy")
+                .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, 3600000 )
                 .build();
     }
 

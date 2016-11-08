@@ -4,7 +4,9 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.os.RemoteException;
 import android.service.media.MediaBrowserService;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaBrowserServiceCompat;
 import android.support.v4.media.session.MediaControllerCompat;
@@ -23,9 +25,6 @@ import com.application.chetna_priya.exo_audio.R;
 public class MainActivity extends AppCompatActivity implements AbstractPlaybackControlView.ActivityCallbacks {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private SmallPlaybackControlView playbackControlView;
-    private PodcastService mService;
-    private boolean mBound;
     private MediaBrowserCompat mMediaBrowser;
 
 
@@ -49,50 +48,14 @@ public class MainActivity extends AppCompatActivity implements AbstractPlaybackC
                 Playlist.getPlaylistInstance().addAlbumToList();
             }
         });
-        playbackControlView = (SmallPlaybackControlView) findViewById(R.id.current_audio_view);
 
     }
 
-
-    /** Defines callbacks for service binding, passed to bindService() */
-    private ServiceConnection mConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
-            PodcastService.LocalBinder binder = (PodcastService.LocalBinder) service;
-            mService = binder.getService();
-            mService.setViewForPlayer(playbackControlView);
-            mBound = true;
-            Log.d(TAG, "SERVICEEEEEE CONNNNNNNECCCCTTTTTTEEEEEDDDDDDD");
-
-            /* move mMediaBrowser.connect here because
-            we want the view class to have the player reference before we start
-            avoiding the null pointer exception*/
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            mBound = false;
-            Log.d(TAG, "SERVICE NEVER GOT DISCONNECTEDDDDDDDDDDDD");
-        }
-
-
-    };
-
     @Override
     protected void onStart() {
-        super.onStart();/*
+        super.onStart();
         if(mMediaBrowser!= null && !mMediaBrowser.isConnected())
-            mMediaBrowser.connect();*/
-        Log.d(TAG, "ON START TRY TO BINDDDDDDDDDDDDDDDDDDD");
-        Intent serviceIntent = new Intent(this, PodcastService.class);
-        serviceIntent.setAction(MediaBrowserServiceCompat.SERVICE_INTERFACE);
-     //   if(PodcastService.isServiceRunning)
-        startService(serviceIntent);
-            bindService(serviceIntent, mConnection, BIND_AUTO_CREATE);
-
+            mMediaBrowser.connect();
     }
 
     @Override
@@ -100,11 +63,7 @@ public class MainActivity extends AppCompatActivity implements AbstractPlaybackC
         super.onStop();
         if(mMediaBrowser!= null && mMediaBrowser.isConnected())
             mMediaBrowser.disconnect();
-        if (mBound) {
-            unbindService(mConnection);
-            mBound = false;
-        }
-    }
+       }
 
     @Override
     public void finishActivity() {

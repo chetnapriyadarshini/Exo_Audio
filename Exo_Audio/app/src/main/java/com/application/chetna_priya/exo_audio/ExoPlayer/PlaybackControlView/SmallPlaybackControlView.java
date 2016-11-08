@@ -33,10 +33,7 @@ import butterknife.ButterKnife;
 public class SmallPlaybackControlView extends AbstractPlaybackControlView {
 
     private static final String TAG = SmallPlaybackControlView.class.getSimpleName();
-
-    private final SmallPlaybackControlView.ComponentListener componentListener;
     private final MediaBrowserCompat mMediaBrowser;
-    private SimpleExoPlayer player;
     @BindView(R.id.imgbtn_play_pause) ImageButton playButton;
     private Context mContext;
 
@@ -51,7 +48,7 @@ public class SmallPlaybackControlView extends AbstractPlaybackControlView {
     public SmallPlaybackControlView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         this.mContext = context;
-        componentListener = new SmallPlaybackControlView.ComponentListener();
+        ComponentListener componentListener = new SmallPlaybackControlView.ComponentListener();
 
         View view  = LayoutInflater.from(context).inflate(R.layout.layout_current_audio, this);
         ButterKnife.bind(this,view);
@@ -63,47 +60,22 @@ public class SmallPlaybackControlView extends AbstractPlaybackControlView {
 
         activityCallbacks.setMediaBrowser(mMediaBrowser);
 
-        /*mMediaBrowser.connect();*/
-/*
-        playerImpl = new PlayerImpl(context, SmallPlaybackControlView.this);*/
-
-        updateAll();
+//        mMediaBrowser.connect();
     }
-
-    /**
-     * Sets the {@link ExoPlayer} to control.
-     *
-     * @param player the {@code ExoPlayer} to control.
-     */
-    public void setPlayer(SimpleExoPlayer player) {
-        if (this.player == player) {
-            return;
-        }
-        if (this.player != null) {
-            this.player.removeListener(componentListener);
-        }
-        this.player = player;
-        if (player != null) {
-            player.addListener(componentListener);
-        }
-
-        updatePlayPauseButton();
-    }
-
-
-    private void updateAll() {
-        updatePlayPauseButton();
-    }
-
 
     private void updatePlayPauseButton() {
-        boolean playing = player != null && player.getPlayWhenReady();
-        Log.d(TAG, "IN UPDATE PLAY PAUSE BUTTON, PLAYER IS PLAYING "+playing+" IS PLAYER NULL "+player);
+        MediaControllerCompat mediaControllerCompat= ((FragmentActivity)mContext).getSupportMediaController();
+
+        PlaybackStateCompat state = mediaControllerCompat.getPlaybackState();
+        boolean playing = state.getState() == PlaybackStateCompat.STATE_PLAYING ||
+                state.getState() == PlaybackStateCompat.STATE_BUFFERING;
+        Log.d(TAG, "IN UPDATE PLAY PAUSE BUTTON, PLAYER IS PLAYING "+playing);
         String contentDescription = getResources().getString(
                 playing ? R.string.exo_controls_pause_description : R.string.exo_controls_play_description);
         playButton.setContentDescription(contentDescription);
         playButton.setImageResource(
                 playing ? R.drawable.exo_controls_pause : R.drawable.exo_controls_play);
+
     }
 
     /*@Override
@@ -140,6 +112,7 @@ public class SmallPlaybackControlView extends AbstractPlaybackControlView {
 
         @Override
         public void onPlaybackStateChanged(PlaybackStateCompat state) {
+            Log.d(TAG, "ON PLAYBACK STATUS CHANGEDDDDDD IN SMALLPLAYBACKCONTROLVIEW "+state);
             super.onPlaybackStateChanged(state);
             updatePlayPauseButton();
         }
@@ -168,7 +141,7 @@ public class SmallPlaybackControlView extends AbstractPlaybackControlView {
                 }
             };
 
-    private void connectToSession(MediaSessionCompat.Token token) throws RemoteException {
+    public void connectToSession(MediaSessionCompat.Token token) throws RemoteException {
         MediaControllerCompat mediaController = new MediaControllerCompat(
                 mContext, token);
         if (mediaController.getMetadata() == null) {
@@ -177,61 +150,42 @@ public class SmallPlaybackControlView extends AbstractPlaybackControlView {
         }
         activityCallbacks.setSupportMediaControllerForActivity(mediaController);
         mediaController.registerCallback(mCallback);
-        PlaybackStateCompat state = mediaController.getPlaybackState();
+
         MediaMetadataCompat metadata = mediaController.getMetadata();
+
         if (metadata != null) {
          //   updateMediaDescription(metadata.getDescription());
            // updateDuration(metadata);
-        }/*
-        updateProgress();
-        if (state != null && (state.getState() == PlaybackStateCompat.STATE_PLAYING ||
-                state.getState() == PlaybackStateCompat.STATE_BUFFERING)) {
-            scheduleSeekbarUpdate();
-        }*/
+        }
     }
 
 
-    final class ComponentListener implements OnClickListener, ExoPlayer.EventListener {
+    final class ComponentListener implements OnClickListener {
 
         @Override
         public void onClick(View view) {
-         /*   if (playButton == view) {
-                player.setPlayWhenReady(!player.getPlayWhenReady());
+            PlaybackStateCompat state = ((FragmentActivity)mContext).getSupportMediaController().getPlaybackState();
+            boolean playing = state.getState() == PlaybackStateCompat.STATE_PLAYING;
+            Log.d(TAG, "ON CLICK ON PLAY BUTTON isPlaying "+playing+state.getState());
+           // if (state != null)
+            {
+                MediaControllerCompat.TransportControls controls =
+                        ((FragmentActivity)mContext).getSupportMediaController().getTransportControls();
+                switch (state.getState()) {
+                    case PlaybackStateCompat.STATE_PLAYING: // fall through
+                    case PlaybackStateCompat.STATE_BUFFERING:
+                        controls.pause();
+                        break;
+                    case PlaybackStateCompat.STATE_PAUSED:
+                    case PlaybackStateCompat.STATE_STOPPED:
+                    case PlaybackStateCompat.STATE_NONE:
+                        controls.play();
+                        break;
+                    default:
+                        Log.d(TAG, "onClick with state "+ state.getState());
+                }
             }
-            boolean playing =  player.getPlayWhenReady();
-            Log.d(TAG, "ON CLICK ON PLAY BUTTON isPlaying "+playing);*/
-            MediaControllerCompat.TransportControls controls =
-                    ((FragmentActivity)mContext).getSupportMediaController().getTransportControls();
-            boolean playing = player != null && player.getPlayWhenReady();
-            if(playing)
-                controls.pause();
-            else
-                controls.play();
-        }
 
-        @Override
-        public void onLoadingChanged(boolean isLoading) {
-            //Do Nothing
-        }
-
-        @Override
-        public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-            updatePlayPauseButton();
-        }
-
-        @Override
-        public void onTimelineChanged(Timeline timeline, Object manifest) {
-            //Do Nothing
-        }
-
-        @Override
-        public void onPlayerError(ExoPlaybackException error) {
-            //Do Nothing
-        }
-
-        @Override
-        public void onPositionDiscontinuity() {
-            //Do Nothing
         }
     }
 

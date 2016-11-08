@@ -91,7 +91,7 @@ public class PlaybackListener implements Playback.Callback {
         Log.d(TAG, "handleStopRequest: mState=" + mPlayback.getState() + " error="+ withError);
         mPlayback.stop(true);
         mServiceCallback.onPlaybackStop();
-        updatePlaybackState(withError);
+      //  updatePlaybackState(withError);
     }
 
 
@@ -140,23 +140,8 @@ public class PlaybackListener implements Playback.Callback {
     }
 
     private void setCustomAction(PlaybackStateCompat.Builder stateBuilder) {
-/*
-        MediaSessionCompat.QueueItem currentMusic = mQueueManager.getCurrentMusic();
-        if (currentMusic == null) {
-            return;
-        }
-        // Set appropriate "Favorite" icon on Custom action:
-        String mediaId = currentMusic.getDescription().getMediaId();
-        if (mediaId == null) {
-            return;
-        }*/
-     //   String musicId = MediaIDHelper.extractMusicIDFromMediaID(mediaId);
-      //  int favoriteIcon = mMusicProvider.isFavorite(musicId) ?
-         //       R.drawable.ic_star_on : R.drawable.ic_star_off;
-    /*    LogHelper.d(TAG, "updatePlaybackState, setting Favorite custom action of music ",
-                musicId, " current favorite=", mMusicProvider.isFavorite(musicId));
-    */    Bundle customActionExtras = new Bundle();
-      //  WearHelper.setShowCustomActionOnWear(customActionExtras, true);
+        Bundle customActionExtras = new Bundle();
+        //  WearHelper.setShowCustomActionOnWear(customActionExtras, true);
         stateBuilder.addCustomAction(new PlaybackStateCompat.CustomAction.Builder(
                 AbstractPlaybackControlView.CUSTOM_ACTION_SPEED_CHANGE,
                 "speed", -1)
@@ -200,6 +185,7 @@ public class PlaybackListener implements Playback.Callback {
 
     @Override
     public void onPlaybackStatusChanged(int state) {
+        Log.d(TAG, "ON PLAYBACK STATUS CHANGEDDDDDDDDDDDDDDDDDDDDDD");
         updatePlaybackState(null);
     }
 
@@ -298,10 +284,6 @@ public class PlaybackListener implements Playback.Callback {
             }
         }
 
-        @Override
-        public boolean onMediaButtonEvent(Intent mediaButtonEvent) {
-            return super.onMediaButtonEvent(mediaButtonEvent);
-        }
     }
 
 

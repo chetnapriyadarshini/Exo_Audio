@@ -11,8 +11,8 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.application.chetna_priya.exo_audio.DemoApplication;
 import com.application.chetna_priya.exo_audio.ExoPlayer.Playlist;
-import com.application.chetna_priya.exo_audio.ExoPlayer.PlaybackControlView.AbstractPlaybackControlView;
 import com.application.chetna_priya.exo_audio.R;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
@@ -40,6 +40,8 @@ import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.upstream.HttpDataSource;
 import com.google.android.exoplayer2.util.Util;
 
@@ -52,7 +54,7 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
     private static final String TAG = PlayerImpl.class.getSimpleName();
     private final AudioManager mAudioManager;
     private int mState;
-    private AbstractPlaybackControlView exoPlayerView;
+ //   private AbstractPlaybackControlView exoPlayerView;
     private Context mContext;
     private DataSource.Factory mediaDataSourceFactory;
     private SimpleExoPlayer exoPlayer;
@@ -91,11 +93,11 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
         this.mState = PlaybackStateCompat.STATE_NONE;
     }
 
-    public void attachView(AbstractPlaybackControlView playbackControlView){
+    /*public void attachView(AbstractPlaybackControlView playbackControlView){
         this.exoPlayerView = playbackControlView;
         if(exoPlayer != null)
             playbackControlView.setPlayer(exoPlayer);
-    }
+    }*/
 
 
 
@@ -120,7 +122,7 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
             //Set Event Logger as the Audio Debug Listener
             exoPlayer.setAudioDebugListener(eventLogger);
             //4. Attach view
-            exoPlayerView.setPlayer(exoPlayer);
+           // exoPlayerView.setPlayer(exoPlayer);
             if (shouldRestorePosition) {
                 if (mCurrentPosition == C.TIME_UNSET) {
                     exoPlayer.seekToDefaultPosition(playerWindow);
@@ -147,6 +149,8 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
         // Prepare the exoPlayer with the source.
         exoPlayer.prepare(mediaSource);
         exoPlayer.setPlayWhenReady(true);
+        if(mCallback != null)
+            mCallback.onPlaybackStatusChanged(mState);
     }
 
     private MediaSource buildMediaSource(Uri uri, String overrideExtension) {
@@ -170,21 +174,15 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
     }
 
     private DataSource.Factory buildDataSourceFactory(boolean useBandwidthMeter) {
-        return ((DemoApplication) ((Activity)mContext).getApplication())
+        return ((DemoApplication) mContext.getApplicationContext())
                 .buildDataSourceFactory(useBandwidthMeter ? BANDWIDTH_METER : null);
     }
 
-    /**
-     * Returns a new HttpDataSource factory.
-     *
-     * @param useBandwidthMeter Whether to set {@link #BANDWIDTH_METER} as a listener to the new
-     *     DataSource factory.
-     * @return A new HttpDataSource factory.
-     */
     private HttpDataSource.Factory buildHttpDataSourceFactory(boolean useBandwidthMeter) {
-        return ((DemoApplication) ((Activity)mContext).getApplication())
+        return ((DemoApplication) mContext.getApplicationContext())
                 .buildHttpDataSourceFactory(useBandwidthMeter ? BANDWIDTH_METER : null);
     }
+
 
     public void relaxResources(boolean releaseExoPlayer) {
         if (releaseExoPlayer && exoPlayer != null)
@@ -211,6 +209,7 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+        mCallback.onPlaybackStatusChanged(mState);
         //Do Nothing, it is handled in playback controlview classes
     }
 
@@ -332,7 +331,8 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
     @Override
     public float getPlaybackSpeed() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return exoPlayer != null ? exoPlayer.getPlaybackParams().getSpeed() : 1.0f;
+            return exoPlayer != null && exoPlayer.getPlaybackParams()!= null?
+                    exoPlayer.getPlaybackParams().getSpeed() : 1.0f;
         }
         return 1.0f;
     }
@@ -370,6 +370,7 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
         boolean mediaHasChanged = false;/* Dummy implementation */
 
         if (mState == PlaybackStateCompat.STATE_PAUSED && !mediaHasChanged && exoPlayer != null) {
+            Log.d(TAG, "INSIDE ON PLAY IN PLAYER IMPL, CONFIG MEDIA PLAYER STATE");
             configMediaPlayerState();
         } else {
             createPlayerIfNeeded();
@@ -383,7 +384,8 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
 
     @Override
     public void pause() {
-        if (mState == PlaybackStateCompat.STATE_PLAYING) {
+        Log.d(TAG, "PAUSE REQUEST RECEIVEDDDDDDDDDDDDDDDDDD IN PLAYERIMPL");
+        if (mState == PlaybackStateCompat.STATE_PLAYING || mState == PlaybackStateCompat.STATE_BUFFERING) {
             // Pause media player and cancel the 'foreground service' state.
             if (exoPlayer != null && exoPlayer.getPlayWhenReady()) {
                 exoPlayer.setPlayWhenReady(false);
@@ -458,11 +460,14 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
                     Log.d(TAG,"configMediaPlayerState startMediaPlayer. seeking to "+
                             mCurrentPosition);
                     if (mCurrentPosition == exoPlayer.getCurrentPosition()) {
+                        Log.d(TAG, "SET PLAYINGGGGGGGGGGGGGGGGGGG");
                         exoPlayer.setPlayWhenReady(true);
                         mState = PlaybackStateCompat.STATE_PLAYING;
                     } else {
+                        Log.d(TAG, "SET BUFFERRINGGGGGGGGGGG "+mCurrentPosition+" playerposition "+exoPlayer.getCurrentPosition());
                         exoPlayer.seekTo(mCurrentPosition);
                         mState = PlaybackStateCompat.STATE_BUFFERING;
+                        exoPlayer.setPlayWhenReady(true);
                     }
                 }
                 mPlayOnFocusGain = false;

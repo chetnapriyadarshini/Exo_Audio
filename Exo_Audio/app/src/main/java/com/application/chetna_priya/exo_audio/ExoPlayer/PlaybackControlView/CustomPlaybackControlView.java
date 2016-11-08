@@ -27,6 +27,7 @@ import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
+import com.google.android.exoplayer2.util.SystemClock;
 import com.google.android.exoplayer2.util.Util;
 import java.util.Formatter;
 import java.util.Locale;
@@ -39,23 +40,9 @@ import butterknife.ButterKnife;
  */
 public class CustomPlaybackControlView extends AbstractPlaybackControlView{
 
-    /**
-     * Listener to be notified about changes of the visibility of the UI control.
-     */
-    /*public interface VisibilityListener {
-        *//**
-         * Called when the visibility changes.
-         *
-         * @param visibility The new visibility. Either {@link View#VISIBLE} or {@link View#GONE}.
-         *//*
-        void onVisibilityChange(int visibility);
-    }*/
-
     private static final int PROGRESS_BAR_MAX = 1000;
     private static final long MAX_POSITION_FOR_SEEK_TO_PREVIOUS = 3000;
     private static final String TAG = CustomPlaybackControlView.class.getSimpleName();
-
-    private final ComponentListener componentListener;
     private final MediaBrowserCompat mMediaBrowser;
 
     @BindView(R.id.tv_time) TextView time;
@@ -78,10 +65,6 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
     private final int STANDARD_INDEX = 5;//index of 1.00f
     private int CURRENT_INDEX = STANDARD_INDEX;
 
-   // private SimpleExoPlayer player;
-    //private VisibilityListener visibilityListener;
-   // private OnPlaybackParamsListener paramsListener;
-
 
     private boolean dragging;
 
@@ -92,7 +75,6 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
         }
     };
     private Context mContext;
-    private SimpleExoPlayer player;
 
     public CustomPlaybackControlView(Context context) {
         this(context, null);
@@ -108,7 +90,7 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
         currentWindow = new Timeline.Window();
         formatBuilder = new StringBuilder();
         formatter = new Formatter(formatBuilder, Locale.getDefault());
-        componentListener = new ComponentListener();
+        ComponentListener componentListener = new ComponentListener();
 
         View view  = LayoutInflater.from(context).inflate(R.layout.custom_exo_playback_control_view, this);
         ButterKnife.bind(this, view);
@@ -130,12 +112,9 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
         progressBar.setOnSeekBarChangeListener(componentListener);
         progressBar.setMax(PROGRESS_BAR_MAX);
 
-       //   stateClass = new StateClass();
-
         mMediaBrowser = new MediaBrowserCompat(mContext,
                 new ComponentName(mContext, PodcastService.class), mConnectionCallback, null);
         activityCallbacks.setMediaBrowser(mMediaBrowser);
-        updateAll();
     }
 
 
@@ -152,8 +131,7 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
         @Override
         public void onPlaybackStateChanged(PlaybackStateCompat state) {
             super.onPlaybackStateChanged(state);
-            updatePlayPauseButton();
-            updateProgress();
+            updateAll();
         }
 
         @Override
@@ -203,7 +181,6 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
         activityCallbacks.setSupportMediaControllerForActivity(mediaController);
         mediaController.registerCallback(mCallback);
         updateProgress();
-        PlaybackStateCompat state = mediaController.getPlaybackState();
         MediaMetadataCompat metadata = mediaController.getMetadata();
         if (metadata != null) {
             //   updateMediaDescription(metadata.getDescription());
@@ -216,26 +193,6 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
         }*/
     }
 
-    /**
-     * Sets the {@link ExoPlayer} to control.
-     *
-     * @param player the {@code ExoPlayer} to control.
-     */
-    @Override
-    public void setPlayer(SimpleExoPlayer player) {
-        if (this.player == player) {
-            return;
-        }
-        if (this.player != null) {
-            this.player.removeListener(componentListener);
-        }
-        this.player = player;
-        if (player != null) {
-            player.addListener(componentListener);
-        }
-        updateAll();
-    }
-
     private void updateAll() {
         updatePlayPauseButton();
         updateNavigation();
@@ -243,11 +200,12 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
     }
 
     private void updatePlayPauseButton() {
-       /* if (!isVisible()) {
-            return;
-        }*/
-        boolean playing = player != null && player.getPlayWhenReady();
-        Log.d(TAG, "IN UPDATE PLAY PAUSE BUTTON, PLAYER IS PLAYING "+playing+" IS PLAYER NULL "+player);
+
+        MediaControllerCompat mediaControllerCompat= ((FragmentActivity)mContext).getSupportMediaController();
+        PlaybackStateCompat state = mediaControllerCompat.getPlaybackState();
+        boolean playing = state.getState() == PlaybackStateCompat.STATE_PLAYING ||
+                state.getState() == PlaybackStateCompat.STATE_BUFFERING;
+        Log.d(TAG, "IN UPDATE PLAY PAUSE BUTTON, PLAYER IS PLAYING "+playing);
         String contentDescription = getResources().getString(
                 playing ? R.string.exo_controls_pause_description : R.string.exo_controls_play_description);
         playButton.setContentDescription(contentDescription);
@@ -258,24 +216,29 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
 
 
     private void updateNavigation() {
-      /*  if (!isVisible()) {
-            return;
-        }*/
 
-        MediaControllerCompat.TransportControls controls =
-                ((FragmentActivity)mContext).getSupportMediaController().getTransportControls();
-        Timeline currentTimeline = player != null ? player.getCurrentTimeline() : null;
-        boolean haveTimeline = currentTimeline != null;
+        MediaControllerCompat mediaControllerCompat= ((FragmentActivity)mContext).getSupportMediaController();
+        MediaControllerCompat.TransportControls controls =mediaControllerCompat.getTransportControls();
+        PlaybackStateCompat state = mediaControllerCompat.getPlaybackState();
+        MediaMetadataCompat metadata = mediaControllerCompat.getMetadata();
+        long duration = metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
+        long currentPosition = state.getPosition();
+        //TODO come up with a robust implementation below
+      //  Timeline currentTimeline = player != null ? player.getCurrentTimeline() : null;
+        boolean haveTimeline = currentPosition < duration/*currentTimeline != null*/;
         boolean isSeekable = false;
         boolean enablePrevious = false;
         boolean enableNext = false;
         if (haveTimeline) {
-            int currentWindowIndex = player.getCurrentWindowIndex();
-            currentTimeline.getWindow(currentWindowIndex, currentWindow);
-            isSeekable = currentWindow.isSeekable;
-            enablePrevious = currentWindowIndex > 0 || isSeekable || !currentWindow.isDynamic;
-            enableNext = (currentWindowIndex < currentTimeline.getWindowCount() - 1)
-                    || currentWindow.isDynamic;
+          //  int currentWindowIndex = player.getCurrentWindowIndex();
+           // currentTimeline.getWindow(currentWindowIndex, currentWindow);
+            isSeekable = currentPosition > 30000 &&
+                    currentPosition < duration - 30000 /*&&
+                    android.os.SystemClock.elapsedRealtime() - state.getLastPositionUpdateTime()<= 30000*/;
+            /*currentWindow.isSeekable*/;
+         //   enablePrevious = currentWindowIndex > 0 || isSeekable || !currentWindow.isDynamic;
+          //  enableNext = (currentWindowIndex < currentTimeline.getWindowCount() - 1)
+            //        || currentWindow.isDynamic;
         }
         setButtonEnabled(enablePrevious , previousButton);
         setButtonEnabled(enableNext, nextButton);
@@ -291,28 +254,27 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
     }
 
     private void updateProgress() {
-       /* if (!isVisible()) {
-            return;
-        }*/
-        long duration = player == null ? 0 : player.getDuration();
-        long position = player == null ? 0 : player.getCurrentPosition();
-        time.setText(stringForTime(duration));
+
+        MediaControllerCompat mediaControllerCompat= ((FragmentActivity)mContext).getSupportMediaController();
+        PlaybackStateCompat state = mediaControllerCompat.getPlaybackState();
+
+        time.setText(stringForTime(mediaControllerCompat.getMetadata().getLong(MediaMetadataCompat.METADATA_KEY_DURATION)));
         if (!dragging) {
-            timeCurrent.setText(stringForTime(position));
+            timeCurrent.setText(stringForTime(state.getPosition()));
         }
         if (!dragging) {
-            progressBar.setProgress(progressBarValue(position));
+            progressBar.setProgress(progressBarValue(state.getPosition()));
         }
-        long bufferedPosition = player == null ? 0 : player.getBufferedPosition();
-        progressBar.setSecondaryProgress(progressBarValue(bufferedPosition));
+        progressBar.setSecondaryProgress(progressBarValue(state.getBufferedPosition()));
         // Remove scheduled updates.
         removeCallbacks(updateProgressAction);
         // Schedule an update if necessary.
-        int playbackState = player == null ? ExoPlayer.STATE_IDLE : player.getPlaybackState();
-        if (playbackState != ExoPlayer.STATE_IDLE && playbackState != ExoPlayer.STATE_ENDED) {
+     //   int playbackState = player == null ? ExoPlayer.STATE_IDLE : player.getPlaybackState();
+        if (state.getState() != PlaybackStateCompat.STATE_NONE && state.getState() != PlaybackStateCompat.STATE_STOPPED &&
+                state.getPosition() != PlaybackStateCompat.STATE_ERROR) {
             long delayMs;
-            if (player.getPlayWhenReady() && playbackState == ExoPlayer.STATE_READY) {
-                delayMs = 1000 - (position % 1000);
+            if (state.getState() == PlaybackStateCompat.STATE_PLAYING/* && state.getState() == ExoPlayer.STATE_READY*/) {
+                delayMs = 1000 - (state.getPosition() % 1000);
                 if (delayMs < 200) {
                     delayMs += 1000;
                 }
@@ -347,48 +309,29 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
     }
 
     private int progressBarValue(long position) {
-        long duration = player == null ? C.TIME_UNSET : player.getDuration();
+
+        MediaControllerCompat mediaControllerCompat= ((FragmentActivity)mContext).getSupportMediaController();
+        PlaybackStateCompat state = mediaControllerCompat.getPlaybackState();
+
+        long duration = state.getState() == PlaybackStateCompat.STATE_ERROR  ? C.TIME_UNSET :
+                mediaControllerCompat.getMetadata().getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
         return duration == C.TIME_UNSET || duration == 0 ? 0
                 : (int) ((position * PROGRESS_BAR_MAX) / duration);
     }
 
     private long positionValue(int progress) {
-        long duration = player == null ? C.TIME_UNSET : player.getDuration();
+        MediaControllerCompat mediaControllerCompat= ((FragmentActivity)mContext).getSupportMediaController();
+        PlaybackStateCompat state = mediaControllerCompat.getPlaybackState();
+
+        long duration = state.getState() == PlaybackStateCompat.STATE_ERROR  ? C.TIME_UNSET :
+                mediaControllerCompat.getMetadata().getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
         return duration == C.TIME_UNSET ? 0 : ((duration * progress) / PROGRESS_BAR_MAX);
-    }
-
-    private void previous() {
-        Timeline currentTimeline = player.getCurrentTimeline();
-        if (currentTimeline == null) {
-            return;
-        }
-        int currentWindowIndex = player.getCurrentWindowIndex();
-        currentTimeline.getWindow(currentWindowIndex, currentWindow);
-        if (currentWindowIndex > 0 && (player.getCurrentPosition() <= MAX_POSITION_FOR_SEEK_TO_PREVIOUS
-                || (currentWindow.isDynamic && !currentWindow.isSeekable))) {
-            player.seekToDefaultPosition(currentWindowIndex - 1);
-        } else {
-            player.seekTo(0);
-
-        }
-    }
-
-    private void next() {
-        Timeline currentTimeline = player.getCurrentTimeline();
-        if (currentTimeline == null) {
-            return;
-        }
-        int currentWindowIndex = player.getCurrentWindowIndex();
-        if (currentWindowIndex < currentTimeline.getWindowCount() - 1) {
-            player.seekToDefaultPosition(currentWindowIndex + 1);
-        } else if (currentTimeline.getWindow(currentWindowIndex, currentWindow, false).isDynamic) {
-            player.seekToDefaultPosition();
-        }
     }
 
     private void updateSpeedText() {
         speed.setText(SPEED_ARR[CURRENT_INDEX]+"x");
     }
+
    /* @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         if (player == null || event.getAction() != KeyEvent.ACTION_DOWN) {
@@ -429,8 +372,7 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
     }
 */
 
-    final class ComponentListener implements  SeekBar.OnSeekBarChangeListener, OnClickListener,
-            ExoPlayer.EventListener{
+    final class ComponentListener implements  SeekBar.OnSeekBarChangeListener, OnClickListener{
 
         @Override
         public void onStartTrackingTouch(SeekBar seekBar) {
@@ -451,62 +393,50 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
             MediaControllerCompat.TransportControls controls =
                     ((FragmentActivity)mContext).getSupportMediaController().getTransportControls();
             controls.seekTo(positionValue(seekBar.getProgress()));
+            updateNavigation();
+            updateProgress();
            // player.seekTo(positionValue(seekBar.getProgress()));
             //hideDeferred();
         }
 
         @Override
-        public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-            updatePlayPauseButton();
-            updateProgress();
-        }
-
-        @Override
-        public void onPositionDiscontinuity() {
-            updateNavigation();
-            updateProgress();
-        }
-
-        @Override
-        public void onTimelineChanged(Timeline timeline, Object manifest) {
-            updateNavigation();
-            updateProgress();
-        }
-
-        @Override
-        public void onLoadingChanged(boolean isLoading) {
-            // Do nothing.
-        }
-
-        @Override
-        public void onPlayerError(ExoPlaybackException error) {
-            // Do nothing.
-        }
-        @Override
         public void onClick(View view) {
-            Timeline currentTimeline = null;
+         //   Timeline currentTimeline = null;
             MediaControllerCompat.TransportControls controls =
                     ((FragmentActivity)mContext).getSupportMediaController().getTransportControls();
-            if(player != null)
-            currentTimeline = player.getCurrentTimeline();
-            if (nextButton == view) {
+           if (nextButton == view) {
                 controls.skipToNext();
                // next();
             } else if (previousButton == view) {
                 controls.skipToPrevious();
+
               //  previous();
             } else if (fastForwardButton == view) {
                 controls.fastForward();
              //   fastForward();
-            } else if (rewindButton == view && currentTimeline != null) {
+            } else if (rewindButton == view) {
                 controls.rewind();
                // rewind();
             } else if (playButton == view) {
-                PlaybackStateCompat state = ((FragmentActivity)mContext).getSupportMediaController().getPlaybackState();
-                if(state.getState() == PlaybackStateCompat.STATE_PAUSED)
-                    controls.play();
-                else
-                    controls.pause();
+               PlaybackStateCompat state = ((FragmentActivity)mContext).getSupportMediaController().getPlaybackState();
+               boolean playing = state.getState() == PlaybackStateCompat.STATE_PLAYING;
+               Log.d(TAG, "ON CLICK ON PLAY BUTTON isPlaying "+playing+state.getState());
+               // if (state != null)
+               {
+                   switch (state.getState()) {
+                       case PlaybackStateCompat.STATE_PLAYING: // fall through
+                       case PlaybackStateCompat.STATE_BUFFERING:
+                           controls.pause();
+                           break;
+                       case PlaybackStateCompat.STATE_PAUSED:
+                       case PlaybackStateCompat.STATE_STOPPED:
+                       case PlaybackStateCompat.STATE_NONE:
+                           controls.play();
+                           break;
+                       default:
+                           Log.d(TAG, "onClick with state "+ state.getState());
+                   }
+               }
 
             }else if(speed == view){
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

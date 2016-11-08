@@ -1,4 +1,4 @@
-package com.application.chetna_priya.exo_audio.ExoPlayer.Playback;
+package com.application.chetna_priya.exo_audio;
 
 import android.app.Application;
 import com.google.android.exoplayer2.upstream.DataSource;
@@ -21,12 +21,12 @@ public class DemoApplication extends Application {
         userAgent = Util.getUserAgent(this, "ExoPlayerDemo");
     }
 
-    DataSource.Factory buildDataSourceFactory(DefaultBandwidthMeter bandwidthMeter) {
+    public DataSource.Factory buildDataSourceFactory(DefaultBandwidthMeter bandwidthMeter) {
         return new DefaultDataSourceFactory(this, bandwidthMeter,
                 buildHttpDataSourceFactory(bandwidthMeter));
     }
 
-    HttpDataSource.Factory buildHttpDataSourceFactory(DefaultBandwidthMeter bandwidthMeter) {
+    public HttpDataSource.Factory buildHttpDataSourceFactory(DefaultBandwidthMeter bandwidthMeter) {
         return new DefaultHttpDataSourceFactory(userAgent, bandwidthMeter);
     }
 

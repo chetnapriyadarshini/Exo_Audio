@@ -37,48 +37,12 @@ public class PodcastService extends MediaBrowserServiceCompat implements Playbac
     private MediaSessionCompat mSession;
     private MediaNotificationManager mMediaNotificationManager;
     private PlaybackListener mPlaybackListener;
-    private IBinder mBinder = new LocalBinder();
-    private PlayerImpl player = null;
-
-    @Override
-    public IBinder onBind(Intent intent) {
-     //   Log.d(TAG, "ON BIND RETURNINGGGGG    "+super.onBind(intent));
-        return mBinder;
-
-    }
-
-    /**
-     * Class used for the client Binder.  Because we know this service always
-     * runs in the same process as its clients, we don't need to deal with IPC.
-     */
-/*
-    public class LocalBinder extends Binder {
-        public PodcastService getService() {
-            // Return this instance of LocalService so clients can call public methods
-            return PodcastService.this;
-        }
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return mBinder;
-    }
-*/
-
-
-    public class LocalBinder extends Binder {
-        public PodcastService getService() {
-            // Return this instance of LocalService so clients can call public methods
-            return PodcastService.this;
-        }
-    }
-
 
     @Override
     public void onCreate() {
 
         super.onCreate();
-        player = new PlayerImpl(getApplicationContext());
+        PlayerImpl player = new PlayerImpl(getApplicationContext());
         mSession = new MediaSessionCompat(this, "PodcastService");
         setSessionToken(mSession.getSessionToken());
         //TODO put forth a proper implementation for metadata
@@ -95,6 +59,7 @@ public class PodcastService extends MediaBrowserServiceCompat implements Playbac
         PendingIntent pi = PendingIntent.getActivity(context, 99 /*request code*/,
                 intent, PendingIntent.FLAG_UPDATE_CURRENT);
         mSession.setSessionActivity(pi);
+        mPlaybackListener.updatePlaybackState(null);
         try {
             mMediaNotificationManager = new MediaNotificationManager(this);
         } catch (RemoteException e) {
@@ -161,15 +126,6 @@ public class PodcastService extends MediaBrowserServiceCompat implements Playbac
         This is 100% expected. Make sure every code path calls one or the other.
          */
         result.sendResult(null);
-    }
-
-
-    public void setViewForPlayer(SmallPlaybackControlView playbackControlView) {
-        player.attachView(playbackControlView);
-    }
-
-    public void setViewForPlayer(CustomPlaybackControlView playbackControlView) {
-        player.attachView(playbackControlView);
     }
 
     @Override

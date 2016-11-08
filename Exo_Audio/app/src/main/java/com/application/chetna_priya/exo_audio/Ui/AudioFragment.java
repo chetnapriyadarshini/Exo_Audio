@@ -20,38 +20,13 @@ import com.application.chetna_priya.exo_audio.R;
 
 import static android.content.Context.BIND_AUTO_CREATE;
 
-public class AudioFragment extends Fragment implements AbstractPlaybackControlView.ActivityCallbacks {
+public class AudioFragment extends Fragment {
     private static final String TAG = AudioFragment.class.getSimpleName();
-
-    private CustomPlaybackControlView exoplayerView;
-    private MediaBrowserCompat mMediaBrowser;
 
     public AudioFragment() {
         // Required empty public constructor
     }
 
-
-    private PodcastService mService;
-    private boolean mBound;
-
-    /** Defines callbacks for service binding, passed to bindService() */
-    private ServiceConnection mConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
-            PodcastService.LocalBinder binder = (PodcastService.LocalBinder) service;
-            mService = binder.getService();
-            mService.setViewForPlayer(exoplayerView);
-            mBound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            mBound = false;
-        }
-    };
 
 
     @Override
@@ -59,7 +34,6 @@ public class AudioFragment extends Fragment implements AbstractPlaybackControlVi
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_audio, container, false);
-        exoplayerView = (CustomPlaybackControlView) rootView.findViewById(R.id.exo_player_control);
        return rootView;
     }
 
@@ -71,43 +45,9 @@ public class AudioFragment extends Fragment implements AbstractPlaybackControlVi
     }
 
     @Override
-    public void onStart() {
-
-        Intent serviceIntent = new Intent(getActivity(), PodcastService.class);
-        if(PodcastService.isServiceRunning)
-            getActivity().bindService(serviceIntent, mConnection, BIND_AUTO_CREATE);
-        mMediaBrowser.connect();
-        super.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (mBound) {
-            getActivity().unbindService(mConnection);
-            mBound = false;
-        }
-        mMediaBrowser.disconnect();
-    }
-
-    @Override
     public void onDetach() {
         super.onDetach();
        // mListener = null;//Remember to detach listener here if you implement one
     }
 
-    @Override
-    public void finishActivity() {
-        getActivity().finish();
-    }
-
-    @Override
-    public void setSupportMediaControllerForActivity(MediaControllerCompat mediaController) {
-        getActivity().setSupportMediaController(mediaController);
-    }
-
-    @Override
-    public void setMediaBrowser(MediaBrowserCompat mediaBrowser) {
-        mMediaBrowser = mediaBrowser;
-    }
 }
