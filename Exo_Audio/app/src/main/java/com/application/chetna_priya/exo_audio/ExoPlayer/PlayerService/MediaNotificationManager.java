@@ -336,8 +336,8 @@ public class MediaNotificationManager extends BroadcastReceiver {
             mService.stopForeground(true);
             return;
         }
-        if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING ||
-                mPlaybackState.getState() == PlaybackStateCompat.STATE_BUFFERING
+        if ((mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING ||
+                mPlaybackState.getState() == PlaybackStateCompat.STATE_BUFFERING)
                 && mPlaybackState.getPosition() >= 0) {
             Log.d(TAG, "updateNotificationPlaybackState. updating playback position to " +
                     (System.currentTimeMillis() - mPlaybackState.getPosition()) / 1000 + " seconds");
