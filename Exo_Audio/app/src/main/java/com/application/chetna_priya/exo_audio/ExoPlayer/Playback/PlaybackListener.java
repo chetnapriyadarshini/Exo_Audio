@@ -131,10 +131,11 @@ public class PlaybackListener implements Playback.Callback {
             stateBuilder.setActiveQueueItemId(currentMusic.getQueueId());
         }
 */
-        mServiceCallback.onPlaybackStateUpdated(stateBuilder.build());
+         mServiceCallback.onPlaybackStateUpdated(stateBuilder.build());
 
-        if (state == PlaybackStateCompat.STATE_PLAYING ||
+        if (state == PlaybackStateCompat.STATE_PLAYING || state == PlaybackStateCompat.STATE_BUFFERING ||
                 state == PlaybackStateCompat.STATE_PAUSED) {
+            Log.d(TAG, "DISPLAY NOTIFICATIONNNNNNNNNNNNNNNNNNNNNNNN");
             mServiceCallback.onNotificationRequired();
         }
     }

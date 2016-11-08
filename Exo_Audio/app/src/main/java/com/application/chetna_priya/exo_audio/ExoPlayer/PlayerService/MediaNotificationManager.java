@@ -18,6 +18,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
+import com.application.chetna_priya.exo_audio.ExoPlayer.Playback.Playback;
 import com.application.chetna_priya.exo_audio.Ui.AudioActivity;
 import com.application.chetna_priya.exo_audio.R;
 
@@ -223,10 +224,11 @@ public class MediaNotificationManager extends BroadcastReceiver {
     };
 
     private Notification createNotification() {
-        Log.d(TAG, "updateNotificationMetadata. mMetadata=" + mMetadata);
+
         if (mMetadata == null || mPlaybackState == null) {
             return null;
         }
+        Log.d(TAG, "updateNotificationMetadata. mMetadata=" + mMetadata);
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(mService);
         int playPauseButtonPosition = 0;
@@ -271,8 +273,11 @@ public class MediaNotificationManager extends BroadcastReceiver {
             }
         }*/
 
+
+
         notificationBuilder
                 .setStyle(new NotificationCompat.MediaStyle()
+                        .setShowCancelButton(true)
                         .setShowActionsInCompactView(
                                 new int[]{playPauseButtonPosition})  // show only play/pause in compact view
 
@@ -280,7 +285,8 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 .setColor(mNotificationColor)
                 .setSmallIcon(android.R.drawable.ic_notification_clear_all)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setUsesChronometer(true)/*
+                .setUsesChronometer(true)
+                /*
                 .setContentIntent(createContentIntent(description))
                 .setContentTitle(description.getTitle())
                 .setContentText(description.getSubtitle())*/;
@@ -310,7 +316,8 @@ public class MediaNotificationManager extends BroadcastReceiver {
         String label;
         int icon;
         PendingIntent intent;
-        if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
+        if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING
+                ||mPlaybackState.getState()== PlaybackStateCompat.STATE_BUFFERING) {
             label = mService.getString(R.string.label_pause);
             icon = R.drawable.uamp_ic_pause_white_24dp;
             intent = mPauseIntent;
@@ -329,7 +336,8 @@ public class MediaNotificationManager extends BroadcastReceiver {
             mService.stopForeground(true);
             return;
         }
-        if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING
+        if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING ||
+                mPlaybackState.getState() == PlaybackStateCompat.STATE_BUFFERING
                 && mPlaybackState.getPosition() >= 0) {
             Log.d(TAG, "updateNotificationPlaybackState. updating playback position to " +
                     (System.currentTimeMillis() - mPlaybackState.getPosition()) / 1000 + " seconds");
