@@ -33,7 +33,6 @@ import java.util.List;
 public class PodcastService extends MediaBrowserServiceCompat implements PlaybackListener.PlaybackServiceCallback {
 
     private static final String TAG = PodcastService.class.getSimpleName();
-    public static boolean isServiceRunning = false;
     private MediaSessionCompat mSession;
     private MediaNotificationManager mMediaNotificationManager;
     private PlaybackListener mPlaybackListener;
@@ -75,7 +74,6 @@ public class PodcastService extends MediaBrowserServiceCompat implements Playbac
             // Try to handle the intent as a media button event wrapped by MediaButtonReceiver
             MediaButtonReceiver.handleIntent(mSession, startIntent);
         }
-        isServiceRunning = true;
         return START_STICKY;
     }
 
@@ -131,7 +129,6 @@ public class PodcastService extends MediaBrowserServiceCompat implements Playbac
     @Override
     public void onDestroy() {
         super.onDestroy();
-        isServiceRunning = false;
         mPlaybackListener.handleStopRequest(null);
         mMediaNotificationManager.stopNotification();
         mSession.release();
