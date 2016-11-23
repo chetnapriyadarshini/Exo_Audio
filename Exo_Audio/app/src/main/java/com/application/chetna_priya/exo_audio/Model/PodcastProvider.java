@@ -2,7 +2,6 @@ package com.application.chetna_priya.exo_audio.Model;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
@@ -10,15 +9,19 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.util.Log;
 
 import com.application.chetna_priya.exo_audio.R;
+import com.application.chetna_priya.exo_audio.Utils.MediaIDHelper;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+
+import static com.application.chetna_priya.exo_audio.Utils.MediaIDHelper.MEDIA_ID_PODCASTS_BY_GENRE;
+import static com.application.chetna_priya.exo_audio.Utils.MediaIDHelper.MEDIA_ID_ROOT;
+import static com.application.chetna_priya.exo_audio.Utils.MediaIDHelper.createMediaID;
 
 /**
  * Created by chetna_priya on 10/27/2016.
@@ -245,14 +248,14 @@ public class PodcastProvider {
         if (MEDIA_ID_ROOT.equals(mediaId)) {
             mediaItems.add(createBrowsableMediaItemForRoot(resources));
 
-        } else if (MEDIA_ID_MUSICS_BY_GENRE.equals(mediaId)) {
+        } else if (MEDIA_ID_PODCASTS_BY_GENRE.equals(mediaId)) {
             for (String genre : getGenres()) {
                 mediaItems.add(createBrowsableMediaItemForGenre(genre, resources));
             }
 
-        } else if (mediaId.startsWith(MEDIA_ID_MUSICS_BY_GENRE)) {
+        } else if (mediaId.startsWith(MEDIA_ID_PODCASTS_BY_GENRE)) {
             String genre = MediaIDHelper.getHierarchy(mediaId)[1];
-            for (MediaMetadataCompat metadata : getMusicsByGenre(genre)) {
+            for (MediaMetadataCompat metadata : getPodcastByGenre(genre)) {
                 mediaItems.add(createMediaItem(metadata));
             }
 
@@ -264,7 +267,7 @@ public class PodcastProvider {
 
     private MediaBrowserCompat.MediaItem createBrowsableMediaItemForRoot(Resources resources) {
         MediaDescriptionCompat description = new MediaDescriptionCompat.Builder()
-                .setMediaId(MEDIA_ID_MUSICS_BY_GENRE)
+                .setMediaId(MEDIA_ID_PODCASTS_BY_GENRE)
                 .setTitle(resources.getString(R.string.browse_genres))
                 .setSubtitle(resources.getString(R.string.browse_genre_subtitle))
                 /*.setIconUri(Uri.parse("android.resource://" +
@@ -277,7 +280,7 @@ public class PodcastProvider {
     private MediaBrowserCompat.MediaItem createBrowsableMediaItemForGenre(String genre,
                                                                           Resources resources) {
         MediaDescriptionCompat description = new MediaDescriptionCompat.Builder()
-                .setMediaId(createMediaID(null, MEDIA_ID_MUSICS_BY_GENRE, genre))
+                .setMediaId(createMediaID(null, MEDIA_ID_PODCASTS_BY_GENRE, genre))
                 .setTitle(genre)
                 .setSubtitle(resources.getString(
                         R.string.browse_podcast_by_genre_subtitle, genre))
@@ -292,8 +295,8 @@ public class PodcastProvider {
         // when we get a onPlayFromMusicID call, so we can create the proper queue based
         // on where the music was selected from (by artist, by genre, random, etc)
         String genre = metadata.getString(MediaMetadataCompat.METADATA_KEY_GENRE);
-        String hierarchyAwareMediaID = MediaIDHelper.createMediaID(
-                metadata.getDescription().getMediaId(), MEDIA_ID_MUSICS_BY_GENRE, genre);
+        String hierarchyAwareMediaID = createMediaID(
+                metadata.getDescription().getMediaId(), MEDIA_ID_PODCASTS_BY_GENRE, genre);
         MediaMetadataCompat copy = new MediaMetadataCompat.Builder(metadata)
                 .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, hierarchyAwareMediaID)
                 .build();
