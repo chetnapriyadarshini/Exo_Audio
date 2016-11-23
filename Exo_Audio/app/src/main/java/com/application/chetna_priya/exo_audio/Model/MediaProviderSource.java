@@ -1,5 +1,6 @@
 package com.application.chetna_priya.exo_audio.Model;
 
+import android.content.Context;
 import android.support.v4.media.MediaMetadataCompat;
 
 import java.util.Iterator;
@@ -12,4 +13,6 @@ public interface MediaProviderSource {
 
     String CUSTOM_METADATA_TRACK_SOURCE = "__SOURCE__";
     Iterator<MediaMetadataCompat> iterator();
+
+    Iterator<MediaMetadataCompat> iterator(Context context);
 }

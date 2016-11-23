@@ -24,7 +24,7 @@ public class Playlist {
 
     public void addAlbumToList(){
         albumQueue.add(new Album("ALBUM1",
-                "http://feeds.soundcloud.com/stream/280380933-comedybangbang-442-andy-daly-jeremy-rowley.mp3"));
+                "http://feedproxy.google.com/~r/comedycentral/standup/~5/tJb5puJqzE8/buckleys_601_foley.m4v"));
 
         albumQueue.add(new Album("ALBUM2",
                 "http://feeds.soundcloud.com/stream/280380933-comedybangbang-442-andy-daly-jeremy-rowley.mp3"));
