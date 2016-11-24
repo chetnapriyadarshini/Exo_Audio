@@ -1,12 +1,9 @@
-package com.application.chetna_priya.exo_audio.TaskLoaders;
+package com.application.chetna_priya.exo_audio.Network;
 
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.util.Log;
 
-import com.application.chetna_priya.exo_audio.Entity.Genre;
 import com.application.chetna_priya.exo_audio.Entity.Podcast;
-import com.application.chetna_priya.exo_audio.Network.FeedParser;
 
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -6,11 +6,10 @@ import android.util.Log;
 
 import com.application.chetna_priya.exo_audio.Entity.Episode;
 import com.application.chetna_priya.exo_audio.Entity.Podcast;
-import com.application.chetna_priya.exo_audio.TaskLoaders.FetchIndividualPodcastEpisodes;
-import com.application.chetna_priya.exo_audio.TaskLoaders.LoadAvailablePodcastChannels;
+import com.application.chetna_priya.exo_audio.Network.FetchIndividualPodcastEpisodes;
+import com.application.chetna_priya.exo_audio.Network.LoadAvailablePodcastChannels;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Iterator;

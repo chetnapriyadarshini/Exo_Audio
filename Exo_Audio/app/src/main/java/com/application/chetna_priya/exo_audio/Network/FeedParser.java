@@ -67,7 +67,7 @@ public class FeedParser {
         }
         return episodes;
     }
-
+/*
     public Podcast parsePodcast(@NonNull InputStream in, long id, @NonNull String feedUrl)
              {
         Podcast podcast = null;
@@ -90,13 +90,13 @@ public class FeedParser {
         return podcast;
     }
 
-    /**
+    *//**
      * Decode a feed attached to an XmlPullParser.
      *
      * @param parser Incoming XMl
      * @throws XmlPullParserException on error parsing feed.
      * @throws IOException on I/O error.
-     */
+     *//*
     private Podcast readPodcastFeed(XmlPullParser parser, long id, String feedUrl)
             throws XmlPullParserException, IOException, ParseException {
 
@@ -115,17 +115,17 @@ public class FeedParser {
                 podcast_image_link = readTag(parser, TAG_IMAGE_LINK);
             }else if(parser.getName().equals(PODCAST_EPISODE_START_TAG))
             {
-                /*
+                *//*
                 We return from here because the main podcast feed is complete and the
                 episode feed has started, all the info to instantiate a podcast object should
                 be available by now
-                 */
+                 *//*
                 return new Podcast(id, podcast_title, podcast_image_link,podcast_summary,feedUrl);
             }else
                 skip(parser);
         }
        return null;
-    }
+    }*/
 
     private ArrayList<Episode> readEpisodeFeed(XmlPullParser parser, Podcast podcast) throws IOException, XmlPullParserException, ParseException {
         ArrayList<Episode> episodes = new ArrayList<>();

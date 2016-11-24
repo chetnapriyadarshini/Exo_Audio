@@ -1,4 +1,4 @@
-package com.application.chetna_priya.exo_audio.TaskLoaders;
+package com.application.chetna_priya.exo_audio.Network;
 
 import com.application.chetna_priya.exo_audio.Entity.Episode;
 import com.application.chetna_priya.exo_audio.Entity.Podcast;
