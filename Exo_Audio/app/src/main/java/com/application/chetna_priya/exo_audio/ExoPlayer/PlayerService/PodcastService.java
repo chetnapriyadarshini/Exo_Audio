@@ -11,12 +11,14 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaBrowserServiceCompat;
+import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
 import com.application.chetna_priya.exo_audio.ExoPlayer.Playback.PlayerImpl;
+import com.application.chetna_priya.exo_audio.ExoPlayer.Playback.QueueManager;
 import com.application.chetna_priya.exo_audio.ExoPlayer.PlaybackControlView.CustomPlaybackControlView;
 import com.application.chetna_priya.exo_audio.ExoPlayer.PlaybackControlView.SmallPlaybackControlView;
 import com.application.chetna_priya.exo_audio.Ui.AudioActivity;
@@ -26,30 +28,58 @@ import com.application.chetna_priya.exo_audio.R;
 
 import java.util.List;
 
+import static com.application.chetna_priya.exo_audio.Utils.MediaIDHelper.MEDIA_ID_ROOT;
+
 
 /**
  * Created by chetna_priya on 10/26/2016.
  */
-public class PodcastService extends MediaBrowserServiceCompat implements PlaybackListener.PlaybackServiceCallback {
+public class PodcastService extends MediaBrowserServiceCompat implements PlaybackListener.PlaybackServiceCallback{
 
     private static final String TAG = PodcastService.class.getSimpleName();
     private MediaSessionCompat mSession;
     private MediaNotificationManager mMediaNotificationManager;
     private PlaybackListener mPlaybackListener;
+    private PodcastProvider mPodcastProvider;
 
     @Override
     public void onCreate() {
 
         super.onCreate();
-        PlayerImpl player = new PlayerImpl(getApplicationContext());
+        mPodcastProvider = new PodcastProvider();
+        mPodcastProvider.retrieveMediaAsync(null);
+
+        QueueManager queueManager = new QueueManager(mPodcastProvider, getResources(),
+                new QueueManager.MetadataUpdateListener() {
+                    @Override
+                    public void onMetadataChanged(MediaMetadataCompat metadata) {
+                        mSession.setMetadata(metadata);
+                    }
+
+                    @Override
+                    public void onMetadataRetrieveError() {
+                        mPlaybackListener.updatePlaybackState(
+                                getString(R.string.error_no_metadata));
+                    }
+
+                    @Override
+                    public void onCurrentQueueIndexUpdated(int queueIndex) {
+                        mPlaybackListener.handlePlayRequest();
+                    }
+
+                    @Override
+                    public void onQueueUpdated(String title,
+                                               List<MediaSessionCompat.QueueItem> newQueue) {
+                        mSession.setQueue(newQueue);
+                        mSession.setQueueTitle(title);
+                    }
+                });
+
+        PlayerImpl player = new PlayerImpl(getApplicationContext());//TODO proper implementation
+        mPlaybackListener = new PlaybackListener(this, getApplicationContext(), mPodcastProvider, player);
         mSession = new MediaSessionCompat(this, "PodcastService");
         setSessionToken(mSession.getSessionToken());
-        //TODO put forth a proper implementation for metadata
-        mSession.setMetadata(new PodcastProvider().getPodcast("1234"));
-
-        mPlaybackListener = new PlaybackListener(this, getApplicationContext(), new PodcastProvider(), player);
         mSession.setCallback(mPlaybackListener.getMediaSessionCallback());
-
         mSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
                 MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
 
@@ -66,7 +96,6 @@ public class PodcastService extends MediaBrowserServiceCompat implements Playbac
         }
     }
 
-
     @Override
     public int onStartCommand(Intent startIntent, int flags, int startId) {
 
@@ -75,6 +104,55 @@ public class PodcastService extends MediaBrowserServiceCompat implements Playbac
             MediaButtonReceiver.handleIntent(mSession, startIntent);
         }
         return START_STICKY;
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.d(TAG, "onDestroy");
+        // Service is being killed, so make sure we release our resources
+        mPlaybackListener.handleStopRequest(null);
+        mMediaNotificationManager.stopNotification();
+/*
+        mDelayedStopHandler.removeCallbacksAndMessages(null);*/
+        mSession.release();
+    }
+
+    @Override
+    public BrowserRoot onGetRoot(@NonNull String clientPackageName, int clientUid,
+                                 Bundle rootHints) {
+        Log.d(TAG, "OnGetRoot: clientPackageName=" + clientPackageName+
+                "; clientUid=" + clientUid + " ; rootHints="+ rootHints);
+        // To ensure you are not allowing any arbitrary app to browse your app's contents, you
+        // need to check the origin:
+        /*if (!mPackageValidator.isCallerAllowed(this, clientPackageName, clientUid)) {
+            // If the request comes from an untrusted package, return null. No further calls will
+            // be made to other media browsing methods.
+            Log.w(TAG, "OnGetRoot: IGNORING request from untrusted package "
+                    + clientPackageName);
+            return null;
+        }*/
+
+        return new BrowserRoot(MEDIA_ID_ROOT, null);
+    }
+
+
+    @Override
+    public void onLoadChildren(@NonNull final String parentMediaId,
+                               @NonNull final Result<List<MediaBrowserCompat.MediaItem>> result) {
+        Log.d(TAG, "OnLoadChildren: parentMediaId="+ parentMediaId);
+        if (mPodcastProvider.isInitialized()) {
+            // if music library is ready, return immediately
+            result.sendResult(mPodcastProvider.getChildren(parentMediaId, getResources()));
+        } else {
+            // otherwise, only return results when the music library is retrieved
+            result.detach();
+            mPodcastProvider.retrieveMediaAsync(new PodcastProvider.Callback() {
+                @Override
+                public void onMusicCatalogReady(boolean success) {
+                    result.sendResult(mPodcastProvider.getChildren(parentMediaId, getResources()));
+                }
+            });
+        }
     }
 
 
@@ -97,40 +175,11 @@ public class PodcastService extends MediaBrowserServiceCompat implements Playbac
 
     @Override
     public void onPlaybackStop() {
-        mSession.setActive(false);
         stopForeground(true);
     }
 
     @Override
     public void onPlaybackStateUpdated(PlaybackStateCompat newState) {
         mSession.setPlaybackState(newState);
-    }
-
-    @Nullable
-    @Override
-    public BrowserRoot onGetRoot(@NonNull String clientPackageName, int clientUid, @Nullable Bundle rootHints) {
-        // Returning null == no one can connect
-        // so we’ll return something, so that BrowserCompat can be implemented by UI and used to connect
-        return new BrowserRoot(getString(R.string.app_name), null);
-    }
-
-    @Override
-    public void onLoadChildren(@NonNull String parentId, @NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
-        //TODO send sensible result
-        /*
-        If sending a huge result, push this result to another thread and then load it asynchronously and
-        return result from there
-        You’ll find that you’ll get an IllegalStateException if you fail to call detach() or sendResult() before returning.
-        This is 100% expected. Make sure every code path calls one or the other.
-         */
-        result.sendResult(null);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mPlaybackListener.handleStopRequest(null);
-        mMediaNotificationManager.stopNotification();
-        mSession.release();
     }
 }

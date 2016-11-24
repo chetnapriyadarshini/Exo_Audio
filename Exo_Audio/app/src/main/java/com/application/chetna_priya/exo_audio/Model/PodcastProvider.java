@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -26,7 +27,6 @@ import static com.application.chetna_priya.exo_audio.Utils.MediaIDHelper.createM
 /**
  * Created by chetna_priya on 10/27/2016.
  */
-//TODO Complete implementation
 public class PodcastProvider {
 
     private static final String TAG = PodcastProvider.class.getSimpleName();
@@ -76,25 +76,25 @@ public class PodcastProvider {
      * Very basic implementation of a search that filter music tracks with title containing
      * the given query.
      *
-     *//*
+     */
     public Iterable<MediaMetadataCompat> searchPodcastByEpisodeTitle(String query) {
         return searchPodcast(MediaMetadataCompat.METADATA_KEY_TITLE, query);
     }
 
-    *//**
+    /**
      * Very basic implementation of a search that filter music tracks with album containing
      * the given query.
      *
-     *//*
+     */
     public Iterable<MediaMetadataCompat> searchPodcastByAlbum(String query) {
         return searchPodcast(MediaMetadataCompat.METADATA_KEY_ALBUM, query);
     }
 
-    *//**
+    /**
      * Very basic implementation of a search that filter music tracks with artist containing
      * the given query.
      *
-     *//*
+     */
     public Iterable<MediaMetadataCompat> searchPodcastByArtist(String query) {
         return searchPodcast(MediaMetadataCompat.METADATA_KEY_ARTIST, query);
     }
@@ -112,7 +112,7 @@ public class PodcastProvider {
             }
         }
         return result;
-    }*/
+    }
 
     /**
      * Return the MediaMetadataCompat for the given musicID.

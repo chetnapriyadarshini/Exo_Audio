@@ -25,4 +25,5 @@
     <string name="label_play">Play</string>
     <string name="browse_genres">genres</string>
     <string name="browse_genre_subtitle">Songs by genre</string>
+    <string name="error_no_metadata">No Metadata Available</string>
 </resources>
