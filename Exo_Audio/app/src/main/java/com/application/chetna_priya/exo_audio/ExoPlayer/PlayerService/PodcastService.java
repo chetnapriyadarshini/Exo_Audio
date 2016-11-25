@@ -75,8 +75,9 @@ public class PodcastService extends MediaBrowserServiceCompat implements Playbac
                     }
                 });
 
-        PlayerImpl player = new PlayerImpl(getApplicationContext());//TODO proper implementation
-        mPlaybackListener = new PlaybackListener(this, getApplicationContext(), mPodcastProvider, player);
+        PlayerImpl player = new PlayerImpl(getApplicationContext(), mPodcastProvider);
+        mPlaybackListener = new PlaybackListener(this, getResources(),mPodcastProvider,
+                queueManager, player);
         mSession = new MediaSessionCompat(this, "PodcastService");
         setSessionToken(mSession.getSessionToken());
         mSession.setCallback(mPlaybackListener.getMediaSessionCallback());

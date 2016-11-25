@@ -76,7 +76,7 @@ public class LoadAvailablePodcastChannels{
         ArrayList<Podcast> podcastList = new ArrayList<>();
         for(int i = 0; i<resultArray.length(); i++)
         {
-            long trackId = -1;
+            int trackId = -1;
             String album =null;
             String artist=null;
             String artWorkUri = null;
@@ -84,7 +84,7 @@ public class LoadAvailablePodcastChannels{
             String genre=null;
 
             if(resultArray.getJSONObject(i).has(OWM_TRACK_ID)){
-                trackId = (long) resultArray.getJSONObject(i).get(OWM_TRACK_ID);
+                trackId = (int) resultArray.getJSONObject(i).get(OWM_TRACK_ID);
             }
             if(resultArray.getJSONObject(i).has(OWM_ALBUM)){
                 album = (String) resultArray.getJSONObject(i).get(OWM_ALBUM);

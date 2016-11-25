@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements AbstractPlaybackC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getSupportLoaderManager().initLoader(PODCAST_LOADER, null, RemoteJsonSource.getInstance()).forceLoad();
+      //  getSupportLoaderManager().initLoader(PODCAST_LOADER, null, RemoteJsonSource.getInstance()).forceLoad();
         Button launchBtn = (Button) findViewById(R.id.btn_launch_audio);
         launchBtn.setOnClickListener(new View.OnClickListener() {
             @Override

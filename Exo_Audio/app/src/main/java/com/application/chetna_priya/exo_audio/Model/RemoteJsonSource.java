@@ -1,6 +1,5 @@
 package com.application.chetna_priya.exo_audio.Model;
 
-import android.content.Context;
 import android.support.v4.media.MediaMetadataCompat;
 import android.util.Log;
 
@@ -31,13 +30,9 @@ public class RemoteJsonSource implements MediaProviderSource {
    // private static final String JSON_DURATION = "duration";
 
 
-    @Override
-    public Iterator<MediaMetadataCompat> iterator() {
-        return null;
-    }
 
     @Override
-    public Iterator<MediaMetadataCompat> iterator(Context context) {
+    public Iterator<MediaMetadataCompat> iterator() {
         try {
             ArrayList<Podcast> podcastChannelLists = new LoadAvailablePodcastChannels().load();
             ArrayList<MediaMetadataCompat> tracks = new ArrayList<>();
@@ -59,7 +54,7 @@ public class RemoteJsonSource implements MediaProviderSource {
         // the session metadata can be accessed by notification listeners. This is done in this
         // sample for convenience only.
         //noinspection ResourceType
-        long duration = Long.parseLong(episode.getEpisode_duration())*1000;//ms
+        long duration = /*Long.parseLong(episode.getEpisode_duration())**/1000;//ms
         return new MediaMetadataCompat.Builder()
                 .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, episode.getId())
                 .putString(MediaProviderSource.CUSTOM_METADATA_TRACK_SOURCE, episode.getEpisode_pod_link())

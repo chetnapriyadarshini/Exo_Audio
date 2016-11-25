@@ -13,6 +13,4 @@ public interface MediaProviderSource {
 
     String CUSTOM_METADATA_TRACK_SOURCE = "__SOURCE__";
     Iterator<MediaMetadataCompat> iterator();
-
-    Iterator<MediaMetadataCompat> iterator(Context context);
 }
