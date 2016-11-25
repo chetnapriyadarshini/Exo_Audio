@@ -1,12 +1,14 @@
 package com.application.chetna_priya.exo_audio.ExoPlayer.Playback;
 
+import android.support.v4.media.session.MediaSessionCompat;
+
 /**
  * Created by chetna_priya on 11/1/2016.
  */
 
 public interface Playback  {
 
-    void play(/*TODO QueueItem item */);
+    void play(MediaSessionCompat.QueueItem item );
 
     /**
      * Pause the current playing item
@@ -56,6 +58,20 @@ public interface Playback  {
     void updateLastKnownStreamPosition();
 
     void setCurrentStreamPosition(int pos);
+
+    /**
+     * Set the current mediaId. This is only used when switching from one
+     * playback to another.
+     *
+     * @param mediaId to be set as the current.
+     */
+    void setCurrentMediaId(String mediaId);
+
+    /**
+     *
+     * @return the current media Id being processed in any state or null.
+     */
+    String getCurrentMediaId();
 
     interface Callback {
         /**

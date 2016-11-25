@@ -5,15 +5,22 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.media.PlaybackParams;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Handler;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.application.chetna_priya.exo_audio.DemoApplication;
 import com.application.chetna_priya.exo_audio.ExoPlayer.Playlist;
+import com.application.chetna_priya.exo_audio.Model.MediaProviderSource;
+import com.application.chetna_priya.exo_audio.Model.PodcastProvider;
 import com.application.chetna_priya.exo_audio.R;
+import com.application.chetna_priya.exo_audio.Utils.MediaIDHelper;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -45,6 +52,8 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.upstream.HttpDataSource;
 import com.google.android.exoplayer2.util.Util;
 
+import java.io.IOException;
+
 /**
  * Created by chetna_priya on 10/13/2016.
  */
@@ -53,6 +62,7 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
 
     private static final String TAG = PlayerImpl.class.getSimpleName();
     private final AudioManager mAudioManager;
+    private final PodcastProvider mPodcastProvider;
     private int mState;
  //   private AbstractPlaybackControlView exoPlayerView;
     private Context mContext;
@@ -83,14 +93,20 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
 
     private int rewindMs = DEFAULT_REWIND_MS;
     private int fastForwardMs = DEFAULT_FAST_FORWARD_MS;
+    private String mCurrentMediaId;
+    private final WifiManager.WifiLock mWifiLock;
 
 
-
-    public PlayerImpl(Context context){
+    public PlayerImpl(Context context, PodcastProvider podcastProvider){
         Log.d(TAG, "PLAYER CLASS INITILIAZED BY PODCAST SERVICE");
         mContext = context;
+        mPodcastProvider = podcastProvider;
         this.mAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         this.mState = PlaybackStateCompat.STATE_NONE;
+        // Create the Wifi lock (this does not acquire the lock, this just creates it)
+        this.mWifiLock = ((WifiManager) context.getSystemService(Context.WIFI_SERVICE))
+                .createWifiLock(WifiManager.WIFI_MODE_FULL, "podway_lock");
+
     }
 
     /*public void attachView(AbstractPlaybackControlView playbackControlView){
@@ -200,6 +216,10 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
             exoPlayer.release();
             eventLogger = null;
         }
+        // we can also release the Wifi lock, if we're holding it
+        if (mWifiLock.isHeld()) {
+            mWifiLock.release();
+        }
     }
 
     @Override
@@ -210,6 +230,8 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
         mCallback.onPlaybackStatusChanged(mState);
+        if(playbackState == ExoPlayer.STATE_ENDED)
+            mCallback.onCompletion();
         //Do Nothing, it is handled in playback controlview classes
     }
 
@@ -345,39 +367,44 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
     }
 
     @Override
-    public void play(/*TODO QueueItem item */) {
+    public void play(MediaSessionCompat.QueueItem item ) {
         mPlayOnFocusGain = true;
         tryToGetAudioFocus();
 
-    /*    String mediaId = item.getDescription().getMediaId();
+        String mediaId = item.getDescription().getMediaId();
         boolean mediaHasChanged = !TextUtils.equals(mediaId, mCurrentMediaId);
         if (mediaHasChanged) {
             mCurrentPosition = 0;
             mCurrentMediaId = mediaId;
         }
 
-        if (mState == PlaybackStateCompat.STATE_PAUSED && !mediaHasChanged && mMediaPlayer != null) {
+        if (mState == PlaybackStateCompat.STATE_PAUSED && !mediaHasChanged && exoPlayer != null) {
             configMediaPlayerState();
         } else {
             mState = PlaybackStateCompat.STATE_STOPPED;
             relaxResources(false); // release everything except MediaPlayer
-            MediaMetadataCompat track = mMusicProvider.getMusic(
-                    MediaIDHelper.extractMusicIDFromMediaID(item.getDescription().getMediaId()));
+            MediaMetadataCompat track = mPodcastProvider.getPodcast(
+                    MediaIDHelper.extractPodcastIDFromMediaID(item.getDescription().getMediaId()));
 
             //noinspection ResourceType
-            String source = track.getString(PodcastProvider.CUSTOM_METADATA_TRACK_SOURCE);
-    */
-        boolean mediaHasChanged = false;/* Dummy implementation */
+            String source = track.getString(MediaProviderSource.CUSTOM_METADATA_TRACK_SOURCE);
 
-        if (mState == PlaybackStateCompat.STATE_PAUSED && !mediaHasChanged && exoPlayer != null) {
-            Log.d(TAG, "INSIDE ON PLAY IN PLAYER IMPL, CONFIG MEDIA PLAYER STATE");
-            configMediaPlayerState();
-        } else {
-            createPlayerIfNeeded();
-            mState = PlaybackStateCompat.STATE_BUFFERING;
-            preparePlayer();
-            if(mCallback != null)
-                mCallback.onPlaybackStatusChanged(mState);
+            try{
+                createPlayerIfNeeded();
+                mState = PlaybackStateCompat.STATE_BUFFERING;
+                preparePlayer();
+                // If we are streaming from the internet, we want to hold a
+                // Wifi lock, which prevents the Wifi radio from going to
+                // sleep while the song is playing.
+                mWifiLock.acquire();
+                if(mCallback != null)
+                    mCallback.onPlaybackStatusChanged(mState);
+            }catch (Exception ex){
+                Log.e(TAG, ex+ "Exception playing song");
+                if (mCallback != null) {
+                    mCallback.onError(ex.getMessage());
+                }
+            }
         }
 
     }
@@ -432,6 +459,16 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
     @Override
     public void setCurrentStreamPosition(int pos) {
         this.mCurrentPosition = pos;
+    }
+
+    @Override
+    public void setCurrentMediaId(String mediaId) {
+        this.mCurrentMediaId = mediaId;
+    }
+
+    @Override
+    public String getCurrentMediaId() {
+        return mCurrentMediaId;
     }
 
     private void tryToGetAudioFocus() {

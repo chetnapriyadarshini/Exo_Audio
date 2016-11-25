@@ -2,6 +2,7 @@ package com.application.chetna_priya.exo_audio.ExoPlayer.Playback;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 import com.application.chetna_priya.exo_audio.ExoPlayer.PlaybackControlView.AbstractPlaybackControlView;
 import com.application.chetna_priya.exo_audio.Model.PodcastProvider;
 import com.application.chetna_priya.exo_audio.R;
+import com.application.chetna_priya.exo_audio.Utils.MediaIDHelper;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Timeline;
@@ -28,22 +30,30 @@ import com.google.android.exoplayer2.mediacodec.MediaCodecUtil;
 
 public class PlaybackListener implements Playback.Callback {
 
-    //TODO handle queue implementation
     private static final String TAG = PlaybackListener.class.getSimpleName();
-    Context mContext;
-    private PlaybackServiceCallback mServiceCallback;
+
+    // Action to thumbs up a media item
+    private static final String CUSTOM_ACTION_THUMBS_UP = "com.example.android.uamp.THUMBS_UP";
+
+    private PodcastProvider mPodcastProvider;//TODO check in the thumbs up custom action
+    private QueueManager mQueueManager;
+    private Resources mResources;
     Playback mPlayback;
     private MediaSessionCompat.Callback mMediaSessionCallback;
+    private PlaybackServiceCallback mServiceCallback;
 
     public PlaybackListener(PlaybackServiceCallback playbackServiceCallback,
-                            Context context, PodcastProvider podcastProvider,
+                            Resources resources,
+                            PodcastProvider podcastProvider,
+                            QueueManager queueManager,
                             Playback playback){
-        mContext = context;
+        mPodcastProvider = podcastProvider;
         mServiceCallback = playbackServiceCallback;
+        mResources = resources;
+        mQueueManager = queueManager;
         mMediaSessionCallback = new MediaSessionCallback();
         mPlayback = playback;
         mPlayback.setCallback(this);
-
     }
 
     public Playback getPlayback() {
@@ -58,13 +68,11 @@ public class PlaybackListener implements Playback.Callback {
      * Handle a request to play music
      */
     public void handlePlayRequest() {
-        //TODO Implement queue manager functionality
-      //  LogHelper.d(TAG, "handlePlayRequest: mState=" + mPlayback.getState());
-      //  MediaSessionCompat.QueueItem currentMusic = mQueueManager.getCurrentMusic();
-      //  if (currentMusic != null)
-        {
+        Log.d(TAG, "handlePlayRequest: mState=" + mPlayback.getState());
+        MediaSessionCompat.QueueItem currentPodcast = mQueueManager.getCurrentPodcast();
+        if (currentPodcast != null) {
             mServiceCallback.onPlaybackStart();
-            mPlayback.play(/* TODO currentMusic*/);
+            mPlayback.play(currentPodcast);
         }
     }
 
@@ -91,7 +99,7 @@ public class PlaybackListener implements Playback.Callback {
         Log.d(TAG, "handleStopRequest: mState=" + mPlayback.getState() + " error="+ withError);
         mPlayback.stop(true);
         mServiceCallback.onPlaybackStop();
-      //  updatePlaybackState(withError);
+        updatePlaybackState(withError);
     }
 
 
@@ -145,9 +153,29 @@ public class PlaybackListener implements Playback.Callback {
         //  WearHelper.setShowCustomActionOnWear(customActionExtras, true);
         stateBuilder.addCustomAction(new PlaybackStateCompat.CustomAction.Builder(
                 AbstractPlaybackControlView.CUSTOM_ACTION_SPEED_CHANGE,
-                "speed", -1)
+                mResources.getString(R.string.custom_action_speed), -1)
                 .setExtras(customActionExtras)
                 .build());
+
+      /*  MediaSessionCompat.QueueItem currentPodcast = mQueueManager.getCurrentPodcast();
+        if (currentPodcast == null) {
+            return;
+        }
+        // Set appropriate "Favorite" icon on Custom action:
+        String mediaId = currentPodcast.getDescription().getMediaId();
+        if (mediaId == null) {
+            return;
+        }
+        String musicId = MediaIDHelper.extractPodcastIDFromMediaID(mediaId);
+        int favoriteIcon = mPodcastProvider.isFavorite(musicId) ?
+                R.drawable.ic_star_on : R.drawable.ic_star_off;
+        Log.d(TAG, "updatePlaybackState, setting Favorite custom action of music "+
+                musicId+ " current favorite="+ mPodcastProvider.isFavorite(musicId));
+
+        stateBuilder.addCustomAction(new PlaybackStateCompat.CustomAction.Builder(
+                CUSTOM_ACTION_THUMBS_UP, mResources.getString(R.string.favorite), favoriteIcon)
+                .setExtras(customActionExtras)
+                .build());*/
     }
 
     private long getAvailableActions() {
@@ -168,21 +196,63 @@ public class PlaybackListener implements Playback.Callback {
     /**
      * Implementation of the Playback.Callback interface
      */
+    /**
+     * Implementation of the Playback.Callback interface
+     */
     @Override
     public void onCompletion() {
         // The media player finished playing the current song, so we go ahead
         // and start the next.
-        //TODO handle queue implementation
-        /*if (mQueueManager.skipQueuePosition(1)) {
+        if (mQueueManager.skipQueuePosition(1)) {
             handlePlayRequest();
             mQueueManager.updateMetadata();
-        } else*/
-        {
+        } else {
             // If skipping was not possible, we stop and release the resources:
             handleStopRequest(null);
         }
     }
-
+    /**
+     * Switch to a different Playback instance, maintaining all playback state, if possible.
+     *
+     * @param playback switch to this playback
+     */
+    public void switchToPlayback(Playback playback, boolean resumePlaying) {
+        if (playback == null) {
+            throw new IllegalArgumentException("Playback cannot be null");
+        }
+        // suspend the current one.
+        int oldState = mPlayback.getState();
+        int pos = (int) mPlayback.getCurrentStreamPosition();
+        String currentMediaId = mPlayback.getCurrentMediaId();
+        mPlayback.stop(false);
+        playback.setCallback(this);
+        playback.setCurrentStreamPosition(pos < 0 ? 0 : pos);
+        playback.setCurrentMediaId(currentMediaId);
+        playback.start();
+        // finally swap the instance
+        mPlayback = playback;
+        switch (oldState) {
+            case PlaybackStateCompat.STATE_BUFFERING:
+            case PlaybackStateCompat.STATE_CONNECTING:
+            case PlaybackStateCompat.STATE_PAUSED:
+                mPlayback.pause();
+                break;
+            case PlaybackStateCompat.STATE_PLAYING:
+                MediaSessionCompat.QueueItem currentPodcast = mQueueManager.getCurrentPodcast();
+                if (resumePlaying && currentPodcast != null) {
+                    mPlayback.play(currentPodcast);
+                } else if (!resumePlaying) {
+                    mPlayback.pause();
+                } else {
+                    mPlayback.stop(true);
+                }
+                break;
+            case PlaybackStateCompat.STATE_NONE:
+                break;
+            default:
+                Log.d(TAG, "Default called. Old state is "+ oldState);
+        }
+    }
 
     @Override
     public void onPlaybackStatusChanged(int state) {
@@ -197,7 +267,8 @@ public class PlaybackListener implements Playback.Callback {
 
     @Override
     public void setCurrentMediaId(String mediaId) {
-
+        Log.d(TAG, "setCurrentMediaId"+ mediaId);
+        mQueueManager.setQueueFromPodcast(mediaId);
     }
 
     private class MediaSessionCallback extends MediaSessionCompat.Callback {
@@ -212,10 +283,9 @@ public class PlaybackListener implements Playback.Callback {
 
         @Override
         public void onSkipToQueueItem(long queueId) {
-            /*LogHelper.d(TAG, "OnSkipToQueueItem:" + queueId);
+            Log.d(TAG, "OnSkipToQueueItem:" + queueId);
             mQueueManager.setCurrentQueueItem(queueId);
-            mQueueManager.updateMetadata();*/
-            handleStopRequest("Not for now");
+            mQueueManager.updateMetadata();
         }
 
         @Override
@@ -245,26 +315,23 @@ public class PlaybackListener implements Playback.Callback {
 
         @Override
         public void onSkipToNext() {
-           /* LogHelper.d(TAG, "skipToNext");
+            Log.d(TAG, "skipToNext");
             if (mQueueManager.skipQueuePosition(1)) {
                 handlePlayRequest();
             } else {
                 handleStopRequest("Cannot skip");
-            }*/
-         //   mQueueManager.updateMetadata();
-            handleStopRequest("Not for now");
+            }
+            mQueueManager.updateMetadata();
         }
 
         @Override
         public void onSkipToPrevious() {
-           /* if (mQueueManager.skipQueuePosition(-1)) {
+            if (mQueueManager.skipQueuePosition(-1)) {
                 handlePlayRequest();
             } else {
                 handleStopRequest("Cannot skip");
-            }*/
-        //    mQueueManager.updateMetadata();
-
-            handleStopRequest("Not for now");
+            }
+            mQueueManager.updateMetadata();
         }
 
         @Override

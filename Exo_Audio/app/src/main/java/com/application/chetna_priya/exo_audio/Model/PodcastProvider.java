@@ -163,10 +163,12 @@ public class PodcastProvider {
         return mFavoriteTracks.contains(podcastId);
     }
 
-    public Iterable<MediaMetadataCompat> getPodcastsByGenre(String categoryValue) {
-        return null;
+    public Iterable<MediaMetadataCompat> getPodcastsByGenre(String genre) {
+        if (mCurrentState != State.INITIALIZED || !mPodcastListByGenre.containsKey(genre)) {
+            return Collections.emptyList();
+        }
+        return mPodcastListByGenre.get(genre);
     }
-
 
 
     /**
