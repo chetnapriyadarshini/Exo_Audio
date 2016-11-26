@@ -132,7 +132,7 @@ public class SmallPlaybackControlView extends AbstractPlaybackControlView {
             new MediaBrowserCompat.ConnectionCallback() {
                 @Override
                 public void onConnected() {
-                    Log.d(TAG, "!!!!!!!!!!!!!!!!!!!!!onConnected!!!!!!!!!!!!!!!!!!!!!!!!");
+                    Log.d(TAG, "!!!!!!!!!!!!!!!!!!!!!onConnected!!!!!!!!!!!!!!!!!!!!!!!! "+mMediaBrowser.getSessionToken());
                     try {
                         connectToSession(mMediaBrowser.getSessionToken());
                     } catch (RemoteException e) {
@@ -148,7 +148,7 @@ public class SmallPlaybackControlView extends AbstractPlaybackControlView {
             activityCallbacks.finishActivity();
             return;
         }
-*/        activityCallbacks.setSupportMediaControllerForActivity(mediaController);
+*/      activityCallbacks.setSupportMediaControllerForActivity(mediaController);
         mediaController.registerCallback(mCallback);
 
         MediaMetadataCompat metadata = mediaController.getMetadata();

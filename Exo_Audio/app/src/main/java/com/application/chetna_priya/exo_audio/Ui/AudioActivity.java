@@ -27,7 +27,7 @@ public class AudioActivity extends AppCompatActivity  implements AbstractPlaybac
 
     @Override
     public void finishActivity() {
-        finish();
+        //finish();
     }
 
     @Override

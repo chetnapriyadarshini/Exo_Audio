@@ -176,10 +176,10 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
     private void connectToSession(MediaSessionCompat.Token token) throws RemoteException {
         MediaControllerCompat mediaController = new MediaControllerCompat(
                 mContext, token);
-        if (mediaController.getMetadata() == null) {
+       /* if (mediaController.getMetadata() == null) {
             activityCallbacks.finishActivity();
             return;
-        }
+        }*/
         activityCallbacks.setSupportMediaControllerForActivity(mediaController);
         mediaController.registerCallback(mCallback);
         mLastPlaybackState = mediaController.getPlaybackState();

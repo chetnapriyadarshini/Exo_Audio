@@ -150,6 +150,8 @@ public class QueueManager
         }
         mCurrentIndex = Math.max(index, 0);
         mListener.onQueueUpdated(title, newQueue);
+        //add this to add metadata
+        updateMetadata();
     }
 
     public void updateMetadata() {

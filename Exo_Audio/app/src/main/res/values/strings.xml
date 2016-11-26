@@ -24,7 +24,7 @@
     <string name="label_pause">Pause</string>
     <string name="label_play">Play</string>
     <string name="browse_genres">genres</string>
-    <string name="browse_genre_subtitle">Songs by genre</string>
+    <string name="browse_genre_subtitle">Podcasts by genre</string>
     <string name="error_no_metadata">No Metadata Available</string>
     <string name="custom_action_speed" translatable="false">Speed</string>
     <string name="random_queue_title">Random Podcast</string>
