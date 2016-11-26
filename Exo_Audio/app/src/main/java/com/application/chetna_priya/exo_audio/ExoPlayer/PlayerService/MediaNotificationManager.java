@@ -189,7 +189,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
         @Override
         public void onPlaybackStateChanged(@NonNull PlaybackStateCompat state) {
             mPlaybackState = state;
-            Log.d(TAG, "Received new playback state" + state);
+           // Log.d(TAG, "Received new playback state" + state);
             if (state.getState() == PlaybackStateCompat.STATE_STOPPED ||
                     state.getState() == PlaybackStateCompat.STATE_NONE) {
                 stopNotification();
@@ -214,7 +214,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
         @Override
         public void onSessionDestroyed() {
             super.onSessionDestroyed();
-            Log.d(TAG, "Session was destroyed, resetting to the new session token");
+       //     Log.d(TAG, "Session was destroyed, resetting to the new session token");
             try {
                 updateSessionToken();
             } catch (RemoteException e) {
@@ -228,7 +228,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
         if (mMetadata == null || mPlaybackState == null) {
             return null;
         }
-        Log.d(TAG, "updateNotificationMetadata. mMetadata=" + mMetadata);
+  //      Log.d(TAG, "updateNotificationMetadata. mMetadata=" + mMetadata);
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(mService);
         int playPauseButtonPosition = 0;
@@ -312,7 +312,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
     }
 
     private void addPlayPauseAction(NotificationCompat.Builder builder) {
-        Log.d(TAG, "updatePlayPauseAction");
+    //    Log.d(TAG, "updatePlayPauseAction");
         String label;
         int icon;
         PendingIntent intent;
@@ -330,23 +330,23 @@ public class MediaNotificationManager extends BroadcastReceiver {
     }
 
     private void setNotificationPlaybackState(NotificationCompat.Builder builder) {
-        Log.d(TAG, "updateNotificationPlaybackState. mPlaybackState=" + mPlaybackState);
+   //     Log.d(TAG, "updateNotificationPlaybackState. mPlaybackState=" + mPlaybackState);
         if (mPlaybackState == null || !mStarted) {
-            Log.d(TAG, "updateNotificationPlaybackState. cancelling notification!");
+          //  Log.d(TAG, "updateNotificationPlaybackState. cancelling notification!");
             mService.stopForeground(true);
             return;
         }
         if ((mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING ||
                 mPlaybackState.getState() == PlaybackStateCompat.STATE_BUFFERING)
                 && mPlaybackState.getPosition() >= 0) {
-            Log.d(TAG, "updateNotificationPlaybackState. updating playback position to " +
+       /*     Log.d(TAG, "updateNotificationPlaybackState. updating playback position to " +
                     (System.currentTimeMillis() - mPlaybackState.getPosition()) / 1000 + " seconds");
-            builder
+      */      builder
                     .setWhen(System.currentTimeMillis() - mPlaybackState.getPosition())
                     .setShowWhen(true)
                     .setUsesChronometer(true);
         } else {
-            Log.d(TAG, "updateNotificationPlaybackState. hiding playback position");
+         //   Log.d(TAG, "updateNotificationPlaybackState. hiding playback position");
             builder
                     .setWhen(0)
                     .setShowWhen(false)
