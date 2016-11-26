@@ -26,7 +26,7 @@ import com.application.chetna_priya.exo_audio.R;
 public class MainActivity extends AppCompatActivity implements AbstractPlaybackControlView.ActivityCallbacks {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private MediaBrowserCompat mMediaBrowser;
+    private SmallPlaybackControlView mPlaybackControlView;
 
 
     @Override
@@ -48,22 +48,15 @@ public class MainActivity extends AppCompatActivity implements AbstractPlaybackC
                 Playlist.getPlaylistInstance().addAlbumToList();
             }
         });
-
+        mPlaybackControlView = (SmallPlaybackControlView) findViewById(R.id.current_audio_view);
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-      //  if(mMediaBrowser!= null && !mMediaBrowser.isConnected())
-//            mMediaBrowser.connect();
-    }
 
     @Override
     protected void onStop() {
         super.onStop();
-        if(mMediaBrowser!= null && mMediaBrowser.isConnected())
-            mMediaBrowser.disconnect();
-       }
+        mPlaybackControlView.disconnectSession();
+    }
 
     @Override
     public void finishActivity() {
@@ -72,12 +65,13 @@ public class MainActivity extends AppCompatActivity implements AbstractPlaybackC
     }
 
     @Override
-    public void setSupportMediaControllerForActivity(MediaControllerCompat mediaController) {
-        setSupportMediaController(mediaController);
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "@@@@@@@@@  ACTIVITY ON DESTROY CALLLLLEDDDDDDDDDDDDD @@@@@@@@@@@");
     }
 
     @Override
-    public void setMediaBrowser(MediaBrowserCompat mediaBrowser) {
-        mMediaBrowser = mediaBrowser;
+    public void setSupportMediaControllerForActivity(MediaControllerCompat mediaController) {
+        setSupportMediaController(mediaController);
     }
 }

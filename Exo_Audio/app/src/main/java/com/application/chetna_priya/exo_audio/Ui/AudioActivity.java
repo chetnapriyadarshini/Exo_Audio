@@ -15,7 +15,6 @@ public class AudioActivity extends AppCompatActivity  implements AbstractPlaybac
     public static final String EXTRA_START_FULLSCREEN = "start_full_screen";
     public static final String EXTRA_CURRENT_MEDIA_DESCRIPTION = "current_media_info";
     AudioFragment audioFragment;
-    private MediaBrowserCompat mMediaBrowser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,25 +34,6 @@ public class AudioActivity extends AppCompatActivity  implements AbstractPlaybac
         setSupportMediaController(mediaController);
     }
 
-    @Override
-    public void setMediaBrowser(MediaBrowserCompat mediaBrowser) {
-        mMediaBrowser = mediaBrowser;
-    }
-
-
-    @Override
-    public void onStart() {
-        if(mMediaBrowser != null && ! mMediaBrowser.isConnected())
-            mMediaBrowser.connect();
-        super.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if(mMediaBrowser != null && mMediaBrowser.isConnected())
-            mMediaBrowser.disconnect();
-    }
 
     //TODO Check launch mode singleTop and onIntent method
         /*@Override

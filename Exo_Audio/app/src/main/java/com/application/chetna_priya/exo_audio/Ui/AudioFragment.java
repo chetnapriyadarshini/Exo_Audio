@@ -22,6 +22,7 @@ import static android.content.Context.BIND_AUTO_CREATE;
 
 public class AudioFragment extends Fragment {
     private static final String TAG = AudioFragment.class.getSimpleName();
+    private CustomPlaybackControlView mCustomPlaybackControlView;
 
     public AudioFragment() {
         // Required empty public constructor
@@ -34,6 +35,7 @@ public class AudioFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_audio, container, false);
+        mCustomPlaybackControlView = (CustomPlaybackControlView) rootView.findViewById(R.id.exo_player_control);
        return rootView;
     }
 
@@ -42,6 +44,12 @@ public class AudioFragment extends Fragment {
         Log.d(TAG, "Destroy the PLAYER class created by AUDIO ACTIVITY");
 
         super.onDestroy();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mCustomPlaybackControlView.disconnectSession();
     }
 
     @Override
