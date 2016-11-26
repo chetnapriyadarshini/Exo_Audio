@@ -57,7 +57,7 @@ public class RemoteJsonSource implements MediaProviderSource {
     }
 
     private long convertStringDurationToMs(String episode_duration) {
-        Log.d(TAG, "RECEIVEDDDDDD episode_duration for parsingggggggg "+episode_duration);
+      //  Log.d(TAG, "RECEIVEDDDDDD episode_duration for parsingggggggg "+episode_duration);
 
         /*
         The tag can be formatted HH:MM:SS, H:MM:SS, MM:SS, or M:SS (H = hours, M = minutes, S = seconds).
@@ -97,7 +97,7 @@ public class RemoteJsonSource implements MediaProviderSource {
 
         duration = hr + min + sec;
 
-        Log.d(TAG, "Returning durationnnnnnnnnn "+duration);
+       // Log.d(TAG, "Returning durationnnnnnnnnn "+duration);
 
         return duration;
     }
