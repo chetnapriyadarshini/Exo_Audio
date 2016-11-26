@@ -60,7 +60,7 @@ public class SmallPlaybackControlView extends AbstractPlaybackControlView {
 
         activityCallbacks.setMediaBrowser(mMediaBrowser);
 
-//        mMediaBrowser.connect();
+        mMediaBrowser.connect();
     }
 
     private void updatePlayPauseButton() {
@@ -144,11 +144,11 @@ public class SmallPlaybackControlView extends AbstractPlaybackControlView {
     public void connectToSession(MediaSessionCompat.Token token) throws RemoteException {
         MediaControllerCompat mediaController = new MediaControllerCompat(
                 mContext, token);
-        if (mediaController.getMetadata() == null) {
+        /*if (mediaController.getMetadata() == null) {
             activityCallbacks.finishActivity();
             return;
         }
-        activityCallbacks.setSupportMediaControllerForActivity(mediaController);
+*/        activityCallbacks.setSupportMediaControllerForActivity(mediaController);
         mediaController.registerCallback(mCallback);
 
         MediaMetadataCompat metadata = mediaController.getMetadata();

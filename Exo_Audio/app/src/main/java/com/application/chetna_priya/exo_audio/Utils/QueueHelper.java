@@ -99,6 +99,26 @@ public class QueueHelper
 
     }
 
+    /**
+     * Create a random queue with at most {@link #RANDOM_QUEUE_SIZE} elements.
+     *
+     * @param podcastProvider the provider used for fetching music.
+     * @return list containing {@link MediaSessionCompat.QueueItem}'s
+     */
+    public static List<MediaSessionCompat.QueueItem> getRandomQueue(PodcastProvider podcastProvider) {
+        List<MediaMetadataCompat> result = new ArrayList<>(RANDOM_QUEUE_SIZE);
+        Iterable<MediaMetadataCompat> shuffled = podcastProvider.getShuffledPodcast();
+        for (MediaMetadataCompat metadata: shuffled) {
+            if (result.size() == RANDOM_QUEUE_SIZE) {
+                break;
+            }
+            result.add(metadata);
+        }
+        Log.d(TAG, "getRandomQueue: result.size="+ result.size());
+
+        return convertToQueue(result, MEDIA_ID_PODCASTS_BY_SEARCH, "random");
+    }
+
     public static boolean isIndexPlayable(int index, List<MediaSessionCompat.QueueItem> queue) {
         return (queue != null && index >= 0 && index < queue.size());
     }

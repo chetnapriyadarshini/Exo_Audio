@@ -72,7 +72,7 @@ public class LoadAvailablePodcastChannels{
         final String OWM_GENRE= "primaryGenreName";
 
         JSONArray resultArray = jsonObject.getJSONArray(OWM_RESULTS);
-        final FeedParser feedParser = new FeedParser();
+       // Log.d(TAG, "RESULT ARRAY LENGTHHHHHHH:::: "+resultArray.length());
         ArrayList<Podcast> podcastList = new ArrayList<>();
         for(int i = 0; i<resultArray.length(); i++)
         {
@@ -103,18 +103,8 @@ public class LoadAvailablePodcastChannels{
             }
             if(resultArray.getJSONObject(i).has(OWM_FEED_URL)) {
                 final String feedObj = (String) resultArray.getJSONObject(i).get(OWM_FEED_URL);
-                Log.d(TAG, feedObj);
-/*
-                Uri builtUri = Uri.parse(feedObj).buildUpon().build();
-                String url = builtUri.toString();
-
-                Request request = new Request.Builder().url(new URL(url)).build();
-
-                Response response = client.newCall(request).execute();*/
-                /*Podcast podcast  = feedParser.parsePodcast(response.body().byteStream(), trackId,
-                        feedObj);
-                *//*if(podcast != null)
-                    podcastList.add(podcast);*/
+           //     Log.d(TAG, feedObj);
+              //  Log.d(TAG, "INDEXXXXXXXXXXXXX "+(i+1));
                 Podcast podcast = new Podcast(trackId,album,feedObj,artist,genre,totalTracks,artWorkUri);
                 podcastList.add(podcast);
             }

@@ -53,11 +53,13 @@ public class PodcastService extends MediaBrowserServiceCompat implements Playbac
                 new QueueManager.MetadataUpdateListener() {
                     @Override
                     public void onMetadataChanged(MediaMetadataCompat metadata) {
+                        Log.d(TAG, "SET METADATAAAAAAAAAAAAAAAAAAA");
                         mSession.setMetadata(metadata);
                     }
 
                     @Override
                     public void onMetadataRetrieveError() {
+                        Log.d(TAG, "METADATA RETEIVE ERRRRRRRORRRRRRRRRRRR");
                         mPlaybackListener.updatePlaybackState(
                                 getString(R.string.error_no_metadata));
                     }
@@ -70,6 +72,7 @@ public class PodcastService extends MediaBrowserServiceCompat implements Playbac
                     @Override
                     public void onQueueUpdated(String title,
                                                List<MediaSessionCompat.QueueItem> newQueue) {
+                        Log.d(TAG, "QUEUE UPDATEDDDDDDDDDDDDDDDDDDDDDD");
                         mSession.setQueue(newQueue);
                         mSession.setQueueTitle(title);
                     }
@@ -142,10 +145,10 @@ public class PodcastService extends MediaBrowserServiceCompat implements Playbac
                                @NonNull final Result<List<MediaBrowserCompat.MediaItem>> result) {
         Log.d(TAG, "OnLoadChildren: parentMediaId="+ parentMediaId);
         if (mPodcastProvider.isInitialized()) {
-            // if music library is ready, return immediately
+            // if podcast library is ready, return immediately
             result.sendResult(mPodcastProvider.getChildren(parentMediaId, getResources()));
         } else {
-            // otherwise, only return results when the music library is retrieved
+            // otherwise, only return results when the podcast library is retrieved
             result.detach();
             mPodcastProvider.retrieveMediaAsync(new PodcastProvider.Callback() {
                 @Override

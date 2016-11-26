@@ -26,7 +26,6 @@ import com.application.chetna_priya.exo_audio.R;
 public class MainActivity extends AppCompatActivity implements AbstractPlaybackControlView.ActivityCallbacks {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    public static final int PODCAST_LOADER = 1;
     private MediaBrowserCompat mMediaBrowser;
 
 
@@ -34,7 +33,6 @@ public class MainActivity extends AppCompatActivity implements AbstractPlaybackC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-      //  getSupportLoaderManager().initLoader(PODCAST_LOADER, null, RemoteJsonSource.getInstance()).forceLoad();
         Button launchBtn = (Button) findViewById(R.id.btn_launch_audio);
         launchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,8 +54,8 @@ public class MainActivity extends AppCompatActivity implements AbstractPlaybackC
     @Override
     protected void onStart() {
         super.onStart();
-        if(mMediaBrowser!= null && !mMediaBrowser.isConnected())
-            mMediaBrowser.connect();
+      //  if(mMediaBrowser!= null && !mMediaBrowser.isConnected())
+//            mMediaBrowser.connect();
     }
 
     @Override
@@ -69,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements AbstractPlaybackC
 
     @Override
     public void finishActivity() {
+        Log.d(TAG, "FINISHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
         finish();
     }
 

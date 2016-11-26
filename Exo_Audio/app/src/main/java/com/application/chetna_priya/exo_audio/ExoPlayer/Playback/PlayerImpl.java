@@ -153,12 +153,7 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
 
     }
 
-    public void preparePlayer() {
-        MediaSource[] mediaSources = new MediaSource[1];
-       // for (int i = 0; i < albumArrayList.size(); i++)
-        {
-            mediaSources[0] = buildMediaSource(Playlist.getPlaylistInstance().getCurrentAlbumToPlay().getAlbum_uri(), null);
-        }
+    public void preparePlayer(MediaSource[] mediaSources) {
         MediaSource mediaSource = mediaSources.length == 1 ? mediaSources[0]
                 : new ConcatenatingMediaSource(mediaSources);
         exoPlayer.prepare(mediaSource, !shouldRestorePosition);
@@ -382,7 +377,7 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
             configMediaPlayerState();
         } else {
             mState = PlaybackStateCompat.STATE_STOPPED;
-            relaxResources(false); // release everything except MediaPlayer
+            relaxResources(false); // release everything except ExoPlayer
             MediaMetadataCompat track = mPodcastProvider.getPodcast(
                     MediaIDHelper.extractPodcastIDFromMediaID(item.getDescription().getMediaId()));
 
@@ -391,8 +386,12 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
 
             try{
                 createPlayerIfNeeded();
+                /*
+                mediaSources[0] = buildMediaSource(Playlist.getPlaylistInstance().getCurrentAlbumToPlay().getAlbum_uri(), null);
+                 */
                 mState = PlaybackStateCompat.STATE_BUFFERING;
-                preparePlayer();
+                MediaSource[] mediaSources = new MediaSource[]{buildMediaSource(Uri.parse(source), null)};
+                preparePlayer(mediaSources);
                 // If we are streaming from the internet, we want to hold a
                 // Wifi lock, which prevents the Wifi radio from going to
                 // sleep while the song is playing.

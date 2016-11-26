@@ -134,11 +134,10 @@ public class PlaybackListener implements Playback.Callback {
         stateBuilder.setState(state, position, mPlayback.getPlaybackSpeed(), SystemClock.elapsedRealtime());
 
         // Set the activeQueueItemId if the current index is valid.
-     /*   MediaSessionCompat.QueueItem currentMusic = mQueueManager.getCurrentMusic();
+        MediaSessionCompat.QueueItem currentMusic = mQueueManager.getCurrentPodcast();
         if (currentMusic != null) {
             stateBuilder.setActiveQueueItemId(currentMusic.getQueueId());
         }
-*/
          mServiceCallback.onPlaybackStateUpdated(stateBuilder.build());
 
         if (state == PlaybackStateCompat.STATE_PLAYING || state == PlaybackStateCompat.STATE_BUFFERING ||
@@ -275,9 +274,9 @@ public class PlaybackListener implements Playback.Callback {
         @Override
         public void onPlay() {
             Log.d(TAG, "play");
-          /*  if (mQueueManager.getCurrentMusic() == null) {
+            if (mQueueManager.getCurrentPodcast() == null) {
                 mQueueManager.setRandomQueue();
-            }*/
+            }
             handlePlayRequest();
         }
 
@@ -297,7 +296,7 @@ public class PlaybackListener implements Playback.Callback {
         @Override
         public void onPlayFromMediaId(String mediaId, Bundle extras) {
             Log.d(TAG, "playFromMediaId mediaId:"+ mediaId+ "  extras="+ extras);
-         //   mQueueManager.setQueueFromMusic(mediaId);
+            mQueueManager.setQueueFromPodcast(mediaId);
             handlePlayRequest();
         }
 

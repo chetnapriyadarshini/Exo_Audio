@@ -132,6 +132,11 @@ public class QueueManager
         return mPlayingQueue.size();
     }
 
+    public void setRandomQueue() {
+        setCurrentQueue(mResources.getString(R.string.random_queue_title),
+                QueueHelper.getRandomQueue(mPodcastProvider));
+    }
+
     protected void setCurrentQueue(String title, List<MediaSessionCompat.QueueItem> newQueue) {
         setCurrentQueue(title, newQueue, null);
     }
@@ -150,6 +155,7 @@ public class QueueManager
     public void updateMetadata() {
         MediaSessionCompat.QueueItem currentPodcast = getCurrentPodcast();
         if (currentPodcast == null) {
+            Log.d(TAG, "IN update metadataaaa error on retrieving metadata");
             mListener.onMetadataRetrieveError();
             return;
         }

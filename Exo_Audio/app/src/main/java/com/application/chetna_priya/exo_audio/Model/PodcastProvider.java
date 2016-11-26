@@ -123,6 +123,21 @@ public class PodcastProvider {
         return mPodcastListById.containsKey(podcastId) ? mPodcastListById.get(podcastId).metadata : null;
     }
 
+    /**
+     * Get an iterator over a shuffled collection of all songs
+     */
+    public Iterable<MediaMetadataCompat> getShuffledPodcast() {
+        if (mCurrentState != State.INITIALIZED) {
+            return Collections.emptyList();
+        }
+        List<MediaMetadataCompat> shuffled = new ArrayList<>(mPodcastListById.size());
+        for (MutableMediaMetadata mutableMetadata: mPodcastListById.values()) {
+            shuffled.add(mutableMetadata.metadata);
+        }
+        Collections.shuffle(shuffled);
+        return shuffled;
+    }
+
     public synchronized void updatePodcastArt(String podcastId, Bitmap albumArt, Bitmap icon) {
         MediaMetadataCompat metadata = getPodcast(podcastId);
         metadata = new MediaMetadataCompat.Builder(metadata)
