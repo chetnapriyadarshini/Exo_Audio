@@ -386,9 +386,6 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
 
             try{
                 createPlayerIfNeeded();
-                /*
-                mediaSources[0] = buildMediaSource(Playlist.getPlaylistInstance().getCurrentAlbumToPlay().getAlbum_uri(), null);
-                 */
                 mState = PlaybackStateCompat.STATE_BUFFERING;
                 MediaSource[] mediaSources = new MediaSource[]{buildMediaSource(Uri.parse(source), null)};
                 preparePlayer(mediaSources);

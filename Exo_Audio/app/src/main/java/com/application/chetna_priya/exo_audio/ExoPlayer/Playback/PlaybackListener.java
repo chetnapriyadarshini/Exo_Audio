@@ -274,9 +274,9 @@ public class PlaybackListener implements Playback.Callback {
         @Override
         public void onPlay() {
             Log.d(TAG, "play");
-            if (mQueueManager.getCurrentPodcast() == null) {
+          /*  if (mQueueManager.getCurrentMusic() == null) {
                 mQueueManager.setRandomQueue();
-            }
+            }*/
             handlePlayRequest();
         }
 

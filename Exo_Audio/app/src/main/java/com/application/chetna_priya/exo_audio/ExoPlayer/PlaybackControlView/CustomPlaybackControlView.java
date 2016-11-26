@@ -320,6 +320,7 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
         if (timeMs == C.TIME_UNSET) {
             timeMs = 0;
         }
+        Log.d(TAG, "RECEIVED  TIME : "+timeMs);
         long totalSeconds = (timeMs + 500) / 1000;
         long seconds = totalSeconds % 60;
         long minutes = (totalSeconds / 60) % 60;
