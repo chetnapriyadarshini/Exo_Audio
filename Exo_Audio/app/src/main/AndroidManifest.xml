@@ -4,6 +4,8 @@
     package="com.application.chetna_priya.exo_audio">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
         android:name=".DemoApplication"
