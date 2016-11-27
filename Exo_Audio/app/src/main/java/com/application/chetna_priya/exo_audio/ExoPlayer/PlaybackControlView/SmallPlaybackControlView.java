@@ -58,8 +58,6 @@ public class SmallPlaybackControlView extends AbstractPlaybackControlView {
         mMediaBrowser = new MediaBrowserCompat(mContext,
                 new ComponentName(mContext, PodcastService.class), mConnectionCallback, null);
 
-        activityCallbacks.setMediaBrowser(mMediaBrowser);
-
         mMediaBrowser.connect();
     }
 
@@ -112,12 +110,12 @@ public class SmallPlaybackControlView extends AbstractPlaybackControlView {
 
         @Override
         public void onPlaybackStateChanged(PlaybackStateCompat state) {
-            Log.d(TAG, "ON PLAYBACK STATUS CHANGEDDDDDD IN SMALLPLAYBACKCONTROLVIEW "+state);
+        //    Log.d(TAG, "ON PLAYBACK STATUS CHANGEDDDDDD IN SMALLPLAYBACKCONTROLVIEW "+state);
             super.onPlaybackStateChanged(state);
             updatePlayPauseButton();
         }
 
-        @Override
+     /*   @Override
         public void onSessionEvent(String event, Bundle extras) {
             super.onSessionEvent(event, extras);
             switch (event){
@@ -125,14 +123,14 @@ public class SmallPlaybackControlView extends AbstractPlaybackControlView {
                     updatePlayPauseButton();
                     break;
             }
-        }
+        }*/
     };
 
     private final MediaBrowserCompat.ConnectionCallback mConnectionCallback =
             new MediaBrowserCompat.ConnectionCallback() {
                 @Override
                 public void onConnected() {
-                    Log.d(TAG, "!!!!!!!!!!!!!!!!!!!!!onConnected!!!!!!!!!!!!!!!!!!!!!!!! "+mMediaBrowser.getSessionToken());
+                    Log.d(TAG, "!!!!!!!!!!!!!!!!!!!!!onConnected!!!!!!!!!!!!!!!!!!!!!!!!");
                     try {
                         connectToSession(mMediaBrowser.getSessionToken());
                     } catch (RemoteException e) {
@@ -148,7 +146,7 @@ public class SmallPlaybackControlView extends AbstractPlaybackControlView {
             activityCallbacks.finishActivity();
             return;
         }
-*/      activityCallbacks.setSupportMediaControllerForActivity(mediaController);
+*/        activityCallbacks.setSupportMediaControllerForActivity(mediaController);
         mediaController.registerCallback(mCallback);
 
         MediaMetadataCompat metadata = mediaController.getMetadata();
@@ -156,6 +154,13 @@ public class SmallPlaybackControlView extends AbstractPlaybackControlView {
         if (metadata != null) {
          //   updateMediaDescription(metadata.getDescription());
            // updateDuration(metadata);
+        }
+    }
+
+    public void disconnectSession() {
+        if(mMediaBrowser.isConnected()) {
+            Log.d(TAG, "@@@@@@ DISCONNECT FROM THE MEDIA BROWSERRRRRRR @@@@@@@@@@@");
+            mMediaBrowser.disconnect();
         }
     }
 

@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
+import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
@@ -142,7 +143,7 @@ public class PlaybackListener implements Playback.Callback {
 
         if (state == PlaybackStateCompat.STATE_PLAYING || state == PlaybackStateCompat.STATE_BUFFERING ||
                 state == PlaybackStateCompat.STATE_PAUSED) {
-            Log.d(TAG, "DISPLAY NOTIFICATIONNNNNNNNNNNNNNNNNNNNNNNN");
+           // Log.d(TAG, "DISPLAY NOTIFICATIONNNNNNNNNNNNNNNNNNNNNNNN");
             mServiceCallback.onNotificationRequired();
         }
     }
@@ -156,7 +157,7 @@ public class PlaybackListener implements Playback.Callback {
                 .setExtras(customActionExtras)
                 .build());
 
-      /*  MediaSessionCompat.QueueItem currentPodcast = mQueueManager.getCurrentPodcast();
+      /*  MediaSessionCompat.QueueItem currentPodcast = mQueueManager.getCurrentPodcastID();
         if (currentPodcast == null) {
             return;
         }
@@ -255,7 +256,7 @@ public class PlaybackListener implements Playback.Callback {
 
     @Override
     public void onPlaybackStatusChanged(int state) {
-        Log.d(TAG, "ON PLAYBACK STATUS CHANGEDDDDDDDDDDDDDDDDDDDDDD");
+      //  Log.d(TAG, "ON PLAYBACK STATUS CHANGEDDDDDDDDDDDDDDDDDDDDDD");
         updatePlaybackState(null);
     }
 
@@ -270,13 +271,19 @@ public class PlaybackListener implements Playback.Callback {
         mQueueManager.setQueueFromPodcast(mediaId);
     }
 
+    @Override
+    public String getCurrentPodcastID() {
+        return MediaIDHelper.extractPodcastIDFromMediaID(
+                mQueueManager.getCurrentPodcast().getDescription().getMediaId());
+    }
+
     private class MediaSessionCallback extends MediaSessionCompat.Callback {
         @Override
         public void onPlay() {
             Log.d(TAG, "play");
-          /*  if (mQueueManager.getCurrentMusic() == null) {
+            if (mQueueManager.getCurrentPodcast() == null) {
                 mQueueManager.setRandomQueue();
-            }*/
+            }
             handlePlayRequest();
         }
 

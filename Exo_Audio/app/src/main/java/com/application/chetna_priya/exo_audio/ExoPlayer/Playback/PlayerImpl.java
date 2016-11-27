@@ -1,6 +1,5 @@
 package com.application.chetna_priya.exo_audio.ExoPlayer.Playback;
 
-import android.app.Activity;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.PlaybackParams;
@@ -16,7 +15,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.application.chetna_priya.exo_audio.DemoApplication;
-import com.application.chetna_priya.exo_audio.ExoPlayer.Playlist;
 import com.application.chetna_priya.exo_audio.Model.MediaProviderSource;
 import com.application.chetna_priya.exo_audio.Model.PodcastProvider;
 import com.application.chetna_priya.exo_audio.R;
@@ -47,12 +45,8 @@ import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.upstream.HttpDataSource;
 import com.google.android.exoplayer2.util.Util;
-
-import java.io.IOException;
 
 /**
  * Created by chetna_priya on 10/13/2016.
@@ -67,7 +61,8 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
  //   private AbstractPlaybackControlView exoPlayerView;
     private Context mContext;
     private DataSource.Factory mediaDataSourceFactory;
-    private SimpleExoPlayer exoPlayer;
+    private SimpleExoPlayer
+            exoPlayer;
     private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
     private EventLogger eventLogger;
     private Handler mainHandler = new Handler();
@@ -95,6 +90,7 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
     private int fastForwardMs = DEFAULT_FAST_FORWARD_MS;
     private String mCurrentMediaId;
     private final WifiManager.WifiLock mWifiLock;
+    private boolean isDurationSet = false;
 
 
     public PlayerImpl(Context context, PodcastProvider podcastProvider){
@@ -108,14 +104,6 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
                 .createWifiLock(WifiManager.WIFI_MODE_FULL, "podway_lock");
 
     }
-
-    /*public void attachView(AbstractPlaybackControlView playbackControlView){
-        this.exoPlayerView = playbackControlView;
-        if(exoPlayer != null)
-            playbackControlView.setPlayer(exoPlayer);
-    }*/
-
-
 
 
     private void createPlayerIfNeeded() {
@@ -159,9 +147,9 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
         exoPlayer.prepare(mediaSource, !shouldRestorePosition);
         // Prepare the exoPlayer with the source.
         exoPlayer.prepare(mediaSource);
-        exoPlayer.setPlayWhenReady(true);
+        exoPlayer.setPlayWhenReady(true);/*
         if(mCallback != null)
-            mCallback.onPlaybackStatusChanged(mState);
+            mCallback.onPlaybackStatusChanged(mState);*/
     }
 
     private MediaSource buildMediaSource(Uri uri, String overrideExtension) {
@@ -219,21 +207,54 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
 
     @Override
     public void onLoadingChanged(boolean isLoading) {
-        //Do Nothing
+        if(isLoading)
+        {
+          //  mState = PlaybackStateCompat.STATE_CONNECTING;
+            mCallback.onPlaybackStatusChanged(mState);
+        }
     }
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-        mCallback.onPlaybackStatusChanged(mState);
-        if(playbackState == ExoPlayer.STATE_ENDED)
+
+       // mCurrentPosition = exoPlayer.getCurrentPosition();
+     //   Log.d(TAG, "PLAYER STATE CHANGEDDDDDDDDDD "+playbackState/*+" CURRENT POSITION "+mCurrentPosition
+          //      +" DURATION "+exoPlayer.getDuration()+" IS LEFTTTTT "+(exoPlayer.getDuration()-mCurrentPosition)*/);
+        if(exoPlayer.getCurrentPosition() >= exoPlayer.getDuration()) {
             mCallback.onCompletion();
-        //Do Nothing, it is handled in playback controlview classes
+            return;
+        }
+        switch (playbackState){
+            case ExoPlayer.STATE_BUFFERING:
+                mState = PlaybackStateCompat.STATE_BUFFERING;
+                mCallback.onPlaybackStatusChanged(mState);
+                break;
+            case ExoPlayer.STATE_ENDED:
+                mCallback.onCompletion();
+                break;
+            case ExoPlayer.STATE_READY:
+                if(playWhenReady) {
+                    if(!isDurationSet){
+                        isDurationSet = true;
+                        mPodcastProvider.updatePodcastDuration(mCallback.getCurrentPodcastID(),exoPlayer.getDuration());
+                    }
+                    mState = PlaybackStateCompat.STATE_PLAYING;
+                  Log.d(TAG, "THe duration set by exoplayer is : "+exoPlayer.getDuration());
+                } else
+                    mState = PlaybackStateCompat.STATE_PAUSED;
+                mCallback.onPlaybackStatusChanged(mState);
+                break;
+            case ExoPlayer.STATE_IDLE:
+                mState = PlaybackStateCompat.STATE_NONE;
+                mCallback.onPlaybackStatusChanged(mState);
+                break;
+        }
     }
 
 
     @Override
     public void onTimelineChanged(Timeline timeline, Object manifest) {
-        //Do Nothing, it is handled in playback controlview classes
+        mCallback.onPlaybackStatusChanged(mState);
     }
 
     @Override
@@ -264,11 +285,13 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
         if (errorString != null) {
             showToast(errorString);
         }
+        mState = PlaybackStateCompat.STATE_ERROR;
+        mCallback.onPlaybackStatusChanged(mState);
     }
 
     @Override
     public void onPositionDiscontinuity() {
-        //Do Nothing, it is handled in playback controlview classes
+        mCallback.onPlaybackStatusChanged(mState);
     }
 
 
@@ -383,6 +406,7 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
 
             //noinspection ResourceType
             String source = track.getString(MediaProviderSource.CUSTOM_METADATA_TRACK_SOURCE);
+            Log.d(TAG, "The Duration set by us is "+track.getLong(MediaMetadataCompat.METADATA_KEY_DURATION));
 
             try{
                 createPlayerIfNeeded();
@@ -449,6 +473,7 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
             PlaybackParams playbackParams = new PlaybackParams();
             playbackParams.setSpeed(speed);
             exoPlayer.setPlaybackParams(playbackParams);
+            mCallback.onPlaybackStatusChanged(mState);
         }
     }
 

@@ -94,6 +94,8 @@ public interface Playback  {
          * @param mediaId being currently played
          */
         void setCurrentMediaId(String mediaId);
+
+        String getCurrentPodcastID();
     }
 
     void setCallback(Callback callback);

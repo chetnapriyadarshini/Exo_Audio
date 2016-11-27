@@ -162,6 +162,20 @@ public class PodcastProvider {
         mutableMetadata.metadata = metadata;
     }
 
+    public synchronized void updatePodcastDuration(String podcastId, long duration){
+        MediaMetadataCompat metadata = getPodcast(podcastId);
+        metadata = new MediaMetadataCompat.Builder(metadata)
+                .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration)
+        .build();
+        MutableMediaMetadata mutableMetadata = mPodcastListById.get(podcastId);
+        if (mutableMetadata == null) {
+            throw new IllegalStateException("Unexpected error: Inconsistent data structures in " +
+                    "MusicProvider");
+        }
+
+        mutableMetadata.metadata = metadata;
+    }
+
     public void setFavorite(String podcastId, boolean favorite) {
         if (favorite) {
             mFavoriteTracks.add(podcastId);

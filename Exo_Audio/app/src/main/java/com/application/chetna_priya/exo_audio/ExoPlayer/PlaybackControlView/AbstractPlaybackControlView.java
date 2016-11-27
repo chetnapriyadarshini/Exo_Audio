@@ -24,10 +24,12 @@ public abstract class AbstractPlaybackControlView extends FrameLayout /*implemen
     public static final String CUSTOM_ACTION_SPEED_CHANGE = "custom_action_speed_changed";
     public static final String SPEED = "speed";
 
+    public abstract void disconnectSession();
+
     public interface ActivityCallbacks {
         void finishActivity();
         void setSupportMediaControllerForActivity(MediaControllerCompat mediaController);
-        void setMediaBrowser(MediaBrowserCompat mediaBrowser);
+        //void setMediaBrowser(MediaBrowserCompat mediaBrowser);
     }
 
 

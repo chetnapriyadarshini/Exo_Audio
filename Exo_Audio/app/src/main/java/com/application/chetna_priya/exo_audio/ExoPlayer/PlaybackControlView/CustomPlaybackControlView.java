@@ -115,7 +115,7 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
 
         mMediaBrowser = new MediaBrowserCompat(mContext,
                 new ComponentName(mContext, PodcastService.class), mConnectionCallback, null);
-        activityCallbacks.setMediaBrowser(mMediaBrowser);
+        mMediaBrowser.connect();
     }
 
 
@@ -131,11 +131,12 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
 
         @Override
         public void onPlaybackStateChanged(PlaybackStateCompat state) {
+            Log.d(TAG, "RECEIVED CHANGED STATE IN PLAYBACK CONTROLVIEW UPDATE ALLLL");
             super.onPlaybackStateChanged(state);
             mLastPlaybackState = state;
             updateAll();
         }
-
+/*
         @Override
         public void onSessionEvent(String event, Bundle extras) {
             super.onSessionEvent(event, extras);
@@ -157,7 +158,7 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
                     updateProgress();
                     break;
             }
-        }
+        }*/
     };
 
     private final MediaBrowserCompat.ConnectionCallback mConnectionCallback =
@@ -196,6 +197,13 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
         }*/
     }
 
+
+    @Override
+    public void disconnectSession() {
+        if(mMediaBrowser.isConnected())
+            mMediaBrowser.disconnect();
+    }
+
     private void updateAll() {
         updatePlayPauseButton();
         updateNavigation();
@@ -208,7 +216,7 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
         PlaybackStateCompat state = mediaControllerCompat.getPlaybackState();
         boolean playing = state.getState() == PlaybackStateCompat.STATE_PLAYING ||
                 state.getState() == PlaybackStateCompat.STATE_BUFFERING;
-        Log.d(TAG, "IN UPDATE PLAY PAUSE BUTTON, PLAYER IS PLAYING "+playing);
+      //  Log.d(TAG, "IN UPDATE PLAY PAUSE BUTTON, PLAYER IS PLAYING "+playing);
         String contentDescription = getResources().getString(
                 playing ? R.string.exo_controls_pause_description : R.string.exo_controls_play_description);
         playButton.setContentDescription(contentDescription);
@@ -242,8 +250,8 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
           //  enableNext = (currentWindowIndex < currentTimeline.getWindowCount() - 1)
             //        || currentWindow.isDynamic;
         }
-        Log.d(TAG, "TIMELINEEEEEEE "+haveTimeline+" isSeekable "+isSeekable);
-        Log.d(TAG, "CURRENT POSITIONNNN "+currentPosition+" currentPosition < duration - 30000 "+duration);
+      //  Log.d(TAG, "TIMELINEEEEEEE "+haveTimeline+" isSeekable "+isSeekable);
+        //Log.d(TAG, "CURRENT POSITIONNNN "+currentPosition+" currentPosition < duration - 30000 "+duration);
         setButtonEnabled(enablePrevious , previousButton);
         setButtonEnabled(enableNext, nextButton);
         setButtonEnabled(isSeekable, fastForwardButton);
@@ -265,7 +273,12 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
         long currentPosition = mLastPlaybackState.getPosition();
         MediaControllerCompat mediaControllerCompat= ((FragmentActivity)mContext).getSupportMediaController();
 
-        if (mLastPlaybackState.getState() != PlaybackStateCompat.STATE_PAUSED) {
+        /*
+        Adding STATE_BUFFERING to condition because we don't want the position to update
+        while the player is still buffering
+         */
+        if (mLastPlaybackState.getState() != PlaybackStateCompat.STATE_PAUSED
+                && mLastPlaybackState.getState() != PlaybackStateCompat.STATE_BUFFERING) {
             // Calculate the elapsed time between the last position update and now and unless
             // paused, we can assume (delta * speed) + current position is approximately the
             // latest position. This ensure that we do not repeatedly call the getPlaybackState()
@@ -276,16 +289,21 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
         }
 
         time.setText(stringForTime(mediaControllerCompat.getMetadata().getLong(MediaMetadataCompat.METADATA_KEY_DURATION)));
-        Log.d(TAG, "UPDATE TIME TEXT; dragging "+dragging+" POSITION : "+currentPosition);
+    //    Log.d(TAG, "UPDATE TIME TEXT; dragging "+dragging+" POSITION : "+currentPosition);
         if (!dragging) {
             timeCurrent.setText(stringForTime(currentPosition));
         }
         if (!dragging) {
             progressBar.setProgress(progressBarValue(currentPosition));
         }
-      //  progressBar.setSecondaryProgress(progressBarValue(currentPosition+mLastPlaybackState.getBufferedPosition()));
+//        progressBar.setSecondaryProgress(progressBarValue(currentPosition+mLastPlaybackState.getBufferedPosition()));
         // Remove scheduled updates.
         removeCallbacks(updateProgressAction);
+        /*
+        Two issues
+        Issue 1: On Buffering the time update should slow down
+        Issue 2: On completion the time update should stop
+         */
         // Schedule an update if necessary.
      //   int playbackState = player == null ? ExoPlayer.STATE_IDLE : player.getPlaybackState();
         if (mLastPlaybackState.getState() != PlaybackStateCompat.STATE_NONE
@@ -320,7 +338,6 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
         if (timeMs == C.TIME_UNSET) {
             timeMs = 0;
         }
-        Log.d(TAG, "RECEIVED  TIME : "+timeMs);
         long totalSeconds = (timeMs + 500) / 1000;
         long seconds = totalSeconds % 60;
         long minutes = (totalSeconds / 60) % 60;
@@ -415,15 +432,16 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
             MediaControllerCompat.TransportControls controls =
                     ((FragmentActivity)mContext).getSupportMediaController().getTransportControls();
             controls.seekTo(positionValue(seekBar.getProgress()));
-            updateNavigation();
+            //commeting the below code as the updation is automatically called
+            //in onPlaybackstate changed which in turn updates all
+          /*  updateNavigation();
             updateProgress();
-           // player.seekTo(positionValue(seekBar.getProgress()));
+          */ // player.seekTo(positionValue(seekBar.getProgress()));
             //hideDeferred();
         }
 
         @Override
         public void onClick(View view) {
-         //   Timeline currentTimeline = null;
             MediaControllerCompat.TransportControls controls =
                     ((FragmentActivity)mContext).getSupportMediaController().getTransportControls();
            if (nextButton == view) {
@@ -439,28 +457,24 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
             } else if (rewindButton == view) {
                 controls.rewind();
                // rewind();
-            } else if (playButton == view) {
+           } else if (playButton == view) {
                PlaybackStateCompat state = ((FragmentActivity)mContext).getSupportMediaController().getPlaybackState();
-               boolean playing = state.getState() == PlaybackStateCompat.STATE_PLAYING;
-               Log.d(TAG, "ON CLICK ON PLAY BUTTON isPlaying "+playing+state.getState());
-               // if (state != null)
-               {
-                   switch (state.getState()) {
-                       case PlaybackStateCompat.STATE_PLAYING: // fall through
-                       case PlaybackStateCompat.STATE_BUFFERING:
-                           controls.pause();
-                           break;
-                       case PlaybackStateCompat.STATE_PAUSED:
-                       case PlaybackStateCompat.STATE_STOPPED:
-                       case PlaybackStateCompat.STATE_NONE:
-                           controls.play();
-                           break;
-                       default:
-                           Log.d(TAG, "onClick with state "+ state.getState());
-                   }
+               //  Log.d(TAG, "ON CLICK ON PLAY BUTTON isPlaying "+playing+state.getState());
+               switch (state.getState()) {
+                   case PlaybackStateCompat.STATE_PLAYING: // fall through
+                   case PlaybackStateCompat.STATE_BUFFERING:
+                       controls.pause();
+                       break;
+                   case PlaybackStateCompat.STATE_PAUSED:
+                   case PlaybackStateCompat.STATE_STOPPED:
+                   case PlaybackStateCompat.STATE_NONE:
+                       controls.play();
+                       break;
+                   default:
+                       Log.d(TAG, "onClick with state "+ state.getState());
                }
 
-            }else if(speed == view){
+           }else if(speed == view){
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     if(CURRENT_INDEX+1 == SPEED_ARR.length)
                         CURRENT_INDEX = 0;
