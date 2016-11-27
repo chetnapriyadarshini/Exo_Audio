@@ -1,12 +1,10 @@
 package com.application.chetna_priya.exo_audio.Ui;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.application.chetna_priya.exo_audio.ExoPlayer.PlaybackControlView.AbstractPlaybackControlView;
+import com.application.chetna_priya.exo_audio.Ui.PlaybackControlView.AbstractPlaybackControlView;
 import com.application.chetna_priya.exo_audio.R;
 
 public class AudioActivity extends AppCompatActivity  implements AbstractPlaybackControlView.ActivityCallbacks{

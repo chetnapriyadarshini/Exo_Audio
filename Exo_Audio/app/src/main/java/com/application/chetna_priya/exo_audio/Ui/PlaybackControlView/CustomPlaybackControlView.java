@@ -1,8 +1,7 @@
-package com.application.chetna_priya.exo_audio.ExoPlayer.PlaybackControlView;
+package com.application.chetna_priya.exo_audio.Ui.PlaybackControlView;
 
 import android.content.ComponentName;
 import android.content.Context;
-import android.media.PlaybackParams;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -24,9 +23,7 @@ import android.widget.TextView;
 import com.application.chetna_priya.exo_audio.ExoPlayer.PlayerService.PodcastService;
 import com.application.chetna_priya.exo_audio.R;
 import com.google.android.exoplayer2.C;
-import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.util.Util;
 import java.util.Formatter;

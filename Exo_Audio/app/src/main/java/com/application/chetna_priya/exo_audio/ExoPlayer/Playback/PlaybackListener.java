@@ -1,28 +1,17 @@
 package com.application.chetna_priya.exo_audio.ExoPlayer.Playback;
 
-import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
-import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
 
-import com.application.chetna_priya.exo_audio.ExoPlayer.PlaybackControlView.AbstractPlaybackControlView;
+import com.application.chetna_priya.exo_audio.Ui.PlaybackControlView.AbstractPlaybackControlView;
 import com.application.chetna_priya.exo_audio.Model.PodcastProvider;
 import com.application.chetna_priya.exo_audio.R;
 import com.application.chetna_priya.exo_audio.Utils.MediaIDHelper;
-import com.google.android.exoplayer2.ExoPlaybackException;
-import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.Timeline;
-import com.google.android.exoplayer2.mediacodec.MediaCodecRenderer;
-import com.google.android.exoplayer2.mediacodec.MediaCodecUtil;
 
 
 /**

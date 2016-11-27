@@ -1,4 +1,4 @@
-package com.application.chetna_priya.exo_audio.ExoPlayer.PlaybackControlView;
+package com.application.chetna_priya.exo_audio.Ui.PlaybackControlView;
 
 import android.content.Context;
 import android.support.v4.media.MediaBrowserCompat;
