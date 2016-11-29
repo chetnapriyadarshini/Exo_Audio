@@ -29,7 +29,7 @@ public class SmallPlaybackControlView extends AbstractPlaybackControlView {
 
     private static final String TAG = SmallPlaybackControlView.class.getSimpleName();
     private final MediaBrowserCompat mMediaBrowser;
-    @BindView(R.id.imgbtn_play_pause) ImageButton playButton;
+    @BindView(R.id.play_pause) ImageButton playButton;
     private Context mContext;
 
     public SmallPlaybackControlView(Context context) {
