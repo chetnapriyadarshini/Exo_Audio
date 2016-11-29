@@ -28,9 +28,9 @@ import butterknife.ButterKnife;
 public class SmallPlaybackControlView extends AbstractPlaybackControlView {
 
     private static final String TAG = SmallPlaybackControlView.class.getSimpleName();
-    private final MediaBrowserCompat mMediaBrowser;
+    //private final MediaBrowserCompat mMediaBrowser;
     @BindView(R.id.play_pause) ImageButton playButton;
-    private Context mContext;
+ //   private Context mContext;
 
     public SmallPlaybackControlView(Context context) {
         this(context, null);
@@ -42,20 +42,20 @@ public class SmallPlaybackControlView extends AbstractPlaybackControlView {
 
     public SmallPlaybackControlView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        this.mContext = context;
-        ComponentListener componentListener = new SmallPlaybackControlView.ComponentListener();
+     //   this.mContext = context;
+        //ComponentListener componentListener = new SmallPlaybackControlView.ComponentListener();
 
-        View view  = LayoutInflater.from(context).inflate(R.layout.layout_current_audio, this);
-        ButterKnife.bind(this,view);
+        LayoutInflater.from(context).inflate(R.layout.layout_current_audio, this);
+      /*  ButterKnife.bind(this,view);
 
         playButton.setOnClickListener(componentListener);
 
         mMediaBrowser = new MediaBrowserCompat(mContext,
                 new ComponentName(mContext, PodcastService.class), mConnectionCallback, null);
 
-        mMediaBrowser.connect();
+        mMediaBrowser.connect();*/
     }
-
+/*
     private void updatePlayPauseButton() {
         MediaControllerCompat mediaControllerCompat= ((FragmentActivity)mContext).getSupportMediaController();
 
@@ -69,7 +69,7 @@ public class SmallPlaybackControlView extends AbstractPlaybackControlView {
         playButton.setImageResource(
                 playing ? R.drawable.exo_controls_pause : R.drawable.exo_controls_play);
 
-    }
+    }*/
 
     /*@Override
     public boolean dispatchKeyEvent(KeyEvent event) {
@@ -92,7 +92,7 @@ public class SmallPlaybackControlView extends AbstractPlaybackControlView {
         // show();
         return true;
     }*/
-
+/*
     private final MediaControllerCompat.Callback mCallback = new MediaControllerCompat.Callback() {
 
         @Override
@@ -110,7 +110,7 @@ public class SmallPlaybackControlView extends AbstractPlaybackControlView {
             updatePlayPauseButton();
         }
 
-     /*   @Override
+     *//*   @Override
         public void onSessionEvent(String event, Bundle extras) {
             super.onSessionEvent(event, extras);
             switch (event){
@@ -118,9 +118,9 @@ public class SmallPlaybackControlView extends AbstractPlaybackControlView {
                     updatePlayPauseButton();
                     break;
             }
-        }*/
-    };
-
+        }*//*
+    };*/
+/*
     private final MediaBrowserCompat.ConnectionCallback mConnectionCallback =
             new MediaBrowserCompat.ConnectionCallback() {
                 @Override
@@ -137,11 +137,11 @@ public class SmallPlaybackControlView extends AbstractPlaybackControlView {
     public void connectToSession(MediaSessionCompat.Token token) throws RemoteException {
         MediaControllerCompat mediaController = new MediaControllerCompat(
                 mContext, token);
-        /*if (mediaController.getMetadata() == null) {
+        *//*if (mediaController.getMetadata() == null) {
             activityCallbacks.finishActivity();
             return;
         }
-*/        activityCallbacks.setSupportMediaControllerForActivity(mediaController);
+*//*        activityCallbacks.setSupportMediaControllerForActivity(mediaController);
         mediaController.registerCallback(mCallback);
 
         MediaMetadataCompat metadata = mediaController.getMetadata();
@@ -150,16 +150,16 @@ public class SmallPlaybackControlView extends AbstractPlaybackControlView {
          //   updateMediaDescription(metadata.getDescription());
            // updateDuration(metadata);
         }
-    }
-
+    }*/
+/*
     public void disconnectSession() {
         if(mMediaBrowser.isConnected()) {
             Log.d(TAG, "@@@@@@ DISCONNECT FROM THE MEDIA BROWSERRRRRRR @@@@@@@@@@@");
             mMediaBrowser.disconnect();
         }
-    }
+    }*/
 
-
+/*
     final class ComponentListener implements OnClickListener {
 
         @Override
@@ -187,6 +187,6 @@ public class SmallPlaybackControlView extends AbstractPlaybackControlView {
             }
 
         }
-    }
+    }*/
 
 }

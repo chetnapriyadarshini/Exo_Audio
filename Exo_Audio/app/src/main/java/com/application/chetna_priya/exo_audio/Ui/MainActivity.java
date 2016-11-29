@@ -18,6 +18,16 @@ public class MainActivity extends AppCompatActivity implements AbstractPlaybackC
     private static final String TAG = MainActivity.class.getSimpleName();
     private SmallPlaybackControlView mPlaybackControlView;
 
+    public static final String EXTRA_START_FULLSCREEN =
+            "com.application.chetna_priya.exo_audio.EXTRA_START_FULLSCREEN";
+    /**
+     * Optionally used with {@link #EXTRA_START_FULLSCREEN} to carry a MediaDescription to
+     * the {@link AudioActivity}, speeding up the screen rendering
+     * while the {@link android.support.v4.media.session.MediaControllerCompat} is connecting.
+     */
+    public static final String EXTRA_CURRENT_MEDIA_DESCRIPTION =
+            "com.application.chetna_priya.exo_audio.CURRENT_MEDIA_DESCRIPTION";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

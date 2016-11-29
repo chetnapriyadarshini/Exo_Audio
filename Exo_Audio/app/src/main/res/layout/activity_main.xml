@@ -34,7 +34,7 @@
             android:id="@+id/current_audio_view"
             layout="@layout/layout_current_audio"
             android:layout_gravity="bottom"
-            android:layout_height="@dimen/current_audio_layout_height"
+            android:layout_height="wrap_content"
             android:layout_width="match_parent"/>
 
     </FrameLayout>
