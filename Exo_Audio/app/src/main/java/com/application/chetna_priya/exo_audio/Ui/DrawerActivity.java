@@ -154,7 +154,7 @@ public class DrawerActivity extends AppCompatActivity {
             throw new IllegalStateException("Layout is required to include a Toolbar with id " +
                     "'toolbar'");
         }
-        mToolbar.inflateMenu(R.menu.main);
+      //  mToolbar.inflateMenu(R.menu.main);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (mDrawerLayout != null) {
