@@ -1,57 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright (C) 2014 The Android Open Source Project
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@color/current_audio_backgr">
-
+    android:padding="@dimen/playback_controls_padding">
     <ImageView
-        android:id="@+id/img_album_img"
-        android:layout_width="@dimen/current_audio_album_img"
-        android:layout_height="@dimen/current_audio_album_img"
-        android:src="@mipmap/ic_launcher"/>
-
+        android:id="@+id/album_art"
+        tools:src="@drawable/ic_launcher"
+        android:layout_width="@dimen/playback_controls_albumart_size"
+        android:layout_height="@dimen/playback_controls_albumart_size"
+        android:scaleType="centerCrop"
+        android:contentDescription="@string/currently_playing_podcast"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true" />
     <LinearLayout
-        android:id="@+id/layout_audio_detail"
+        android:id="@+id/content"
         android:layout_width="wrap_content"
-        android:orientation="vertical"
-        android:layout_toRightOf="@id/img_album_img"
-        android:layout_toEndOf="@id/img_album_img"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/padding_albumimg_and_desc"
-        android:layout_marginStart="@dimen/padding_albumimg_and_desc"
+        android:layout_marginStart="@dimen/playback_controls_albumart_horizontal_margin"
+        android:layout_marginLeft="@dimen/playback_controls_albumart_horizontal_margin"
+        android:orientation="vertical"
+        android:layout_toEndOf="@id/album_art"
+        android:layout_toStartOf="@+id/play_pause"
+        android:layout_toRightOf="@id/album_art"
+        android:layout_toLeftOf="@+id/play_pause"
         android:layout_centerVertical="true">
-
         <TextView
-            android:id="@+id/tv_album_episode_name"
+            android:id="@+id/title"
+            tools:text="The Best Music EVAH1111 THE BEST"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/Base.TextAppearance.AppCompat.Large"
-            android:textColor="@android:color/white"
-            android:text="@string/app_name"/>
-<!--            android:maxLength="@I"-->
-
+            android:contentDescription="@string/currently_playing_podcast"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="?android:attr/textColorPrimary"/>
         <TextView
-            android:id="@+id/tv_album_name"
+            android:id="@+id/artist"
+            tools:text="John Doe and Band"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/padding_albumimg_and_desc"
-            style="@style/Base.TextAppearance.AppCompat.Medium"
-            android:textColor="@android:color/white"
-            android:text="@string/app_name"
-            android:maxLength="@integer/max_text_length"/>
-
+            android:contentDescription="@string/currently_playing_artist"
+            android:textAppearance="?android:attr/textAppearanceSmall"/>
+        <TextView
+            android:id="@+id/extra_info"
+            tools:text="casting to MyCast"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:contentDescription="@string/currently_playing_extra_info"
+            android:textAppearance="?android:attr/textAppearanceSmall"/>
     </LinearLayout>
-
     <ImageButton
-        android:id="@+id/imgbtn_play_pause"
-        android:layout_height="@dimen/play_btn_current_audio"
-        android:layout_width="@dimen/play_btn_current_audio"
-        android:src="@drawable/exo_controls_play"
-        android:layout_gravity="center_vertical"
-        android:layout_alignParentEnd="true"
-        android:layout_marginRight="@dimen/margin_play_current_audio"
-        android:layout_marginEnd="@dimen/margin_play_current_audio"
+        android:id="@+id/play_pause"
         android:layout_centerVertical="true"
-        android:layout_alignParentRight="true" />
-
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:background="?selectableItemBackgroundBorderless"
+        android:src="@drawable/exo_controls_play"
+        android:contentDescription="@string/play_pause"
+        android:tintMode="src_in"
+        android:tint="@color/bt_accent" />
 </RelativeLayout>

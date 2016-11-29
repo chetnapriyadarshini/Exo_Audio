@@ -30,4 +30,8 @@
     <string name="random_queue_title">Random Podcast</string>
     <string name="open_content_drawer">Open the main menu</string>
     <string name="close_content_drawer">Close the main menu</string>
+    <string name="currently_playing_podcast">Podcast currently playing</string>
+    <string name="currently_playing_artist">Artist of currently playing podcast</string>
+    <string name="currently_playing_extra_info">Extra Info of currently playing podcast</string>
+    <string name="play_pause">Play or Pause</string>
 </resources>

@@ -25,6 +25,9 @@
     <dimen name="notification_expanded_height">128.0dip</dimen>
     <dimen name="play_controls_notification">48.0dip</dimen>
     <dimen name="notification_padding">8.0dip</dimen>
+    <dimen name="playback_controls_albumart_size">64dp</dimen>
+    <dimen name="playback_controls_padding">8dp</dimen>
+    <dimen name="playback_controls_albumart_horizontal_margin">8dp</dimen>
 
     <!-- Notification related dimens -->
 
