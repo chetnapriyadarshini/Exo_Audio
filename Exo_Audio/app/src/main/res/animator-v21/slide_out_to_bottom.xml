@@ -14,11 +14,11 @@
   See the License for the specific language governing permissions and
   limitations under the License.
   -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto" >
-    <item
-            android:id="@+id/media_route_menu_item"
-            android:title="@string/media_route_menu_title"
-            app:actionProviderClass="android.support.v7.app.MediaRouteActionProvider"
-            app:showAsAction="always"/>
-</menu>
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:interpolator="@android:interpolator/fast_out_slow_in">
+    <objectAnimator
+        android:propertyName="y"
+        android:valueType="floatType"
+        android:valueFrom="0"
+        android:valueTo="2000"/>
+</set>
