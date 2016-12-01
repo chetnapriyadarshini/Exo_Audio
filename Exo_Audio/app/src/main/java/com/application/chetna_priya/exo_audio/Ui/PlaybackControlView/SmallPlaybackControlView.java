@@ -13,6 +13,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
 import com.application.chetna_priya.exo_audio.ExoPlayer.PlayerService.PodcastService;
@@ -25,11 +26,13 @@ import butterknife.ButterKnife;
  * Created by chetna_priya on 10/23/2016.
  */
 
-public class SmallPlaybackControlView extends AbstractPlaybackControlView {
+public class SmallPlaybackControlView extends FrameLayout {
 
     private static final String TAG = SmallPlaybackControlView.class.getSimpleName();
     //private final MediaBrowserCompat mMediaBrowser;
-    @BindView(R.id.play_pause) ImageButton playButton;
+  //  @BindView(R.id.play_pause) ImageButton playButton;
+    public static final String CUSTOM_ACTION_SPEED_CHANGE = "custom_action_speed_changed";
+    public static final String SPEED = "speed";
  //   private Context mContext;
 
     public SmallPlaybackControlView(Context context) {

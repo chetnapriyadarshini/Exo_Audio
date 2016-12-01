@@ -16,6 +16,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -32,10 +33,13 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.application.chetna_priya.exo_audio.Ui.PlaybackControlView.SmallPlaybackControlView.CUSTOM_ACTION_SPEED_CHANGE;
+import static com.application.chetna_priya.exo_audio.Ui.PlaybackControlView.SmallPlaybackControlView.SPEED;
+
 /**
  * A view to control video playback of an {@link ExoPlayer}.
  */
-public class CustomPlaybackControlView extends AbstractPlaybackControlView{
+public class CustomPlaybackControlView extends FrameLayout{
 
     private static final int PROGRESS_BAR_MAX = 1000;
     private static final long MAX_POSITION_FOR_SEEK_TO_PREVIOUS = 3000;
@@ -177,8 +181,8 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
        /* if (mediaController.getMetadata() == null) {
             activityCallbacks.finishActivity();
             return;
-        }*/
-        activityCallbacks.setSupportMediaControllerForActivity(mediaController);
+        }*//*
+        activityCallbacks.setSupportMediaControllerForActivity(mediaController);*/
         mediaController.registerCallback(mCallback);
         mLastPlaybackState = mediaController.getPlaybackState();
         updateAll();
@@ -194,12 +198,12 @@ public class CustomPlaybackControlView extends AbstractPlaybackControlView{
         }*/
     }
 
-
+/*
     @Override
     public void disconnectSession() {
         if(mMediaBrowser.isConnected())
             mMediaBrowser.disconnect();
-    }
+    }*/
 
     private void updateAll() {
         updatePlayPauseButton();
