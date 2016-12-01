@@ -12,7 +12,6 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
  */
 
 public class Genre {
-
     @Retention(SOURCE)
     @StringDef({ARTS,
             COMEDY,
@@ -48,5 +47,48 @@ public class Genre {
     public static final String GAMES_HOBBIES = "Games & Hobbies";
     public static final String SOCIETY_CULTURE = "Society & Culture";
     public static final String GOVERNMENT_ORIGANIZATION = "Government & Organization";
+
+    public String getGenre(int position){
+        switch (position){
+            case 0:
+                return ARTS;
+            case 1:
+                return COMEDY;
+            case 2:
+                return EDUCATION;
+            case 3:
+                return KIDS_FAMILY;
+            case 4:
+                return HEALTH;
+            case 5:
+                return TV_FILM;
+            case 6:
+                return MUSIC;
+            case 7:
+                return NEWS_POLITICS;
+            case 8:
+                return RELIGION_SPIRITUALITY;
+            case 9:
+                return SCIENCE_MEDICINE;
+            case 10:
+                return SPORTS_RECREATION;
+            case 11:
+                return TECHNOLOGY;
+            case 12:
+                return BUSINESS;
+            case 13:
+                return GAMES_HOBBIES;
+            case 14:
+                return SOCIETY_CULTURE;
+            case 15:
+                return GOVERNMENT_ORIGANIZATION;
+        }
+        return null;
+    }
+
+
+    public int getItemCount() {
+        return 16;
+    }
 
 }
