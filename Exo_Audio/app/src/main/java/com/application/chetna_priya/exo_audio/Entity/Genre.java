@@ -50,37 +50,37 @@ public class Genre {
 
     public String getGenre(int position){
         switch (position){
-            case 0:
-                return ARTS;
             case 1:
-                return COMEDY;
+                return ARTS;
             case 2:
-                return EDUCATION;
+                return COMEDY;
             case 3:
-                return KIDS_FAMILY;
+                return EDUCATION;
             case 4:
-                return HEALTH;
+                return KIDS_FAMILY;
             case 5:
-                return TV_FILM;
+                return HEALTH;
             case 6:
-                return MUSIC;
+                return TV_FILM;
             case 7:
-                return NEWS_POLITICS;
+                return MUSIC;
             case 8:
-                return RELIGION_SPIRITUALITY;
+                return NEWS_POLITICS;
             case 9:
-                return SCIENCE_MEDICINE;
+                return RELIGION_SPIRITUALITY;
             case 10:
-                return SPORTS_RECREATION;
+                return SCIENCE_MEDICINE;
             case 11:
-                return TECHNOLOGY;
+                return SPORTS_RECREATION;
             case 12:
-                return BUSINESS;
+                return TECHNOLOGY;
             case 13:
-                return GAMES_HOBBIES;
+                return BUSINESS;
             case 14:
-                return SOCIETY_CULTURE;
+                return GAMES_HOBBIES;
             case 15:
+                return SOCIETY_CULTURE;
+            case 16:
                 return GOVERNMENT_ORIGANIZATION;
         }
         return null;
