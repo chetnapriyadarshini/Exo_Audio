@@ -32,19 +32,19 @@ import static android.content.ContentValues.TAG;
 public class PlaybackControlsFragment extends Fragment {
 
     @BindView(R.id.play_pause)
-    private ImageButton mPlayPause;
+    ImageButton mPlayPause;
 
     @BindView(R.id.title)
-    private TextView mTitle;
+    TextView mTitle;
 
     @BindView(R.id.artist)
-    private TextView mSubtitle;
+    TextView mSubtitle;
 
     @BindView(R.id.extra_info)
-    private TextView mExtraInfo;
+    TextView mExtraInfo;
 
     @BindView(R.id.album_art)
-    private ImageView mAlbumArt;
+    ImageView mAlbumArt;
 
     private String mArtUrl;
 
@@ -78,7 +78,7 @@ public class PlaybackControlsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_playback_controls, container, false);
-        ButterKnife.bind(rootView);
+        ButterKnife.bind(this,rootView);
 
         rootView.setOnClickListener(new View.OnClickListener() {
             @Override

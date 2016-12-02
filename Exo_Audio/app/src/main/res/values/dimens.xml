@@ -26,6 +26,9 @@
     <dimen name="playback_controls_albumart_size">64dp</dimen>
     <dimen name="playback_controls_padding">8dp</dimen>
     <dimen name="playback_controls_albumart_horizontal_margin">8dp</dimen>
+    <dimen name="genre_text_bottom_padding">15dp</dimen>
+    <dimen name="genre_text_width_max">100dp</dimen>
+    <integer name="genre_grid_span_count">3</integer>
 
     <!-- Notification related dimens -->
 

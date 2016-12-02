@@ -87,7 +87,7 @@ public class Genre {
     }
 
 
-    public int getItemCount() {
+    public static int getItemCount() {
         return 16;
     }
 

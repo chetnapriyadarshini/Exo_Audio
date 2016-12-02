@@ -48,7 +48,8 @@
         </service>
 
         <activity android:name=".Ui.DrawerActivity" />
-        <activity android:name=".Ui.BaseActivity"></activity>
+        <activity android:name=".Ui.BaseActivity" />
+        <activity android:name=".Ui.GenreActivity"></activity>
     </application>
 
 </manifest>

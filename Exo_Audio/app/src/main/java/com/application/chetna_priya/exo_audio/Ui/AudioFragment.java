@@ -12,7 +12,7 @@ import com.application.chetna_priya.exo_audio.R;
 
 public class AudioFragment extends Fragment {
     private static final String TAG = AudioFragment.class.getSimpleName();
-    private CustomPlaybackControlView mCustomPlaybackControlView;
+//    private CustomPlaybackControlView mCustomPlaybackControlView;
 
     public AudioFragment() {
         // Required empty public constructor
@@ -25,7 +25,7 @@ public class AudioFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_audio, container, false);
-        mCustomPlaybackControlView = (CustomPlaybackControlView) rootView.findViewById(R.id.exo_player_control);
+   //     mCustomPlaybackControlView = (CustomPlaybackControlView) rootView.findViewById(R.id.exo_player_control);
        return rootView;
     }
 
@@ -36,11 +36,6 @@ public class AudioFragment extends Fragment {
         super.onDestroy();
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        mCustomPlaybackControlView.disconnectSession();
-    }
 
     @Override
     public void onDetach() {

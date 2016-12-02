@@ -8,9 +8,9 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
-import com.application.chetna_priya.exo_audio.Ui.PlaybackControlView.AbstractPlaybackControlView;
 import com.application.chetna_priya.exo_audio.Model.PodcastProvider;
 import com.application.chetna_priya.exo_audio.R;
+import com.application.chetna_priya.exo_audio.Ui.PlaybackControlView.SmallPlaybackControlView;
 import com.application.chetna_priya.exo_audio.Utils.MediaIDHelper;
 
 
@@ -141,7 +141,7 @@ public class PlaybackListener implements Playback.Callback {
         Bundle customActionExtras = new Bundle();
         //  WearHelper.setShowCustomActionOnWear(customActionExtras, true);
         stateBuilder.addCustomAction(new PlaybackStateCompat.CustomAction.Builder(
-                AbstractPlaybackControlView.CUSTOM_ACTION_SPEED_CHANGE,
+                SmallPlaybackControlView.CUSTOM_ACTION_SPEED_CHANGE,
                 mResources.getString(R.string.custom_action_speed), -1)
                 .setExtras(customActionExtras)
                 .build());
@@ -342,8 +342,8 @@ public class PlaybackListener implements Playback.Callback {
 
         @Override
         public void onCustomAction(@NonNull String action, Bundle extras) {
-            if(action.equals(AbstractPlaybackControlView.CUSTOM_ACTION_SPEED_CHANGE)){
-                mPlayback.changeSpeed((Float) extras.get(AbstractPlaybackControlView.SPEED));
+            if(action.equals(SmallPlaybackControlView.CUSTOM_ACTION_SPEED_CHANGE)){
+                mPlayback.changeSpeed((Float) extras.get(SmallPlaybackControlView.SPEED));
             }
         }
 

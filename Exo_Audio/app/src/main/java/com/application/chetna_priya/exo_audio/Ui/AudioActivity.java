@@ -4,10 +4,9 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.application.chetna_priya.exo_audio.Ui.PlaybackControlView.AbstractPlaybackControlView;
 import com.application.chetna_priya.exo_audio.R;
 
-public class AudioActivity extends AppCompatActivity  implements AbstractPlaybackControlView.ActivityCallbacks{
+public class AudioActivity extends AppCompatActivity{
 
     private static final String TAG = AudioActivity.class.getSimpleName();
     public static final String EXTRA_START_FULLSCREEN = "start_full_screen";
@@ -22,15 +21,6 @@ public class AudioActivity extends AppCompatActivity  implements AbstractPlaybac
 
     }
 
-    @Override
-    public void finishActivity() {
-        //finish();
-    }
-
-    @Override
-    public void setSupportMediaControllerForActivity(MediaControllerCompat mediaController) {
-        setSupportMediaController(mediaController);
-    }
 
 
     //TODO Check launch mode singleTop and onIntent method

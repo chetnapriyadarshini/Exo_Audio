@@ -26,6 +26,7 @@ public class LoadAvailablePodcastChannels{
     private static final String TAG = LoadAvailablePodcastChannels.class.getSimpleName();
     private OkHttpClient client;
 
+    //https://itunes.apple.com/us/rss/topaudiobooks/limit=10/xml
     public ArrayList<Podcast> load(){
         client = new OkHttpClient();
 
