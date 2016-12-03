@@ -13,9 +13,6 @@ import com.application.chetna_priya.exo_audio.Utils.GenreHelper;
 
 import java.util.ArrayList;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 public class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.ViewHolder> {
 
     /*
