@@ -4,6 +4,7 @@ import android.support.annotation.IntDef;
 import android.support.annotation.StringDef;
 
 import java.lang.annotation.Retention;
+import java.util.ArrayList;
 
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
@@ -12,6 +13,25 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
  */
 
 public class Genre {
+
+    private String genre_desc;
+    private int genre_icon;
+
+    public Genre(String genre_desc, int genre_icon){
+        this.genre_desc = genre_desc;
+        this.genre_icon = genre_icon;
+    }
+
+
+    public String getGenre_desc() {
+        return genre_desc;
+    }
+
+    public int getGenre_icon() {
+        return genre_icon;
+    }
+
+    /*
     @Retention(SOURCE)
     @StringDef({ARTS,
             COMEDY,
@@ -29,62 +49,46 @@ public class Genre {
             GAMES_HOBBIES,
             SOCIETY_CULTURE,
             GOVERNMENT_ORIGANIZATION})
-    public @interface GenreCategory {}
+    public @interface GenreCategory {}*/
 
-    public static final String ARTS = "Arts";
-    public static final String COMEDY = "Comedy";
-    public static final String EDUCATION = "Education";
-    public static final String KIDS_FAMILY= "Kids & Family";
-    public static final String HEALTH = "Health";
-    public static final String TV_FILM = "TV & Film";
-    public static final String MUSIC = "Music";
-    public static final String NEWS_POLITICS = "News & Politics";
-    public static final String RELIGION_SPIRITUALITY = "Religion & Spirituality";
-    public static final String SCIENCE_MEDICINE = "Science & Medicine";
-    public static final String SPORTS_RECREATION = "Sports & Recreation";
-    public static final String TECHNOLOGY = "Technology";
-    public static final String BUSINESS = "Business";
-    public static final String GAMES_HOBBIES = "Games & Hobbies";
-    public static final String SOCIETY_CULTURE = "Society & Culture";
-    public static final String GOVERNMENT_ORIGANIZATION = "Government & Organization";
 
-    public String getGenre(int position){
+    /*public String getGenre(int position){
         switch (position){
-            case 1:
+            case 0:
                 return ARTS;
-            case 2:
+            case 1:
                 return COMEDY;
-            case 3:
+            case 2:
                 return EDUCATION;
-            case 4:
+            case 3:
                 return KIDS_FAMILY;
-            case 5:
+            case 4:
                 return HEALTH;
-            case 6:
+            case 5:
                 return TV_FILM;
-            case 7:
+            case 6:
                 return MUSIC;
-            case 8:
+            case 7:
                 return NEWS_POLITICS;
-            case 9:
+            case 8:
                 return RELIGION_SPIRITUALITY;
-            case 10:
+            case 9:
                 return SCIENCE_MEDICINE;
-            case 11:
+            case 10:
                 return SPORTS_RECREATION;
-            case 12:
+            case 11:
                 return TECHNOLOGY;
-            case 13:
+            case 12:
                 return BUSINESS;
-            case 14:
+            case 13:
                 return GAMES_HOBBIES;
-            case 15:
+            case 14:
                 return SOCIETY_CULTURE;
-            case 16:
+            case 15:
                 return GOVERNMENT_ORIGANIZATION;
         }
         return null;
-    }
+    }*/
 
 
     public static int getItemCount() {

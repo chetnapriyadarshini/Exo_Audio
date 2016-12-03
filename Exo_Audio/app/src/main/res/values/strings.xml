@@ -34,4 +34,6 @@
     <string name="currently_playing_artist">Artist of currently playing podcast</string>
     <string name="currently_playing_extra_info">Extra Info of currently playing podcast</string>
     <string name="play_pause">Play or Pause</string>
+    <string name="hello_know_more">Hello! Time to know you more.</string>
+    <string name="tell_interest">Tell us your interest topics and we will provide better content for you.</string>
 </resources>
