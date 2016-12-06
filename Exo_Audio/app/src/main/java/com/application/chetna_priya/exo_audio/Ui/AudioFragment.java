@@ -40,7 +40,7 @@ public class AudioFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-       // mListener = null;//Remember to detach listener here if you implement one
+       // mListener = null;//Remember to detach Listener here if you implement one
     }
 
 }

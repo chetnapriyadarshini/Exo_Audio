@@ -36,4 +36,14 @@
     <string name="play_pause">Play or Pause</string>
     <string name="hello_know_more">Hello! Time to know you more.</string>
     <string name="tell_interest">Tell us your interest topics and we will provide better content for you.</string>
+    <string name="select_three_genre">Select at least three categories.</string>
+    <string name="nice_start">Nice start! A few more please.</string>
+    <string name="almost_there">Almost there. Keep going!</string>
+    <string name="label_top_podcast">Top Podcasts</string>
+    <string name="title_activity_tabbed">tabbed</string>
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="featured">Featured</string>
+    <string name="categories">Categories</string>
+    <string name="networks">Networks</string>
 </resources>

@@ -28,7 +28,8 @@
             style="@style/Base.TextAppearance.AppCompat.Large"
             android:textColor="@color/black_54p"
             android:textStyle="bold"
-            android:text="@string/hello_know_more"/>
+            android:text="@string/hello_know_more"
+            android:contentDescription="@string/hello_know_more"/>
 
         <TextView
             android:id="@+id/genre_sub_header"
@@ -38,7 +39,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/genre_hello_text_top_margin"
             style="@style/Base.TextAppearance.AppCompat.Medium"
-            android:text="@string/tell_interest"/>
+            android:text="@string/tell_interest"
+            android:contentDescription="@string/tell_interest"/>
 
 
         <android.support.v7.widget.RecyclerView
@@ -57,6 +59,7 @@
         android:background="@color/colorAccent"
         android:textColor="@color/white"
         android:text="@string/label_next"
+        android:contentDescription="@string/label_next"
         android:textAllCaps="false"
         style="@style/Base.TextAppearance.AppCompat.Large"
         android:layout_alignParentBottom="true"
