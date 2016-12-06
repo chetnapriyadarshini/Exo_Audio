@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+        <style name="main_activity_text_style" parent="Base.TextAppearance.AppCompat.Large">
+                <item name="android:layout_marginLeft">@dimen/activity_horizontal_margin</item>
+        </style>
+</resources>

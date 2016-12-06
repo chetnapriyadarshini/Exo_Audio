@@ -31,6 +31,8 @@
     <dimen name="genre_hello_text_top_margin">10dp</dimen>
     <dimen name="genre_next_button_height">50dp</dimen>
     <integer name="genre_grid_span_count">3</integer>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="appbar_padding_top">8dp</dimen>
 
     <!-- Notification related dimens -->
 
