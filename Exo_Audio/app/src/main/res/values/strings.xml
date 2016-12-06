@@ -46,4 +46,6 @@
     <string name="featured">Featured</string>
     <string name="categories">Categories</string>
     <string name="networks">Networks</string>
+    <string name="see_all">See All</string>
+    <string name="add_new_categories">Add New Categories</string>
 </resources>
