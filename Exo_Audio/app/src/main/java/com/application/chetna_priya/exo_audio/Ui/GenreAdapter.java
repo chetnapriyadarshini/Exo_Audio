@@ -1,7 +1,10 @@
 package com.application.chetna_priya.exo_audio.Ui;
 
 import android.content.Context;
+import android.support.v7.widget.CardView;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +19,9 @@ import com.application.chetna_priya.exo_audio.Utils.PreferenceHelper;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.ViewHolder> {
 
     /*
@@ -29,6 +35,7 @@ class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.ViewHolder> {
 
     private Listener listener;
     private ArrayList<String> savedGenres;
+    private Context mContext;
 
     interface Listener {
         void onGenreSaved(int totalGenreSaved);
@@ -37,6 +44,7 @@ class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.ViewHolder> {
     private static final String TAG = GenreAdapter.class.getSimpleName();
 
     GenreAdapter(Context context){
+        this.mContext = context;
         listener = (Listener) context;
         GenreHelper helper = new GenreHelper();
         this.genreArrayList = helper.getGenreList();
@@ -78,14 +86,19 @@ class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.ViewHolder> {
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
+        @BindView(R.id.genre_img)
         ImageView genreImage;
+
+        @BindView(R.id.genre_info)
         TextView genreInfo;
 
-        ViewHolder(final View itemView) {
-            super(itemView);
-            genreImage = (ImageView) itemView.findViewById(R.id.genre_img);
-            genreInfo = (TextView) itemView.findViewById(R.id.genre_info);
+        @BindView(R.id.card_view)
+        CardView cardView;
 
+        ViewHolder(final View itemView) {
+
+            super(itemView);
+            ButterKnife.bind(this, itemView);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -94,8 +107,8 @@ class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.ViewHolder> {
                         savedGenres.remove(desc);
                     else {
                         savedGenres.add(desc);
-                        listener.onGenreSaved(savedGenres.size());
                     }
+                    listener.onGenreSaved(savedGenres.size());
                     notifyItemChanged(getAdapterPosition());
                     /*TODO set the color according to the outline which will be set
                        accroding to the pallette from the icon of the genre
