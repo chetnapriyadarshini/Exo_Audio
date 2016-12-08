@@ -41,6 +41,7 @@ public class LoadAvailablePodcastChannels{
 
 
             Uri builtUri = uriBuilder.build();
+                if(url == null)
             url = builtUri.toString();
             }
             Log.d(TAG, "URLLLLLLLLLLL "+url);

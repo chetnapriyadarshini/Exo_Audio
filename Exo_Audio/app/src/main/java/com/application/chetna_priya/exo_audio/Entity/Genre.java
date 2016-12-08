@@ -1,5 +1,6 @@
 package com.application.chetna_priya.exo_audio.Entity;
 
+
 /**
  * Created by chetna_priya on 11/23/2016.
  */
@@ -21,10 +22,6 @@ public class Genre {
 
     public int getGenre_icon() {
         return genre_icon;
-    }
-
-    public static int getItemCount() {
-        return 16;
     }
 
 }
