@@ -7,28 +7,31 @@ import android.util.Log;
 import com.application.chetna_priya.exo_audio.Entity.Genre;
 import com.application.chetna_priya.exo_audio.R;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
 
 public  class GenreHelper {
 
-    private final String ARTS = "Arts";
-    private final String COMEDY = "Comedy";
-    private final String EDUCATION = "Education";
-    private final String KIDS_FAMILY= "Kids & Family";
-    private final String HEALTH = "Health";
-    final String TV_FILM = "TV & Film";
-    final String MUSIC = "Music";
-    final String NEWS_POLITICS = "News & Politics";
-    final String RELIGION_SPIRITUALITY = "Religion & Spirituality";
-    final String SCIENCE_MEDICINE = "Science & Medicine";
-    final String SPORTS_RECREATION = "Sports & Recreation";
-    final String TECHNOLOGY = "Technology";
-    final String BUSINESS = "Business";
-    final String GAMES_HOBBIES = "Games & Hobbies";
-    final String SOCIETY_CULTURE = "Society & Culture";
-    private final String GOVERNMENT_ORIGANIZATION = "Government & Organization";
+    public static final int TOTAL_ITEM_COUNT = 13;
+    private static final String ARTS = "Arts";
+    private static final String COMEDY = "Comedy";
+    private static final String EDUCATION = "Education";
+    private static final String KIDS_FAMILY= "Kids & Family";
+    private static final String HEALTH = "Health";
+    private static final String TV_FILM = "TV & Film";
+ //   private final String MUSIC = "Music";
+    private static final String NEWS_POLITICS = "News & Politics";
+    private static final String RELIGION_SPIRITUALITY = "Religion & Spirituality";
+    private static final String SCIENCE_MEDICINE = "Science & Medicine";
+  //  private static final String SPORTS_RECREATION = "Sports & Recreation";
+    private static final String TECHNOLOGY = "Technology";
+    private static final String BUSINESS = "Business";
+    private static final String GAMES_HOBBIES = "Games & Hobbies";
+    private static final String SOCIETY_CULTURE = "Society & Culture";
+    //private static final String GOVERNMENT_ORIGANIZATION = "Government & Organization";
     public static final String TOP_PODCASTS = "Top Podcasts";
 
     final int resId = R.drawable.ic_launcher;
@@ -36,9 +39,7 @@ public  class GenreHelper {
     public ArrayList<Genre> getGenreList(){
         ArrayList<Genre> genreArrayList = new ArrayList<>();
 
-        int TOTAL_GENRE = 16;
-
-        for(int i = 0; i< TOTAL_GENRE; i++){
+        for(int i = 0; i< TOTAL_ITEM_COUNT; i++){
             Genre genre = new Genre(getGenre(i), getGenreImage(i));
             genreArrayList.add(genre);
         }
@@ -64,43 +65,68 @@ public  class GenreHelper {
                 return HEALTH;
             case 5:
                 return TV_FILM;
-            case 6:
+          /*  case 6:
                 return MUSIC;
-            case 7:
+          */  case 6:
                 return NEWS_POLITICS;
-            case 8:
+            case 7:
                 return RELIGION_SPIRITUALITY;
-            case 9:
+            case 8:
                 return SCIENCE_MEDICINE;
-            case 10:
+           /* case 9:
                 return SPORTS_RECREATION;
-            case 11:
+           */ case 9:
                 return TECHNOLOGY;
-            case 12:
+            case 10:
                 return BUSINESS;
-            case 13:
+            case 11:
                 return GAMES_HOBBIES;
-            case 14:
+            case 12:
                 return SOCIETY_CULTURE;
-            case 15:
+            /*case 14:
                 return GOVERNMENT_ORIGANIZATION;
-        }
+        */}
         return null;
     }
 
 
     public static String getGenreUrl(String category, int limit) {
+        /*
+        	Available Media : movie, podcast, music, musicVideo, audiobook, shortFilm, tvShow, software, ebook, all
+         */
+        String LIMIT_PARAM = "limit";
+        Uri.Builder uriBuilder;
+        /*
+        urlStringBuilder.append(
+              URLEncoder.encode("\"YHOO\",\"AAPL\",\"GOOG\",\"MSFT\")", "UTF-8"));
+         */
 
-        String limitParam = "limit";
-        switch (category){
-            case TOP_PODCASTS:
-                String BASE_URI  =  "https://itunes.apple.com/us/rss/toppodcasts";
-                Uri.Builder uriBuilder = Uri.parse(BASE_URI).buildUpon();
-                uriBuilder.appendQueryParameter(limitParam, String.valueOf(limit));
-                uriBuilder.appendPath("xml");
-                return uriBuilder.build().toString();
+        if(!(category.equals(TOP_PODCASTS))) {
+            final String ITUNES_BASE_URL = "https://itunes.apple.com/search?";
+            final String TERM_PARAM = "term";
+            final String MEDIA_PARAM = "media";
+            final String podcastmediaVal = "podcast";
+            final String musicmediaVal = "music";
+            final String audiobookmediaVal = "audiobook";
+
+                uriBuilder = Uri.parse(ITUNES_BASE_URL).buildUpon();
+                uriBuilder.appendQueryParameter(MEDIA_PARAM, podcastmediaVal);
+                //  uriBuilder.appendQueryParameter(MEDIA_PARAM, musicmediaVal);
+                // uriBuilder.appendQueryParameter(MEDIA_PARAM, audiobookmediaVal);
+
+            uriBuilder.appendQueryParameter(TERM_PARAM, category);
+            uriBuilder.appendQueryParameter(LIMIT_PARAM, String.valueOf(limit));
+
+
+            Uri builtUri = uriBuilder.build();
+            return builtUri.toString();
+        }else{
+
+            String BASE_URI  =  "https://itunes.apple.com/us/rss/toppodcasts";
+            uriBuilder = Uri.parse(BASE_URI).buildUpon();
+            uriBuilder.appendQueryParameter(LIMIT_PARAM, String.valueOf(limit));
+            uriBuilder.appendPath("xml");
+            return uriBuilder.build().toString();
         }
-
-        return null;
     }
 }

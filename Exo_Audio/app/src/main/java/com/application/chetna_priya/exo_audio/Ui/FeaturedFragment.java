@@ -22,6 +22,7 @@ public class FeaturedFragment extends Fragment {
         new categories all enclosed in a scroll view
          */
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.album_category_recycler_view);
+        recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(new FeatureRecyViewAdapter(getActivity()));
         return rootView;

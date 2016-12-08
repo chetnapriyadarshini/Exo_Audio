@@ -37,6 +37,7 @@
     <dimen name="cardview_elevation">18dp</dimen>
     <dimen name="featured_margin">5dp</dimen>
     <dimen name="album_right_margin">5dp</dimen>
+    <dimen name="genre_recycler_view_bottom_pad">80dp</dimen>
 
     <!-- Notification related dimens -->
 

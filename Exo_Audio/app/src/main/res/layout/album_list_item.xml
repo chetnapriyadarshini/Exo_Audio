@@ -32,6 +32,16 @@
             android:textColor="@color/black"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
             tools:text="Religion &amp; Spirituality"/>
+
+        <TextView
+            android:id="@+id/album_artist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:maxLength="@integer/max_podcast_title_length"
+            android:textColor="@color/black"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+            tools:text="Religion &amp; Spirituality"/>
     </LinearLayout>
 
 

@@ -37,6 +37,7 @@
         android:layout_below="@id/list_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/genre_text_bottom_padding"
         android:layout_marginLeft="@dimen/album_right_margin"
         android:layout_marginStart="@dimen/album_right_margin"
         android:scrollbars="horizontal"/>

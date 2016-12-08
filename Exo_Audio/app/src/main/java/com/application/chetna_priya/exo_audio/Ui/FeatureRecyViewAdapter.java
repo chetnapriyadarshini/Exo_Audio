@@ -4,9 +4,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -37,15 +34,16 @@ class FeatureRecyViewAdapter extends RecyclerView.Adapter<FeatureRecyViewAdapter
 
     private ArrayList<String> categoriesList = new ArrayList<>();
     private Context mContext;
+    private final String TAG = FeatureRecyViewAdapter.class.getSimpleName();
 
     FeatureRecyViewAdapter(Context context){
         this.mContext = context;
         /*
         In addition to user selected genre categories we also fetch toppodcasts
          */
-        categoriesList.add(GenreHelper.TOP_PODCASTS);
+       // categoriesList.add(GenreHelper.TOP_PODCASTS);
         //Now we add all the saved genres
-     //   categoriesList.addAll(PreferenceHelper.getSavedGenres(context));
+        categoriesList.addAll(PreferenceHelper.getSavedGenres(context));
     }
 
     @Override
@@ -85,7 +83,13 @@ class FeatureRecyViewAdapter extends RecyclerView.Adapter<FeatureRecyViewAdapter
             @Override
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
-                holder.albumRecyclerView.setAdapter(new AlbumAdapter(podcastArrayList));
+                Log.d(TAG, "Initializing album adapter with size "+podcastArrayList.size()+" and category "
+                 +category);
+                /*
+                Make sure that the category consists of at least one podcast
+                 */
+                if(podcastArrayList.size() > 0)
+                     holder.albumRecyclerView.setAdapter(new AlbumAdapter(podcastArrayList));
             }
         }.execute();
     }
@@ -116,6 +120,7 @@ class FeatureRecyViewAdapter extends RecyclerView.Adapter<FeatureRecyViewAdapter
             title, see_all and then this child recycler view containing a list of cardviews of individual albums
              */
             albumRecyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
+            albumRecyclerView.setNestedScrollingEnabled(false);
         }
     }
 
@@ -165,24 +170,26 @@ class FeatureRecyViewAdapter extends RecyclerView.Adapter<FeatureRecyViewAdapter
                                     int textColor = palette.getLightVibrantColor(Color.WHITE);
                                     holder.cardView.setCardBackgroundColor(color);
                                     holder.album_info.setTextColor(textColor);
+                                    holder.album_artist.setTextColor(textColor);
                                 }
                             });
                         }
 
                         @Override
                         public void onError() {
-
+                            holder.cardView.setCardBackgroundColor(mContext.getResources().getColor(R.color.colorAccent));
                         }
                     });
 
-       //     holder.cardView.setCardBackgroundColor(R.color.colorAccent);
+
             holder.album_info.setText(podcastList.get(position).getAlbum_title());
+            holder.album_artist.setText(podcastList.get(position).getArtist());
             holder.itemView.setContentDescription(holder.album_info.getText());
         }
 
         @Override
         public int getItemCount() {
-            return  mContext.getResources().getInteger(R.integer.num_albums);
+            return  podcastList.size();
         }
 
     }
@@ -194,6 +201,9 @@ class FeatureRecyViewAdapter extends RecyclerView.Adapter<FeatureRecyViewAdapter
 
         @BindView(R.id.album_info)
         TextView album_info;
+
+        @BindView(R.id.album_artist)
+        TextView album_artist;
 
         @BindView(R.id.card_view)
         CardView cardView;

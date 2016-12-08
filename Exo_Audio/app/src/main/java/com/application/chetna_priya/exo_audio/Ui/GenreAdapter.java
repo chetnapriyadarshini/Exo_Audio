@@ -81,7 +81,7 @@ class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return Genre.getItemCount();
+        return GenreHelper.TOTAL_ITEM_COUNT;
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
