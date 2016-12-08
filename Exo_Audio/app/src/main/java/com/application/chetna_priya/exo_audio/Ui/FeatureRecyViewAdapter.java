@@ -76,7 +76,8 @@ class FeatureRecyViewAdapter extends RecyclerView.Adapter<FeatureRecyViewAdapter
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                String url = GenreHelper.getGenreUrl(category, mContext);
+                int limit = mContext.getResources().getInteger(R.integer.num_albums);
+                String url = GenreHelper.getGenreUrl(category, limit);
                 podcastArrayList.addAll(new LoadAvailablePodcastChannels().load(url));
                 return null;
             }
