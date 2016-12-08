@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <ImageView
+        android:id="@+id/album_icon"
+        android:layout_width="@dimen/album_small_size"
+        android:layout_height="@dimen/album_small_size"
+        tools:src="@drawable/placeholder"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="@dimen/album_icon_left_margin"
+        android:layout_marginStart="@dimen/album_icon_left_margin"
+        android:layout_centerVertical="true"/>
+
+
+        <TextView
+            android:id="@+id/album_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="RadioLab presents: More time"
+            style="@style/Base.TextAppearance.AppCompat.Medium"
+            android:layout_centerInParent="true"
+            android:textColor="@color/black"/>
+
+
+</RelativeLayout>

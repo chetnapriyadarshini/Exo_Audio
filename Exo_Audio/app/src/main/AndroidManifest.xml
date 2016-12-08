@@ -52,6 +52,7 @@
         <activity android:name=".Ui.DrawerActivity" android:screenOrientation="portrait" />
         <activity android:name=".Ui.BaseActivity" android:screenOrientation="portrait" />
         <activity android:name=".Ui.GenreActivity" android:screenOrientation="portrait" />
+        <activity android:name=".Ui.AllPodcastsInCategory" android:screenOrientation="portrait"/>
     </application>
 
 </manifest>
