@@ -20,7 +20,7 @@ public class RemoteJsonSource implements MediaProviderSource {
     @Override
     public Iterator<MediaMetadataCompat> iterator() {
         try {
-            ArrayList<Podcast> podcastChannelLists = new LoadAvailablePodcastChannels().load();
+            ArrayList<Podcast> podcastChannelLists = new LoadAvailablePodcastChannels().load(null);
             ArrayList<MediaMetadataCompat> tracks = new ArrayList<>();
             ArrayList<Episode> episodeList = new FetchIndividualPodcastEpisodes().load(podcastChannelLists);
             for(int i=0; i<episodeList.size();i++){

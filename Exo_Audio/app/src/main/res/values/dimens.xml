@@ -6,7 +6,8 @@
     <dimen name="margin_play_current_audio">@dimen/activity_horizontal_margin</dimen>
     <dimen name="padding_albumimg_and_desc">10dp</dimen>
     <integer name="max_text_length">80</integer>
-
+    <dimen name="podcast_album_width">114dp</dimen>
+    <dimen name="podcast_album_height">200dp</dimen>
     <!-- Notification related dimens -->
 
     <!-- Text sizes -->
@@ -34,6 +35,8 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="appbar_padding_top">8dp</dimen>
     <dimen name="cardview_elevation">18dp</dimen>
+    <dimen name="featured_margin">5dp</dimen>
+    <dimen name="album_right_margin">5dp</dimen>
 
     <!-- Notification related dimens -->
 

@@ -39,11 +39,13 @@ public class PlaybackControlsFragment extends Fragment {
 
     @BindView(R.id.artist)
     TextView mSubtitle;
+/*
 
     @BindView(R.id.extra_info)
     TextView mExtraInfo;
+*/
 
-    @BindView(R.id.album_art)
+    @BindView(R.id.current_album_art)
     ImageView mAlbumArt;
 
     private String mArtUrl;

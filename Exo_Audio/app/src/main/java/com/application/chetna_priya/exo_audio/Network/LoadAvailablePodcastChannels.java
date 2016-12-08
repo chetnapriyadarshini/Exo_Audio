@@ -17,19 +17,16 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-/**
- * Created by chetna_priya on 11/22/2016.
- */
 
 public class LoadAvailablePodcastChannels{
 
     private static final String TAG = LoadAvailablePodcastChannels.class.getSimpleName();
-    private OkHttpClient client;
 
     //https://itunes.apple.com/us/rss/topaudiobooks/limit=10/xml
-    public ArrayList<Podcast> load(){
-        client = new OkHttpClient();
+    public ArrayList<Podcast> load(String url){
 
+        OkHttpClient client = new OkHttpClient();
+//        Log.d(TAG, url);
         final String ITUNES_BASE_URL = "https://itunes.apple.com/search?";
         final String TERM_PARAM = "term";
         final String MEDIA_PARAM = "media";
@@ -37,14 +34,15 @@ public class LoadAvailablePodcastChannels{
         final String termVal = "comedy";
 
         try {
+            /*if(url == null)*/{
             Uri.Builder uriBuilder = Uri.parse(ITUNES_BASE_URL).buildUpon();
             uriBuilder.appendQueryParameter(MEDIA_PARAM, mediaVal);
             uriBuilder.appendQueryParameter(TERM_PARAM, termVal);
 
 
             Uri builtUri = uriBuilder.build();
-            String url = builtUri.toString();
-
+            url = builtUri.toString();
+            }
             Log.d(TAG, "URLLLLLLLLLLL "+url);
 
             Request request = new Request.Builder()
@@ -55,8 +53,6 @@ public class LoadAvailablePodcastChannels{
             return  parseFeedUrlFromJSON(response.body().string());
         } catch (IOException | JSONException e) {
             e.printStackTrace();
-        }finally {
-            client = null;
         }
         return null;
     }

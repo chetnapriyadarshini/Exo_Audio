@@ -28,11 +28,9 @@
         <item name="android:contentDescription">@string/exo_controls_rewind_description</item>
     </style>
 
-    <style name="main_activity_text_style" parent="Base.TextAppearance.AppCompat.Large">
-        <item name="android:textColor">@android:color/darker_gray</item>
+    <style name="main_activity_text_style" parent="Base.TextAppearance.AppCompat.Medium">
+        <item name="android:textColor">@color/background_grey</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:layout_marginLeft">@dimen/activity_horizontal_margin</item>
-        <item name="android:layout_marginBottom">@dimen/activity_horizontal_margin</item>
     </style>
 
     <style name="AppTheme.NoActionBar">

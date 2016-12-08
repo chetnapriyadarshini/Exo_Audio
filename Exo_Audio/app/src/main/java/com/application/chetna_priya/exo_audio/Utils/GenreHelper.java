@@ -1,22 +1,23 @@
 package com.application.chetna_priya.exo_audio.Utils;
 
+import android.content.Context;
+import android.net.Uri;
+import android.util.Log;
+
 import com.application.chetna_priya.exo_audio.Entity.Genre;
 import com.application.chetna_priya.exo_audio.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by chetna_priya on 12/3/2016.
- */
 
 public  class GenreHelper {
 
-    final String ARTS = "Arts";
-    final String COMEDY = "Comedy";
-    final String EDUCATION = "Education";
-    final String KIDS_FAMILY= "Kids & Family";
-    final String HEALTH = "Health";
+    private final String ARTS = "Arts";
+    private final String COMEDY = "Comedy";
+    private final String EDUCATION = "Education";
+    private final String KIDS_FAMILY= "Kids & Family";
+    private final String HEALTH = "Health";
     final String TV_FILM = "TV & Film";
     final String MUSIC = "Music";
     final String NEWS_POLITICS = "News & Politics";
@@ -27,7 +28,8 @@ public  class GenreHelper {
     final String BUSINESS = "Business";
     final String GAMES_HOBBIES = "Games & Hobbies";
     final String SOCIETY_CULTURE = "Society & Culture";
-    final String GOVERNMENT_ORIGANIZATION = "Government & Organization";
+    private final String GOVERNMENT_ORIGANIZATION = "Government & Organization";
+    public static final String TOP_PODCASTS = "Top Podcasts";
 
     final int resId = R.drawable.ic_launcher;
 
@@ -87,4 +89,18 @@ public  class GenreHelper {
     }
 
 
+    public static String getGenreUrl(String category, Context context) {
+        int limit = context.getResources().getInteger(R.integer.num_albums);
+        String limitParam = "limit";
+        switch (category){
+            case TOP_PODCASTS:
+                String BASE_URI  =  "https://itunes.apple.com/us/rss/toppodcasts";
+                Uri.Builder uriBuilder = Uri.parse(BASE_URI).buildUpon();
+                uriBuilder.appendQueryParameter(limitParam, String.valueOf(limit));
+                uriBuilder.appendPath("xml");
+                return uriBuilder.build().toString();
+        }
+
+        return null;
+    }
 }

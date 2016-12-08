@@ -11,9 +11,10 @@
         android:layout_height="wrap_content"
         style="@style/main_activity_text_style"
         android:layout_alignParentLeft="true"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginLeft="@dimen/featured_margin"
         android:layout_alignParentStart="true"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginStart="@dimen/featured_margin"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
         tools:text="Top Podcasts"/>
 
     <TextView
@@ -23,8 +24,9 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_alignBaseline="@id/list_title"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/featured_margin"
+        android:layout_marginEnd="@dimen/featured_margin"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
         android:text="@string/see_all"
         style="@style/Base.TextAppearance.AppCompat.Medium"
         android:textColor="@color/colorAccent"/>
@@ -32,11 +34,11 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/album_recycler_view"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
         android:layout_below="@id/list_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/album_right_margin"
+        android:layout_marginStart="@dimen/album_right_margin"
         android:scrollbars="horizontal"/>
-
 
 </RelativeLayout>
