@@ -89,8 +89,8 @@ public  class GenreHelper {
     }
 
 
-    public static String getGenreUrl(String category, Context context) {
-        int limit = context.getResources().getInteger(R.integer.num_albums);
+    public static String getGenreUrl(String category, int limit) {
+
         String limitParam = "limit";
         switch (category){
             case TOP_PODCASTS:
