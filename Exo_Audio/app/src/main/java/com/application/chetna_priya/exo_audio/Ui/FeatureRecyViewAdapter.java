@@ -1,9 +1,11 @@
 package com.application.chetna_priya.exo_audio.Ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -32,6 +34,7 @@ import static android.widget.ImageView.ScaleType.CENTER_CROP;
 
 class FeatureRecyViewAdapter extends RecyclerView.Adapter<FeatureRecyViewAdapter.ViewHolder> {
 
+    static final String ALBUM_CATEGORY = "album_category";
     private ArrayList<String> categoriesList = new ArrayList<>();
     private Context mContext;
     private final String TAG = FeatureRecyViewAdapter.class.getSimpleName();
@@ -47,7 +50,8 @@ class FeatureRecyViewAdapter extends RecyclerView.Adapter<FeatureRecyViewAdapter
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
+    {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.featured_category_list_item, parent, false);
         // set the view's size, margins, paddings and layout parameters
@@ -62,7 +66,9 @@ class FeatureRecyViewAdapter extends RecyclerView.Adapter<FeatureRecyViewAdapter
         holder.seeAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent allpodcasts = new Intent(mContext, AllPodcastsInCategory.class);
+                allpodcasts.putExtra(ALBUM_CATEGORY, categoriesList.get(holder.getAdapterPosition()));
+                mContext.startActivity(allpodcasts);
             }
         });
         /*
@@ -83,9 +89,9 @@ class FeatureRecyViewAdapter extends RecyclerView.Adapter<FeatureRecyViewAdapter
             @Override
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
-                Log.d(TAG, "Initializing album adapter with size "+podcastArrayList.size()+" and category "
+              /*  Log.d(TAG, "Initializing album adapter with size "+podcastArrayList.size()+" and category "
                  +category);
-                /*
+              */  /*
                 Make sure that the category consists of at least one podcast
                  */
                 if(podcastArrayList.size() > 0)

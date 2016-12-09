@@ -14,13 +14,15 @@
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/album_category_recycler_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"/>
 
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
+                android:layout_below="@id/album_category_recycler_view"
                 android:contentDescription="@string/add_new_categories"
+                android:layout_marginBottom="20dp"
                 android:elevation="@dimen/cardview_elevation"
                 app:cardCornerRadius="@dimen/cardview_default_radius">
 <!--
@@ -38,6 +40,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/activity_horizontal_margin"
                         android:layout_marginStart="@dimen/activity_horizontal_margin"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
                         android:src="@drawable/ic_launcher"
                         android:contentDescription="@string/add_new_categories"/>
 

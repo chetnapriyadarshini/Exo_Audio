@@ -38,6 +38,8 @@
     <dimen name="featured_margin">5dp</dimen>
     <dimen name="album_right_margin">5dp</dimen>
     <dimen name="genre_recycler_view_bottom_pad">80dp</dimen>
+    <dimen name="album_small_size">80dp</dimen>
+    <dimen name="album_icon_left_margin">10dp</dimen>
 
     <!-- Notification related dimens -->
 

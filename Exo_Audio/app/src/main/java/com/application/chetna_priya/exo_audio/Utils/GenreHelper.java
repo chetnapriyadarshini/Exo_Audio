@@ -96,26 +96,27 @@ public  class GenreHelper {
          */
         String LIMIT_PARAM = "limit";
         Uri.Builder uriBuilder;
-        /*
-        urlStringBuilder.append(
-              URLEncoder.encode("\"YHOO\",\"AAPL\",\"GOOG\",\"MSFT\")", "UTF-8"));
-         */
 
         if(!(category.equals(TOP_PODCASTS))) {
             final String ITUNES_BASE_URL = "https://itunes.apple.com/search?";
             final String TERM_PARAM = "term";
             final String MEDIA_PARAM = "media";
             final String podcastmediaVal = "podcast";
-            final String musicmediaVal = "music";
-            final String audiobookmediaVal = "audiobook";
+          //  final String musicmediaVal = "music";
+          //  final String audiobookmediaVal = "audiobook";
 
-                uriBuilder = Uri.parse(ITUNES_BASE_URL).buildUpon();
-                uriBuilder.appendQueryParameter(MEDIA_PARAM, podcastmediaVal);
-                //  uriBuilder.appendQueryParameter(MEDIA_PARAM, musicmediaVal);
-                // uriBuilder.appendQueryParameter(MEDIA_PARAM, audiobookmediaVal);
+            uriBuilder = Uri.parse(ITUNES_BASE_URL).buildUpon();
+            uriBuilder.appendQueryParameter(MEDIA_PARAM, podcastmediaVal);
+
+            //  uriBuilder.appendQueryParameter(MEDIA_PARAM, musicmediaVal);
+            // uriBuilder.appendQueryParameter(MEDIA_PARAM, audiobookmediaVal);
 
             uriBuilder.appendQueryParameter(TERM_PARAM, category);
-            uriBuilder.appendQueryParameter(LIMIT_PARAM, String.valueOf(limit));
+            /*
+            This applies for cases when we want all podcasts in a cetegory
+             */
+            if(limit != -1)
+                uriBuilder.appendQueryParameter(LIMIT_PARAM, String.valueOf(limit));
 
 
             Uri builtUri = uriBuilder.build();
