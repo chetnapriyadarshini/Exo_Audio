@@ -52,7 +52,6 @@ public class GenreActivity extends AppCompatActivity implements GenreAdapter.Lis
             genreButton.setEnabled(false);
             onGenreSaved(0);
         }
-
         genreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

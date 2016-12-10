@@ -12,19 +12,17 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-/**
- * Created by chetna_priya on 11/22/2016.
- */
 public class FetchIndividualPodcastEpisodes {
 
-    public ArrayList<Episode> load(ArrayList<Podcast> podList){
+    public ArrayList<Episode> load(Podcast podcast){
 
-        for(int i=0; i<podList.size();i++) {
+        //for(int i=0; i<podList.size();i++)
+        {
             try {
                 OkHttpClient client = new OkHttpClient();
-                Request request = new Request.Builder().url(new URL(podList.get(i).getTrackUri())).build();
+                Request request = new Request.Builder().url(new URL(podcast.getTrackUri())).build();
                 Response response = client.newCall(request).execute();
-                return new FeedParser().parseEpisodes(response.body().byteStream(), podList.get(i));
+                return new FeedParser().parseEpisodes(response.body().byteStream(), podcast);
 
             } catch (IOException e) {
                 e.printStackTrace();

@@ -43,16 +43,14 @@ public class FeedParser {
     private final String MAIN_ATTRIBUTE_TAG_POD_AUDIO_URL = "enclosure";
 
     private static final String TAG = FeedParser.class.getSimpleName();
-    private String podcast_title;
-    private String podcast_summary;
-    private String podcast_image_link;
+    private String podsummary;
 
     /** Parse an Atom feed, returning a collection of Episode objects.
      *
      * @param in Atom feed, as a stream.
      * @throws IOException on I/O error.
      */
-    public ArrayList<Episode> parseEpisodes(@NonNull InputStream in, Podcast podcast) throws IOException {
+    ArrayList<Episode> parseEpisodes(@NonNull InputStream in, Podcast podcast) throws IOException {
         ArrayList<Episode> episodes = null;
         try {
             XmlPullParser parser = Xml.newPullParser();
@@ -145,6 +143,8 @@ public class FeedParser {
                 if(episode != null) {
                     episodes.add(episode);
                 }
+            }else if(parser.getName().equals(ATTRIBUTE_TAG_EPISODE_SUMMARY)) {
+                podsummary = readTag(parser, TAG_SUMMARY);
             }else
                 skip(parser);
         }
@@ -194,8 +194,8 @@ public class FeedParser {
             }
 
         }
-        Episode episode = new Episode(podcast, episode_title, episode_duration,episode_summary,episode_pod_url,publishedOn);
-        return episode;
+        return new Episode(podcast, episode_title, episode_duration,episode_summary,episode_pod_url,publishedOn,
+                podsummary);
     }
 
     private String getDateString(String date) {

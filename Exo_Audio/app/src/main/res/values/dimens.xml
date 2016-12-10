@@ -40,6 +40,7 @@
     <dimen name="genre_recycler_view_bottom_pad">80dp</dimen>
     <dimen name="album_small_size">80dp</dimen>
     <dimen name="album_icon_left_margin">10dp</dimen>
+    <dimen name="detail_backdrop_height">200dp</dimen>
 
     <!-- Notification related dimens -->
 

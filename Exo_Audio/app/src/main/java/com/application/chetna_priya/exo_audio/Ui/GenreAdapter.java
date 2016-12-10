@@ -35,7 +35,6 @@ class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.ViewHolder> {
 
     private Listener listener;
     private ArrayList<String> savedGenres;
-    private Context mContext;
 
     interface Listener {
         void onGenreSaved(int totalGenreSaved);
@@ -44,7 +43,6 @@ class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.ViewHolder> {
     private static final String TAG = GenreAdapter.class.getSimpleName();
 
     GenreAdapter(Context context){
-        this.mContext = context;
         listener = (Listener) context;
         GenreHelper helper = new GenreHelper();
         this.genreArrayList = helper.getGenreList();

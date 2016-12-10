@@ -48,4 +48,8 @@
     <string name="networks">Networks</string>
     <string name="see_all">See All</string>
     <string name="add_new_categories">Add New Categories</string>
+    <!-- Just a sample text, no need to translate !-->
+    <string name="sample_summary" translatable="false">This american life is weekly public radio show heard by 2.2
+    million people on more than 500 stations. Another 1.5 million people download the podacst. It is hosted by
+    Ira Glass produced in collaboration with Chicago public media.</string>
 </resources>

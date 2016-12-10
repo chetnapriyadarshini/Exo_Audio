@@ -2,13 +2,16 @@ package com.application.chetna_priya.exo_audio.Entity;
 
 
 import android.support.annotation.NonNull;
+import android.util.Log;
+
+import java.io.Serializable;
 
 /**
  * This class represents a single entry (post) in the XML feed.
  *
  * <p>It includes the data members "title," "link," and "summary."
  */
-public class Episode {
+public class Episode implements Serializable {
 
     private final String TAG = Episode.class.getSimpleName();
 
@@ -19,15 +22,17 @@ public class Episode {
     private String episode_published_on;
 
     private Podcast podcast;
+    private String podcast_summary;
 
-    public Episode(@NonNull Podcast podcast,@NonNull String episode_title, @NonNull String episode_duration, @NonNull String episode_summary,
-                   @NonNull String episode_pod_url, @NonNull String episode_release_date) {
+    public Episode(@NonNull Podcast podcast, @NonNull String episode_title, @NonNull String episode_duration, @NonNull String episode_summary,
+                   @NonNull String episode_pod_url, @NonNull String episode_release_date, String podcast_summary) {
         this.episode_title = episode_title;
         this.episode_pod_link = episode_pod_url;
         this.episode_summary = episode_summary;
         this.episode_duration = episode_duration;
         this.episode_published_on = episode_release_date;
         this.podcast = podcast;
+        this.podcast_summary = podcast_summary;
     }
 
 
@@ -65,5 +70,9 @@ public class Episode {
 
     public String getId() {
         return String.valueOf((podcast.getTrackNumber() + getEpisode_published_on()).hashCode());
+    }
+
+    public String getPodcastSummary() {
+        return podcast_summary;
     }
 }

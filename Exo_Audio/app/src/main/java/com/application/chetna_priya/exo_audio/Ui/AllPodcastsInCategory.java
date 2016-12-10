@@ -1,5 +1,6 @@
 package com.application.chetna_priya.exo_audio.Ui;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -24,6 +25,7 @@ import butterknife.ButterKnife;
 class AllPodcastsInCategory extends BaseActivity {
 
     private static final String TAG = AllPodcastsInCategory.class.getSimpleName();
+    public static final String PODCAST_OBJ = "podcast_obj";
     String selected_category;
     ArrayList<Podcast> podcastArrayList;
 
@@ -95,6 +97,14 @@ class AllPodcastsInCategory extends BaseActivity {
         ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent episodesIntent = new Intent(AllPodcastsInCategory.this, AllEpisodes.class);
+                    episodesIntent.putExtra(PODCAST_OBJ, podcastArrayList.get(getAdapterPosition()));
+                    startActivity(episodesIntent);
+                }
+            });
         }
     }
 }

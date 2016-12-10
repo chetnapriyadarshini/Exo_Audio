@@ -61,9 +61,14 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "NOTIFYYYYYYYYYYYYYYYYYYYYYYYY "+requestCode);
+
         switch (requestCode){
             case REQUEST_CODE_GENRE_ACTIVITY:
                 performIntialization();
+                break;
+            case FeaturedFragment.REQUEST_CODE_ADD_GENRES:
+                mPodcastPagerAdapter.getItem(0).onActivityResult(requestCode, resultCode,data);
                 break;
         }
     }

@@ -14,9 +14,11 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Ui.AudioActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".Ui.MainActivity"
+        <activity
+            android:name=".Ui.AudioActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Ui.MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -49,10 +51,19 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".Ui.DrawerActivity" android:screenOrientation="portrait" />
-        <activity android:name=".Ui.BaseActivity" android:screenOrientation="portrait" />
-        <activity android:name=".Ui.GenreActivity" android:screenOrientation="portrait" />
-        <activity android:name=".Ui.AllPodcastsInCategory" android:screenOrientation="portrait"/>
+        <activity
+            android:name=".Ui.DrawerActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Ui.BaseActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Ui.GenreActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Ui.AllPodcastsInCategory"
+            android:screenOrientation="portrait" />
+        <activity android:name=".Ui.AllEpisodes" android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>

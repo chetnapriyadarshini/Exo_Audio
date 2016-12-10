@@ -2,7 +2,9 @@ package com.application.chetna_priya.exo_audio.Entity;
 
 import android.support.annotation.NonNull;
 
-public class Podcast {
+import java.io.Serializable;
+
+public class Podcast implements Serializable {
 
     final String TAG = Podcast.class.getSimpleName();
 
@@ -15,6 +17,7 @@ public class Podcast {
     private String genre;
     private String artwork_uri;
     private long totalTrackCount;
+    private String podcast_summary;
 
     public Podcast(long trackNumber, @NonNull String album_title, /*@NonNull String album_cover_link,*/ @NonNull String track_uri,
                    @NonNull String artist, @NonNull String genre, long totalTrackCount, @NonNull String artwork_uri){
@@ -69,5 +72,13 @@ public class Podcast {
     @Override
     public String toString() {
         return "PODCAST : \n"+" TITLE: "+ album_title;
+    }
+
+    public void setSummary(String summary) {
+        this.podcast_summary = summary;
+    }
+
+    public String getSummary(){
+        return podcast_summary;
     }
 }
