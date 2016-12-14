@@ -29,6 +29,16 @@ class AllPodcastsInCategory extends BaseActivity {
     String selected_category;
     ArrayList<Podcast> podcastArrayList;
 
+    /*
+    This fragment needs both podcast and three episodes, we need to fetch 2 roots
+    both of which belong to the browsable category
+
+    Genres -- Health/Comedy -- All Podcasts
+                                       |
+                                       |
+                                Start here
+     */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +52,7 @@ class AllPodcastsInCategory extends BaseActivity {
             @Override
             protected Void doInBackground(Void... voids) {
                 String url = GenreHelper.getGenreUrl(selected_category, -1);
-                podcastArrayList = new LoadAvailablePodcastChannels().load(url);
+                podcastArrayList = new LoadAvailablePodcastChannels().load(url, selected_category);
                 return null;
             }
 

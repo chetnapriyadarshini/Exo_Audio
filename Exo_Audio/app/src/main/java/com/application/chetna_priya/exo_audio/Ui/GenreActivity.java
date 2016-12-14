@@ -57,10 +57,9 @@ public class GenreActivity extends AppCompatActivity implements GenreAdapter.Lis
             public void onClick(View view) {
                 PreferenceHelper.saveGenrePreferences(getApplicationContext(), mAdapter.getSavedGenres());
                 setResult(RESULT_OK);
-                finish();
-                /*
-                Intent intent = new Intent(GenreActivity.this,tabbed.class);
-                startActivity(intent);*/
+                /*finish();*/
+                Intent intent = new Intent(GenreActivity.this,MainActivity.class);
+                startActivity(intent);
             }
         });
     }

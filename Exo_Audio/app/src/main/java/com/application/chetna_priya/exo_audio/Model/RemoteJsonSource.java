@@ -1,30 +1,70 @@
 package com.application.chetna_priya.exo_audio.Model;
 
+import android.content.Context;
 import android.support.v4.media.MediaMetadataCompat;
 import android.util.Log;
 
+import com.application.chetna_priya.exo_audio.Data.LocalPersistence;
 import com.application.chetna_priya.exo_audio.Entity.Episode;
 import com.application.chetna_priya.exo_audio.Entity.Podcast;
 import com.application.chetna_priya.exo_audio.Network.FetchIndividualPodcastEpisodes;
 import com.application.chetna_priya.exo_audio.Network.LoadAvailablePodcastChannels;
+import com.application.chetna_priya.exo_audio.R;
+import com.application.chetna_priya.exo_audio.Utils.GenreHelper;
+import com.application.chetna_priya.exo_audio.Utils.PreferenceHelper;
 
 import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import static android.content.ContentValues.TAG;
 
-public class RemoteJsonSource implements MediaProviderSource {
 
+class RemoteJsonSource implements MediaProviderSource {
+
+    final String TAG = RemoteJsonSource.class.getSimpleName();
     @Override
-    public Iterator<MediaMetadataCompat> iterator() {
+    public Iterator<MediaMetadataCompat> iterator(Context context) {
         try {
-            ArrayList<Podcast> podcastChannelLists = new LoadAvailablePodcastChannels().load(null);
             ArrayList<MediaMetadataCompat> tracks = new ArrayList<>();
-            ArrayList<Episode> episodeList = new FetchIndividualPodcastEpisodes().load(podcastChannelLists.get(0));
-            for(int i=0; i<episodeList.size();i++){
-                tracks.add(buildFromPodcastEntity(episodeList.get(i)));
+            ArrayList<String> genres = PreferenceHelper.getSavedGenres(context);
+            Log.d(TAG, genres.toString());
+            if(genres == null)
+                return tracks.iterator();
+            ArrayList<Podcast> podcastChannelLists = new ArrayList<>();
+            LoadAvailablePodcastChannels loadChannels = new LoadAvailablePodcastChannels();
+            for(int i = 0; i< genres.size(); i++)
+            {
+                ArrayList<Podcast> podsublist = loadChannels.load(GenreHelper.getGenreUrl(genres.get(i), 10), genres.get(i));
+                podcastChannelLists.addAll(podsublist);
+            }
+
+
+            /*
+            We now load all the available episodes for all the selected channels
+             */
+            FetchIndividualPodcastEpisodes fetchEpisodes = new FetchIndividualPodcastEpisodes();
+            ArrayList<Episode> episodeList = new ArrayList<>();
+            for(int i = 0; i< podcastChannelLists.size(); i++)
+            {
+                ArrayList<Episode> episodeSubList = fetchEpisodes.load(podcastChannelLists.get(i));
+                if(episodeSubList != null) {
+                    for (int j = 0; j < episodeSubList.size(); j++) {
+                        episodeList.add(episodeSubList.get(j));
+                    }
+                }else{
+                    Log.d(TAG, "DO NOT ADDDDDDDDDDDD");
+                }
+            }
+            /*
+            Finally build the metadata from the episodes and add it to the tracks
+             */
+            for(int i=0; i<episodeList.size();i++) {
+             //   Episode episode = (Episode) LocalPersistence.readObjectFromFile(context, context.getString(R.string.current_episode));
+             //   Log.d(TAG, "Retrievedddddddd " + episode);
+                MediaMetadataCompat metadata = buildFromPodcastEntity(episodeList.get(i));
+                if(metadata != null)
+                    tracks.add(metadata);
             }
             return tracks.iterator();
         } catch (Exception e) {
@@ -40,7 +80,16 @@ public class RemoteJsonSource implements MediaProviderSource {
         // the session metadata can be accessed by notification listeners. This is done in this
         // sample for convenience only.
         //noinspection ResourceType
-        long duration = convertStringDurationToMs(episode.getEpisode_duration());
+        long duration;
+        try {
+            duration = convertStringDurationToMs(episode.getEpisode_duration());
+        }catch (NumberFormatException e){
+            e.printStackTrace();
+            return null;
+        }
+        if(duration == -1)
+            return null;
+
         ///*Long.parseLong(episode.getEpisode_duration())**/1000;//ms
         return new MediaMetadataCompat.Builder()
                 .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, episode.getId())
@@ -66,7 +115,8 @@ public class RemoteJsonSource implements MediaProviderSource {
         and the number to the right is assumed to be seconds.
         If more than two colons are present, the numbers furthest to the right are ignored.
          */
-
+        if(episode_duration == null)
+            return -1;
         if(!episode_duration.contains(":")){
             /*
             Accounts for condition: If an integer is provided (no colon present), the value is assumed to be in seconds.

@@ -1,5 +1,6 @@
 package com.application.chetna_priya.exo_audio.Model;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -21,12 +22,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import static com.application.chetna_priya.exo_audio.Utils.MediaIDHelper.MEDIA_ID_PODCASTS_BY_GENRE;
+import static com.application.chetna_priya.exo_audio.Utils.MediaIDHelper.MEDIA_ID_PODCASTS_BY_GENRE_AND_CHANNEL_NAME;
 import static com.application.chetna_priya.exo_audio.Utils.MediaIDHelper.MEDIA_ID_ROOT;
 import static com.application.chetna_priya.exo_audio.Utils.MediaIDHelper.createMediaID;
+import static com.application.chetna_priya.exo_audio.Utils.MediaIDHelper.createMediaIDForGenre;
 
-/**
- * Created by chetna_priya on 10/27/2016.
- */
 public class PodcastProvider {
 
     private static final String TAG = PodcastProvider.class.getSimpleName();
@@ -36,25 +36,25 @@ public class PodcastProvider {
     }
 
     private volatile State mCurrentState = State.NON_INITIALIZED;
-
     // Categorized caches for music track data:
     private ConcurrentMap<String, List<MediaMetadataCompat>> mPodcastListByGenre;
+    private ConcurrentMap<String, List<MediaMetadataCompat>> mPodcastListByChannelName;
     private final ConcurrentMap<String, MutableMediaMetadata> mPodcastListById;
     private final Set<String> mFavoriteTracks;
     private MediaProviderSource mSource;
 
     public interface Callback {
-        void onMusicCatalogReady(boolean success);
+        void onPodcastCatalogReady(boolean success);
     }
     public PodcastProvider() {
         this(new RemoteJsonSource());
     }
 
     public PodcastProvider(MediaProviderSource source) {
-
         mSource = source;
         mPodcastListByGenre = new ConcurrentHashMap<>();
         mPodcastListById = new ConcurrentHashMap<>();
+        mPodcastListByChannelName = new ConcurrentHashMap<>();
         mFavoriteTracks = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
     }
 
@@ -65,11 +65,26 @@ public class PodcastProvider {
         return mPodcastListByGenre.keySet();
     }
 
+    public Iterable<String> getAlbumsByGenre(String genre) {
+        if (mCurrentState != State.INITIALIZED) {
+            return Collections.emptyList();
+        }
+        Log.d(TAG, "SIZEEEE RETURNINGGGGGGGG" +mPodcastListByChannelName.size());
+        return mPodcastListByChannelName.keySet();
+    }
+
     public Iterable<MediaMetadataCompat> getPodcastByGenre(String genre) {
         if (mCurrentState != State.INITIALIZED || !mPodcastListByGenre.containsKey(genre)) {
             return Collections.emptyList();
         }
         return mPodcastListByGenre.get(genre);
+    }
+
+    public Iterable<MediaMetadataCompat> getEpisodeByChannelName(String podcastName) {
+        if (mCurrentState != State.INITIALIZED || !mPodcastListByChannelName.containsKey(podcastName)) {
+            return Collections.emptyList();
+        }
+        return mPodcastListByChannelName.get(podcastName);
     }
 /*
     *//**
@@ -192,24 +207,16 @@ public class PodcastProvider {
         return mFavoriteTracks.contains(podcastId);
     }
 
-    public Iterable<MediaMetadataCompat> getPodcastsByGenre(String genre) {
-        if (mCurrentState != State.INITIALIZED || !mPodcastListByGenre.containsKey(genre)) {
-            return Collections.emptyList();
-        }
-        return mPodcastListByGenre.get(genre);
-    }
-
-
     /**
      * Get the list of music tracks from a server and caches the track information
      * for future reference, keying tracks by musicId and grouping by genre.
      */
-    public void retrieveMediaAsync(final Callback callback) {
+    public void retrieveMediaAsync(final Callback callback, final Context context) {
         Log.d(TAG, "retrieveMediaAsync called");
         if (mCurrentState == State.INITIALIZED) {
             if (callback != null) {
                 // Nothing to do, execute callback immediately
-                callback.onMusicCatalogReady(true);
+                callback.onPodcastCatalogReady(true);
             }
             return;
         }
@@ -218,46 +225,63 @@ public class PodcastProvider {
         new AsyncTask<Void, Void, State>() {
             @Override
             protected State doInBackground(Void... params) {
-                retrieveMedia();
+                retrieveMedia(context);
                 return mCurrentState;
             }
 
             @Override
             protected void onPostExecute(State current) {
                 if (callback != null) {
-                    callback.onMusicCatalogReady(current == State.INITIALIZED);
+                    callback.onPodcastCatalogReady(current == State.INITIALIZED);
                 }
             }
         }.execute();
     }
 
     private synchronized void buildListsByGenre() {
-        ConcurrentMap<String, List<MediaMetadataCompat>> newMusicListByGenre = new ConcurrentHashMap<>();
+
+        ConcurrentMap<String, List<MediaMetadataCompat>> newPodcastListByGenre = new ConcurrentHashMap<>();
 
         for (MutableMediaMetadata m : mPodcastListById.values()) {
             String genre = m.metadata.getString(MediaMetadataCompat.METADATA_KEY_GENRE);
-            List<MediaMetadataCompat> list = newMusicListByGenre.get(genre);
+            List<MediaMetadataCompat> list = newPodcastListByGenre.get(genre);
             if (list == null) {
                 list = new ArrayList<>();
-                newMusicListByGenre.put(genre, list);
+                newPodcastListByGenre.put(genre, list);
             }
             list.add(m.metadata);
         }
-        mPodcastListByGenre = newMusicListByGenre;
+        mPodcastListByGenre = newPodcastListByGenre;
     }
 
-    private synchronized void retrieveMedia() {
+    private synchronized void buildListsByChannelName() {
+        ConcurrentMap<String, List<MediaMetadataCompat>> newPodcastListByChannelName = new ConcurrentHashMap<>();
+
+        for (MutableMediaMetadata m : mPodcastListById.values()) {
+            String podcastName = m.metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM);
+            List<MediaMetadataCompat> list = newPodcastListByChannelName.get(podcastName);
+            if (list == null) {
+                list = new ArrayList<>();
+                newPodcastListByChannelName.put(podcastName, list);
+            }
+            list.add(m.metadata);
+        }
+        mPodcastListByChannelName = newPodcastListByChannelName;
+    }
+
+    private synchronized void retrieveMedia(Context context) {
         try {
             if (mCurrentState == State.NON_INITIALIZED) {
                 mCurrentState = State.INITIALIZING;
 
-                Iterator<MediaMetadataCompat> tracks = mSource.iterator();
+                Iterator<MediaMetadataCompat> tracks = mSource.iterator(context);
                 while (tracks.hasNext()) {
                     MediaMetadataCompat item = tracks.next();
                     String podcastId = item.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
                     mPodcastListById.put(podcastId, new MutableMediaMetadata(podcastId, item));
                 }
                 buildListsByGenre();
+                buildListsByChannelName();
                 mCurrentState = State.INITIALIZED;
             }
         } finally {
@@ -274,22 +298,27 @@ public class PodcastProvider {
 
         if (!MediaIDHelper.isBrowseable(mediaId)) {
             return mediaItems;
-        }
-
+        }/*
+        Log.d(TAG, "MEDIA IDD RECEIVEDDDD "+mediaId);
+        Log.d(TAG, MediaIDHelper.getParentMediaID(mediaId).concat(MEDIA_ID_PODCASTS_BY_GENRE_AND_CHANNEL_NAME));*/
         if (MEDIA_ID_ROOT.equals(mediaId)) {
             mediaItems.add(createBrowsableMediaItemForRoot(resources));
 
-        } else if (MEDIA_ID_PODCASTS_BY_GENRE.equals(mediaId)) {
+        }else if (MEDIA_ID_PODCASTS_BY_GENRE.equals(mediaId)) {
             for (String genre : getGenres()) {
                 mediaItems.add(createBrowsableMediaItemForGenre(genre, resources));
             }
-
-        } else if (mediaId.startsWith(MEDIA_ID_PODCASTS_BY_GENRE)) {
+        }else if((MediaIDHelper.getParentMediaID(mediaId).concat(MEDIA_ID_PODCASTS_BY_GENRE_AND_CHANNEL_NAME)).equals(mediaId)) {
             String genre = MediaIDHelper.getHierarchy(mediaId)[1];
-            for (MediaMetadataCompat metadata : getPodcastByGenre(genre)) {
+            for (String album : getAlbumsByGenre(genre)) {
+                mediaItems.add(createBrowsableMediaItemForPodcast(album, resources));
+            }
+        }else if (mediaId.startsWith(MEDIA_ID_PODCASTS_BY_GENRE_AND_CHANNEL_NAME)) {
+            String channel = MediaIDHelper.getHierarchy(mediaId)[1];
+            Log.d(TAG, "returnnnn itemmmmmmmmmmmmm "+channel);
+            for (MediaMetadataCompat metadata : getEpisodeByChannelName(channel)) {
                 mediaItems.add(createMediaItem(metadata));
             }
-
         } else {
             Log.w(TAG, "Skipping unmatched mediaId: "+ mediaId);
         }
@@ -311,10 +340,22 @@ public class PodcastProvider {
     private MediaBrowserCompat.MediaItem createBrowsableMediaItemForGenre(String genre,
                                                                           Resources resources) {
         MediaDescriptionCompat description = new MediaDescriptionCompat.Builder()
-                .setMediaId(createMediaID(null, MEDIA_ID_PODCASTS_BY_GENRE, genre))
+                .setMediaId(createMediaID(null, MEDIA_ID_PODCASTS_BY_GENRE, genre).concat(MEDIA_ID_PODCASTS_BY_GENRE_AND_CHANNEL_NAME))
                 .setTitle(genre)
                 .setSubtitle(resources.getString(
                         R.string.browse_podcast_by_genre_subtitle, genre))
+                .build();
+        return new MediaBrowserCompat.MediaItem(description,
+                MediaBrowserCompat.MediaItem.FLAG_BROWSABLE);
+    }
+
+    private MediaBrowserCompat.MediaItem createBrowsableMediaItemForPodcast(String podcastTitle,
+                                                                          Resources resources) {
+        MediaDescriptionCompat description = new MediaDescriptionCompat.Builder()
+                .setMediaId(createMediaID(null, MEDIA_ID_PODCASTS_BY_GENRE_AND_CHANNEL_NAME, podcastTitle))
+                .setTitle(podcastTitle)
+                .setSubtitle(resources.getString(
+                        R.string.browse_podcast_by_genre_by_name_subtitle, podcastTitle))
                 .build();
         return new MediaBrowserCompat.MediaItem(description,
                 MediaBrowserCompat.MediaItem.FLAG_BROWSABLE);
@@ -331,6 +372,7 @@ public class PodcastProvider {
         MediaMetadataCompat copy = new MediaMetadataCompat.Builder(metadata)
                 .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, hierarchyAwareMediaID)
                 .build();
+      //  Log.d(TAG, "Media Item created!!!!!");
         return new MediaBrowserCompat.MediaItem(copy.getDescription(),
                 MediaBrowserCompat.MediaItem.FLAG_PLAYABLE);
 

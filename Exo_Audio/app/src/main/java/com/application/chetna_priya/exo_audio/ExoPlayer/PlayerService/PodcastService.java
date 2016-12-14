@@ -25,10 +25,6 @@ import java.util.List;
 
 import static com.application.chetna_priya.exo_audio.Utils.MediaIDHelper.MEDIA_ID_ROOT;
 
-
-/**
- * Created by chetna_priya on 10/26/2016.
- */
 public class PodcastService extends MediaBrowserServiceCompat implements PlaybackListener.PlaybackServiceCallback{
 
     private static final String TAG = PodcastService.class.getSimpleName();
@@ -42,7 +38,7 @@ public class PodcastService extends MediaBrowserServiceCompat implements Playbac
 
         super.onCreate();
         mPodcastProvider = new PodcastProvider();
-        mPodcastProvider.retrieveMediaAsync(null);
+        mPodcastProvider.retrieveMediaAsync(null, getApplicationContext());
 
         QueueManager queueManager = new QueueManager(mPodcastProvider, getResources(),
                 new QueueManager.MetadataUpdateListener() {
@@ -138,7 +134,7 @@ public class PodcastService extends MediaBrowserServiceCompat implements Playbac
     @Override
     public void onLoadChildren(@NonNull final String parentMediaId,
                                @NonNull final Result<List<MediaBrowserCompat.MediaItem>> result) {
-        Log.d(TAG, "OnLoadChildren: parentMediaId="+ parentMediaId);
+        Log.d(TAG, "OnLoadChildren: parentMediaId="+ parentMediaId+" resulttttt "+result.toString());
         if (mPodcastProvider.isInitialized()) {
             // if podcast library is ready, return immediately
             result.sendResult(mPodcastProvider.getChildren(parentMediaId, getResources()));
@@ -147,12 +143,14 @@ public class PodcastService extends MediaBrowserServiceCompat implements Playbac
             result.detach();
             mPodcastProvider.retrieveMediaAsync(new PodcastProvider.Callback() {
                 @Override
-                public void onMusicCatalogReady(boolean success) {
+                public void onPodcastCatalogReady(boolean success) {
                     result.sendResult(mPodcastProvider.getChildren(parentMediaId, getResources()));
                 }
-            });
+            }, getApplicationContext());
         }
     }
+
+
 
 
     @Override
@@ -181,4 +179,6 @@ public class PodcastService extends MediaBrowserServiceCompat implements Playbac
     public void onPlaybackStateUpdated(PlaybackStateCompat newState) {
         mSession.setPlaybackState(newState);
     }
+
+
 }

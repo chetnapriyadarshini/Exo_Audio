@@ -1,6 +1,7 @@
 package com.application.chetna_priya.exo_audio.Network;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.util.Xml;
 
 import com.application.chetna_priya.exo_audio.Entity.Episode;
@@ -60,72 +61,15 @@ public class FeedParser {
             episodes = readEpisodeFeed(parser, podcast);
         } catch (ParseException | XmlPullParserException | IOException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             in.close();
         }
         return episodes;
     }
-/*
-    public Podcast parsePodcast(@NonNull InputStream in, long id, @NonNull String feedUrl)
-             {
-        Podcast podcast = null;
-        try {
-            XmlPullParser parser = Xml.newPullParser();
-            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-            parser.setInput(in, null);
-            parser.nextTag();
-            podcast = readPodcastFeed(parser, id, feedUrl);
 
-        }catch (XmlPullParserException | ParseException | IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                in.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return podcast;
-    }
-
-    *//**
-     * Decode a feed attached to an XmlPullParser.
-     *
-     * @param parser Incoming XMl
-     * @throws XmlPullParserException on error parsing feed.
-     * @throws IOException on I/O error.
-     *//*
-    private Podcast readPodcastFeed(XmlPullParser parser, long id, String feedUrl)
-            throws XmlPullParserException, IOException, ParseException {
-
-        parser.require(XmlPullParser.START_TAG, ns, BEGIN_PARSE_TAG);
-        parser.nextTag();
-        parser.require(XmlPullParser.START_TAG, ns, BEGIN_PARSE_CHANNEL_TAG);
-        while (parser.next() != XmlPullParser.END_TAG) {
-            if (parser.getEventType() != XmlPullParser.START_TAG) {
-                continue;
-            }
-            if(parser.getName().equals(ATTRIBUTE_TAG_TITLE)){
-                podcast_title = readTag(parser, TAG_TITLE);
-            }else if(parser.getName().equals(ATTRIBUTE_TAG_SUMMARY)){
-                podcast_summary = readTag(parser, TAG_SUMMARY);
-            }else if(parser.getName().equals(MAIN_ATTRIBUTE_URL_TAG)){
-                podcast_image_link = readTag(parser, TAG_IMAGE_LINK);
-            }else if(parser.getName().equals(PODCAST_EPISODE_START_TAG))
-            {
-                *//*
-                We return from here because the main podcast feed is complete and the
-                episode feed has started, all the info to instantiate a podcast object should
-                be available by now
-                 *//*
-                return new Podcast(id, podcast_title, podcast_image_link,podcast_summary,feedUrl);
-            }else
-                skip(parser);
-        }
-       return null;
-    }*/
-
-    private ArrayList<Episode> readEpisodeFeed(XmlPullParser parser, Podcast podcast) throws IOException, XmlPullParserException, ParseException {
+    private ArrayList<Episode> readEpisodeFeed(XmlPullParser parser, Podcast podcast) throws Exception {
         ArrayList<Episode> episodes = new ArrayList<>();
         parser.require(XmlPullParser.START_TAG, ns, BEGIN_PARSE_TAG);
         parser.nextTag();
@@ -154,7 +98,7 @@ public class FeedParser {
 
 
     private Episode readEpisodes(XmlPullParser parser, Podcast podcast)
-            throws XmlPullParserException, IOException, ParseException {
+            throws Exception {
 
         String episode_title = null;
         String episode_duration = null;
@@ -198,8 +142,10 @@ public class FeedParser {
                 podsummary);
     }
 
-    private String getDateString(String date) {
+    private String getDateString(String date) throws Exception {
         String[] dateStringArr = date.split(" ");//Eg Date: Tue, 04 Dec 2007 24:00:00 EST
+        if(dateStringArr == null)// date us in some other format
+            throw new Exception("Wrong Date Format Exception");
         String newDate="";
         for(int i=1; i <= 3; i++){
             newDate = newDate.concat(dateStringArr[i])+" ";
@@ -297,5 +243,66 @@ public class FeedParser {
             }
         }
     }
+
+    /*
+    public Podcast parsePodcast(@NonNull InputStream in, long id, @NonNull String feedUrl)
+             {
+        Podcast podcast = null;
+        try {
+            XmlPullParser parser = Xml.newPullParser();
+            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
+            parser.setInput(in, null);
+            parser.nextTag();
+            podcast = readPodcastFeed(parser, id, feedUrl);
+
+        }catch (XmlPullParserException | ParseException | IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                in.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return podcast;
+    }
+
+    *//**
+     * Decode a feed attached to an XmlPullParser.
+     *
+     * @param parser Incoming XMl
+     * @throws XmlPullParserException on error parsing feed.
+     * @throws IOException on I/O error.
+     *//*
+    private Podcast readPodcastFeed(XmlPullParser parser, long id, String feedUrl)
+            throws XmlPullParserException, IOException, ParseException {
+
+        parser.require(XmlPullParser.START_TAG, ns, BEGIN_PARSE_TAG);
+        parser.nextTag();
+        parser.require(XmlPullParser.START_TAG, ns, BEGIN_PARSE_CHANNEL_TAG);
+        while (parser.next() != XmlPullParser.END_TAG) {
+            if (parser.getEventType() != XmlPullParser.START_TAG) {
+                continue;
+            }
+            if(parser.getName().equals(ATTRIBUTE_TAG_TITLE)){
+                podcast_title = readTag(parser, TAG_TITLE);
+            }else if(parser.getName().equals(ATTRIBUTE_TAG_SUMMARY)){
+                podcast_summary = readTag(parser, TAG_SUMMARY);
+            }else if(parser.getName().equals(MAIN_ATTRIBUTE_URL_TAG)){
+                podcast_image_link = readTag(parser, TAG_IMAGE_LINK);
+            }else if(parser.getName().equals(PODCAST_EPISODE_START_TAG))
+            {
+                *//*
+                We return from here because the main podcast feed is complete and the
+                episode feed has started, all the info to instantiate a podcast object should
+                be available by now
+                 *//*
+                return new Podcast(id, podcast_title, podcast_image_link,podcast_summary,feedUrl);
+            }else
+                skip(parser);
+        }
+       return null;
+    }*/
+
 
 }

@@ -1,25 +1,22 @@
 package com.application.chetna_priya.exo_audio.Ui;
 
+import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.application.chetna_priya.exo_audio.Data.LocalPersistence;
 import com.application.chetna_priya.exo_audio.Entity.Episode;
 import com.application.chetna_priya.exo_audio.Entity.Podcast;
 import com.application.chetna_priya.exo_audio.Network.FetchIndividualPodcastEpisodes;
 import com.application.chetna_priya.exo_audio.R;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,6 +29,16 @@ import butterknife.ButterKnife;
 
 
 public class AllEpisodes extends BaseActivity {
+
+/*
+    This fragment needs both podcast and three episodes, we need to fetch 2 roots
+    both of which belong to the browsable category
+
+    Genres -- Health/Comedy -- All Podcasts -- All Episodes
+                                                   |
+                                                   |
+                                                Start here
+     */
 
     private static final String TAG = AllEpisodes.class.getSimpleName();
     Podcast mPodcast;
@@ -67,7 +74,7 @@ public class AllEpisodes extends BaseActivity {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                episodes = new FetchIndividualPodcastEpisodes().load(mPodcast);
+             //   episodes = new FetchIndividualPodcastEpisodes().load(mPodcast);
                 return null;
             }
 
@@ -165,7 +172,11 @@ public class AllEpisodes extends BaseActivity {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
+                    LocalPersistence.witeObjectToFile(AllEpisodes.this, episodes.get(getAdapterPosition()),
+                            getString(R.string.current_episode));
+                    Intent audioIntent = new Intent(AllEpisodes.this, AudioActivity.class);
+                    audioIntent.putExtra(AudioActivity.CURRENT_EPISODE, episodes.get(getAdapterPosition()));
+                    startActivity(audioIntent);
                 }
             });
         }

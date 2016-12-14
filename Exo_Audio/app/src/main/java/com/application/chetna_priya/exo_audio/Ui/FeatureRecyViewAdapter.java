@@ -5,12 +5,11 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
-import android.os.Bundle;
+import android.support.v4.media.MediaBrowserCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,10 +36,12 @@ class FeatureRecyViewAdapter extends RecyclerView.Adapter<FeatureRecyViewAdapter
     static final String ALBUM_CATEGORY = "album_category";
     private ArrayList<String> categoriesList = new ArrayList<>();
     private Context mContext;
+    public MediaFragmentListener mMediaFragmentListener;
     private final String TAG = FeatureRecyViewAdapter.class.getSimpleName();
 
     FeatureRecyViewAdapter(Context context){
         this.mContext = context;
+        mMediaFragmentListener = (MediaFragmentListener) context;
         /*
         In addition to user selected genre categories we also fetch toppodcasts
          */
@@ -82,7 +83,7 @@ class FeatureRecyViewAdapter extends RecyclerView.Adapter<FeatureRecyViewAdapter
             protected Void doInBackground(Void... voids) {
                 int limit = mContext.getResources().getInteger(R.integer.num_albums);
                 String url = GenreHelper.getGenreUrl(category, limit);
-                podcastArrayList.addAll(new LoadAvailablePodcastChannels().load(url));
+                podcastArrayList.addAll(new LoadAvailablePodcastChannels().load(url, category));
                 return null;
             }
 
@@ -105,6 +106,7 @@ class FeatureRecyViewAdapter extends RecyclerView.Adapter<FeatureRecyViewAdapter
     public int getItemCount() {
         return categoriesList.size();
     }
+
 
     class ViewHolder extends RecyclerView.ViewHolder {
         // Title, see_all
@@ -217,7 +219,19 @@ class FeatureRecyViewAdapter extends RecyclerView.Adapter<FeatureRecyViewAdapter
         AlbumViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                }
+            });
         }
+    }
+
+
+    interface MediaFragmentListener extends MediaBrowserProvider {
+        void onMediaItemSelected(MediaBrowserCompat.MediaItem item);
+        void setToolbarTitle(CharSequence title);
     }
 
 }

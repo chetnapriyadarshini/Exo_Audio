@@ -77,10 +77,10 @@ public abstract class BaseActivity extends DrawerActivity implements MediaBrowse
     protected void showPlaybackControls() {
         Log.d(TAG, "showPlaybackControls");
         if (NetworkHelper.isOnline(this)) {
-            getSupportFragmentManager().beginTransaction()
+            getSupportFragmentManager().beginTransaction()/*
                     .setCustomAnimations(
                             R.animator.slide_in_from_bottom, R.animator.slide_out_to_bottom,
-                            R.animator.slide_in_from_bottom, R.animator.slide_out_to_bottom)
+                            R.animator.slide_in_from_bottom, R.animator.slide_out_to_bottom)*/
                     .show(mControlsFragment)
                     .commit();
         }

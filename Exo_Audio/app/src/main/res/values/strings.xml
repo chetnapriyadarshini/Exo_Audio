@@ -52,4 +52,7 @@
     <string name="sample_summary" translatable="false">This american life is weekly public radio show heard by 2.2
     million people on more than 500 stations. Another 1.5 million people download the podacst. It is hosted by
     Ira Glass produced in collaboration with Chicago public media.</string>
+    <string name="current_episode" translatable="false">current_episode.dat</string>
+    <string name="error_loading_media">Error Loading Media</string>
+    <string name="browse_podcast_by_genre_by_name_subtitle">%1$s podcast</string>
 </resources>

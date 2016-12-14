@@ -5,6 +5,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
@@ -17,14 +18,18 @@
         <activity
             android:name=".Ui.AudioActivity"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".Ui.MainActivity"
+        <activity android:name=".Ui.LauncherActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".Ui.MainActivity"
+            android:screenOrientation="portrait">
+
         </activity>
         <!--
              A receiver that will receive media buttons and send as

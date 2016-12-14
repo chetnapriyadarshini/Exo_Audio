@@ -2,6 +2,8 @@ package com.application.chetna_priya.exo_audio.Entity;
 
 import android.support.annotation.NonNull;
 
+import com.application.chetna_priya.exo_audio.Utils.GenreHelper;
+
 import java.io.Serializable;
 
 public class Podcast implements Serializable {
@@ -31,6 +33,7 @@ public class Podcast implements Serializable {
         this.totalTrackCount = totalTrackCount;
         //this.id = id;
     }
+
 
 /*
     public String getId() {

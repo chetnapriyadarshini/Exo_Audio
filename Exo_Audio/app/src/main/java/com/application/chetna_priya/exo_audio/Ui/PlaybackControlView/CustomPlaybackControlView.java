@@ -21,6 +21,7 @@ import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.application.chetna_priya.exo_audio.Entity.Episode;
 import com.application.chetna_priya.exo_audio.ExoPlayer.PlayerService.PodcastService;
 import com.application.chetna_priya.exo_audio.R;
 import com.google.android.exoplayer2.C;
@@ -78,6 +79,12 @@ public class CustomPlaybackControlView extends FrameLayout{
     };
     private Context mContext;
 
+    public interface Listener {
+        void onMediaControllerSet();
+    }
+
+    Listener listener;
+
     public CustomPlaybackControlView(Context context) {
         this(context, null);
     }
@@ -89,6 +96,7 @@ public class CustomPlaybackControlView extends FrameLayout{
     public CustomPlaybackControlView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mContext = context;
+        listener = (Listener) mContext;
         currentWindow = new Timeline.Window();
         formatBuilder = new StringBuilder();
         formatter = new Formatter(formatBuilder, Locale.getDefault());
@@ -178,6 +186,11 @@ public class CustomPlaybackControlView extends FrameLayout{
     private void connectToSession(MediaSessionCompat.Token token) throws RemoteException {
         MediaControllerCompat mediaController = new MediaControllerCompat(
                 mContext, token);
+        ((FragmentActivity)mContext).setSupportMediaController(mediaController);
+        /*
+        We invoke the listener method signalling that the media can start playing
+         */
+        listener.onMediaControllerSet();
        /* if (mediaController.getMetadata() == null) {
             activityCallbacks.finishActivity();
             return;
@@ -185,12 +198,13 @@ public class CustomPlaybackControlView extends FrameLayout{
         activityCallbacks.setSupportMediaControllerForActivity(mediaController);*/
         mediaController.registerCallback(mCallback);
         mLastPlaybackState = mediaController.getPlaybackState();
-        updateAll();
+     //   updateAll();
         MediaMetadataCompat metadata = mediaController.getMetadata();
         if (metadata != null) {
             //   updateMediaDescription(metadata.getDescription());
             // updateDuration(metadata);
-        }/*
+        }
+        /*
         updateProgress();
         if (state != null && (state.getState() == PlaybackStateCompat.STATE_PLAYING ||
                 state.getState() == PlaybackStateCompat.STATE_BUFFERING)) {
@@ -230,9 +244,10 @@ public class CustomPlaybackControlView extends FrameLayout{
     private void updateNavigation() {
 
         MediaControllerCompat mediaControllerCompat= ((FragmentActivity)mContext).getSupportMediaController();
-        MediaControllerCompat.TransportControls controls =mediaControllerCompat.getTransportControls();
+     //   MediaControllerCompat.TransportControls controls =mediaControllerCompat.getTransportControls();
         PlaybackStateCompat state = mediaControllerCompat.getPlaybackState();
         MediaMetadataCompat metadata = mediaControllerCompat.getMetadata();
+        Log.d(TAG, "METADATTTTTTTTTAAAAAAA "+metadata);
         long duration = metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
         long currentPosition = state.getPosition();
         //TODO come up with a robust implementation below

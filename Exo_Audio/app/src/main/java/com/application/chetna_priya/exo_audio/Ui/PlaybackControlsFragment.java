@@ -81,6 +81,8 @@ public class PlaybackControlsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_playback_controls, container, false);
         ButterKnife.bind(this,rootView);
+        mPlayPause.setEnabled(true);
+        mPlayPause.setOnClickListener(mButtonListener);
 
         rootView.setOnClickListener(new View.OnClickListener() {
             @Override
