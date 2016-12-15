@@ -122,7 +122,7 @@ public class MediaIDHelper {
      //   Log.d(TAG, "MEDIA    IDDDDDDD _____ "+mediaID);
         int pos = mediaID.indexOf(LEAF_SEPARATOR);
         if (pos >= 0) {
-            mediaID = mediaID.substring(0, (pos+1));
+            mediaID = mediaID.substring(0, (pos));
         }
         return mediaID.split(String.valueOf(CATEGORY_SEPARATOR));
     }

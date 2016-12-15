@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.application.chetna_priya.exo_audio.Utils.MediaIDHelper.MEDIA_ID_PODCASTS_BY_GENRE;
+import static com.application.chetna_priya.exo_audio.Utils.MediaIDHelper.MEDIA_ID_PODCASTS_BY_GENRE_AND_CHANNEL_NAME;
 import static com.application.chetna_priya.exo_audio.Utils.MediaIDHelper.MEDIA_ID_PODCASTS_BY_SEARCH;
 
 public class QueueHelper
@@ -36,8 +37,8 @@ public class QueueHelper
 
         Iterable<MediaMetadataCompat> tracks = null;
         // This sample only supports genre and by_search category types.
-        if (categoryType.equals(MEDIA_ID_PODCASTS_BY_GENRE)) {
-            tracks = podcastProvider.getPodcastByGenre(categoryValue);
+        if (categoryType.equals(MEDIA_ID_PODCASTS_BY_GENRE_AND_CHANNEL_NAME)) {
+            tracks = podcastProvider.getEpisodeByChannelName(categoryValue);
         } else if (categoryType.equals(MEDIA_ID_PODCASTS_BY_SEARCH)) {
             tracks = podcastProvider.searchPodcastByEpisodeTitle(categoryValue);
         }

@@ -63,7 +63,7 @@ public class PodcastService extends MediaBrowserServiceCompat implements Playbac
                     @Override
                     public void onQueueUpdated(String title,
                                                List<MediaSessionCompat.QueueItem> newQueue) {
-                        Log.d(TAG, "QUEUE UPDATEDDDDDDDDDDDDDDDDDDDDDD");
+                        Log.d(TAG, "QUEUE UPDATEDDDDDDDDDDDDDDDDDDDDDD "+newQueue);
                         mSession.setQueue(newQueue);
                         mSession.setQueueTitle(title);
                     }
