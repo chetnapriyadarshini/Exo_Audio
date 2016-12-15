@@ -308,7 +308,7 @@ public class PodcastProvider {
             for (String genre : getGenres()) {
                 mediaItems.add(createBrowsableMediaItemForGenre(genre, resources));
             }
-        }else if((MediaIDHelper.getParentMediaID(mediaId).concat(MEDIA_ID_PODCASTS_BY_GENRE_AND_CHANNEL_NAME)).equals(mediaId)) {
+        }else if(mediaId.startsWith(MEDIA_ID_PODCASTS_BY_GENRE)) {
             String genre = MediaIDHelper.getHierarchy(mediaId)[1];
             for (String album : getAlbumsByGenre(genre)) {
                 mediaItems.add(createBrowsableMediaItemForPodcast(album, resources));
@@ -340,7 +340,7 @@ public class PodcastProvider {
     private MediaBrowserCompat.MediaItem createBrowsableMediaItemForGenre(String genre,
                                                                           Resources resources) {
         MediaDescriptionCompat description = new MediaDescriptionCompat.Builder()
-                .setMediaId(createMediaID(null, MEDIA_ID_PODCASTS_BY_GENRE, genre).concat(MEDIA_ID_PODCASTS_BY_GENRE_AND_CHANNEL_NAME))
+                .setMediaId(createMediaID(null, MEDIA_ID_PODCASTS_BY_GENRE, genre))
                 .setTitle(genre)
                 .setSubtitle(resources.getString(
                         R.string.browse_podcast_by_genre_subtitle, genre))
