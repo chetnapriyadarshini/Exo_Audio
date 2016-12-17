@@ -19,16 +19,31 @@
         android:id="@+id/episode_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_toStartOf="@+id/img_download"
+        android:layout_toLeftOf="@+id/img_download"
         android:layout_centerVertical="true"
         android:layout_marginBottom="@dimen/album_icon_left_margin"
         android:layout_marginTop="@dimen/album_icon_left_margin"
         android:layout_marginEnd="@dimen/album_icon_left_margin"
+        android:maxLength="@integer/max_podcast_title_length"
         android:layout_marginRight="@dimen/album_icon_left_margin"
         android:layout_toRightOf="@id/episode_release_date"
         android:layout_toEndOf="@id/episode_release_date"
-        style="@style/Base.TextAppearance.AppCompat.Medium"
+        style="@style/Base.TextAppearance.AppCompat.Small"
         android:textColor="@color/black"
         tools:text="Episode 3: Find all the things you want to find and then find again"/>
+
+    <ImageView
+        android:id="@+id/img_download"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="@dimen/activity_vertical_margin"
+        android:layout_marginEnd="@dimen/activity_vertical_margin"
+        android:contentDescription="@string/download_episode"
+        android:src="@drawable/ic_download"/>
 
     <View
         android:layout_width="match_parent"
