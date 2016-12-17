@@ -44,13 +44,13 @@ public class PodcastService extends MediaBrowserServiceCompat implements Playbac
                 new QueueManager.MetadataUpdateListener() {
                     @Override
                     public void onMetadataChanged(MediaMetadataCompat metadata) {
-                        Log.d(TAG, "SET METADATAAAAAAAAAAAAAAAAAAA");
+                     //   Log.d(TAG, "SET METADATAAAAAAAAAAAAAAAAAAA");
                         mSession.setMetadata(metadata);
                     }
 
                     @Override
                     public void onMetadataRetrieveError() {
-                        Log.d(TAG, "METADATA RETEIVE ERRRRRRRORRRRRRRRRRRR");
+                     //   Log.d(TAG, "METADATA RETEIVE ERRRRRRRORRRRRRRRRRRR");
                         mPlaybackListener.updatePlaybackState(
                                 getString(R.string.error_no_metadata));
                     }
@@ -63,7 +63,7 @@ public class PodcastService extends MediaBrowserServiceCompat implements Playbac
                     @Override
                     public void onQueueUpdated(String title,
                                                List<MediaSessionCompat.QueueItem> newQueue) {
-                        Log.d(TAG, "QUEUE UPDATEDDDDDDDDDDDDDDDDDDDDDD "+newQueue);
+                      //  Log.d(TAG, "QUEUE UPDATEDDDDDDDDDDDDDDDDDDDDDD "+newQueue);
                         mSession.setQueue(newQueue);
                         mSession.setQueueTitle(title);
                     }

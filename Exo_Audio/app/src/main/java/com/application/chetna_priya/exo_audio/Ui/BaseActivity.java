@@ -23,6 +23,9 @@ import com.application.chetna_priya.exo_audio.Utils.NetworkHelper;
 public abstract class BaseActivity extends DrawerActivity implements MediaBrowserProvider {
 
     private static final String TAG = BaseActivity.class.getSimpleName();
+    public static final String EXTRA_MEDIA_ITEM = "extra_media_item";
+    public static final String EXTRA_SUMMARY = "extra_summary";
+    public static final java.lang.String EXTRA_EPISODE_PUBLISHED_DATE = "episode_extra_published_date";
 
     private MediaBrowserCompat mMediaBrowser;
     private PlaybackControlsFragment mControlsFragment;

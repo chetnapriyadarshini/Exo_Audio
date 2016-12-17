@@ -3,18 +3,21 @@ package com.application.chetna_priya.exo_audio.Ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.application.chetna_priya.exo_audio.R;
 import com.application.chetna_priya.exo_audio.Utils.PreferenceHelper;
 
-public class MainActivity extends BaseActivity implements TestAdapter.MediaFragmentListener {
+import java.util.List;
+
+public class MainActivity extends BaseActivity implements FeaturedFragment.MediaFragmentListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int REQUEST_CODE_GENRE_ACTIVITY = 1;
@@ -29,6 +32,8 @@ public class MainActivity extends BaseActivity implements TestAdapter.MediaFragm
      */
     public static final String EXTRA_CURRENT_MEDIA_DESCRIPTION =
             "com.application.chetna_priya.exo_audio.CURRENT_MEDIA_DESCRIPTION";
+    private static final String MEDIA_ID = "media_id";
+    private String mMediaId;
 
 
     /**
@@ -51,30 +56,27 @@ public class MainActivity extends BaseActivity implements TestAdapter.MediaFragm
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if(!PreferenceHelper.isInitialGenrePreferenceSet(this)){
+        /*if(!PreferenceHelper.isInitialGenrePreferenceSet(this)){
             Intent genreIntent = new Intent(this,GenreActivity.class);
             Bundle bundle = new Bundle();
             bundle.putBoolean(GenreActivity.IS_FIRST_TIME, true);
             startActivityForResult(genreIntent, REQUEST_CODE_GENRE_ACTIVITY, bundle);
-        }else {
-            navigateToBrowser(null);
-         //performIntialization();
-        }
+        }*/
     }
 
-    /*@Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(TAG, "NOTIFYYYYYYYYYYYYYYYYYYYYYYYY "+requestCode);
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putString(MEDIA_ID, mMediaId);
+        super.onSaveInstanceState(outState);
+    }
 
-        switch (requestCode){
-            case REQUEST_CODE_GENRE_ACTIVITY:
-                performIntialization();
-                break;
-            case FeaturedFragment.REQUEST_CODE_ADD_GENRES:
-                //mPodcastPagerAdapter.getItem(0).onActivityResult(requestCode, resultCode,data);
-                break;
-        }
-    }*/
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if(savedInstanceState.getString(MEDIA_ID) != null)
+            mMediaId = savedInstanceState.getString(MEDIA_ID);
+    }
+
 /*
     private void performIntialization() {
        // initializeToolbar();
@@ -97,36 +99,25 @@ public class MainActivity extends BaseActivity implements TestAdapter.MediaFragm
         });*//*
     }*/
 
-    @Override
-    public void onMediaItemSelected(MediaBrowserCompat.MediaItem item) {
-        Log.d(TAG, "onMediaItemSelected, mediaId=" + item.getMediaId());
-        if (item.isPlayable()) {
-            getSupportMediaController().getTransportControls()
-                    .playFromMediaId(item.getMediaId(), null);
-        } else if (item.isBrowsable()) {
-            navigateToBrowser(item.getMediaId());
-        } else {
-            Log.w(TAG, "Ignoring MediaItem that is neither browsable nor playable: "+
-                    "mediaId="+ item.getMediaId());
-        }
-    }
-
-    @Override
+    /*@Override
     public void setToolbarTitle(CharSequence title) {
         Log.d(TAG, "Setting toolbar title to "+ title);
         if (title == null) {
             title = getString(R.string.app_name);
         }
         setTitle(title);
-    }
+    }*/
 
-    private void navigateToBrowser(String mediaId) {
-        Log.d(TAG, "navigateToBrowser, mediaId=" + mediaId);
+    private void navigateToBrowser(MediaBrowserCompat.MediaItem mediaItem) {
+        Log.d(TAG, "navigateToBrowser, mediaId=" + mediaItem);
+
         FeaturedFragment fragment = getBrowseFragment();
 
-        if (fragment == null || !TextUtils.equals(fragment.getMediaId(), mediaId)) {
+        //if (fragment == null || !TextUtils.equals(fragment.getMediaId(), mediaItem))
+        if(fragment == null)
+        {
             fragment = new FeaturedFragment();
-            fragment.setMediaId(mediaId);
+            fragment.setMediaId(mediaItem);
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             /*transaction.setCustomAnimations(
                     R.animator.slide_in_from_right, R.animator.slide_out_to_left,
@@ -134,7 +125,7 @@ public class MainActivity extends BaseActivity implements TestAdapter.MediaFragm
            */ transaction.replace(R.id.container, fragment, FRAGMENT_TAG);
             // If this is not the top level media (root), we add it to the fragment back stack,
             // so that actionbar toggle and Back will work appropriately:
-            if (mediaId != null) {
+            if (mediaItem != null) {
                 transaction.addToBackStack(null);
             }
             transaction.commit();
@@ -146,8 +137,43 @@ public class MainActivity extends BaseActivity implements TestAdapter.MediaFragm
     }
 
 
+    private final MediaBrowserCompat.SubscriptionCallback mSubscriptionCallback =
+            new MediaBrowserCompat.SubscriptionCallback() {
+                @Override
+                public void onChildrenLoaded(@NonNull String parentId,
+                                             @NonNull List<MediaBrowserCompat.MediaItem> children) {
+                    try {
+                        Log.d(TAG, "fragment onChildrenLoaded, parentId=" + parentId +
+                                "  count=" + children.size());
+                        /*
+                        We just have the genre here, we load genre as root and pass it to fragment
+                         */
+                        MediaBrowserCompat.MediaItem genreRoot  = children.get(0);
+                        navigateToBrowser(genreRoot);;
+                    } catch (Throwable t) {
+                        Log.e(TAG, "Error on childrenloaded", t);
+                    }
+                }
+
+                @Override
+                public void onError(@NonNull String id) {
+                    Log.e(TAG, "browse fragment subscription onError, id=" + id);
+                    Toast.makeText(MainActivity.this, R.string.error_loading_media, Toast.LENGTH_LONG).show();
+                }
+            };
+
+
+
+
     @Override
     protected void onMediaControllerConnected() {
-        getBrowseFragment().onConnected();
+        mMediaId = getMediaBrowser().getRoot();
+        getMediaBrowser().unsubscribe(mMediaId);
+        getMediaBrowser().subscribe(mMediaId, mSubscriptionCallback);//We load the children of root that is genre
+    }
+
+    @Override
+    public void setToolbarTitle(CharSequence title) {
+
     }
 }

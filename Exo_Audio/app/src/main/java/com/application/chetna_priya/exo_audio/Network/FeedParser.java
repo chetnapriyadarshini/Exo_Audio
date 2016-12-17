@@ -89,6 +89,7 @@ public class FeedParser {
                 }
             }else if(parser.getName().equals(ATTRIBUTE_TAG_EPISODE_SUMMARY)) {
                 podsummary = readTag(parser, TAG_SUMMARY);
+                podcast.setSummary(podsummary);
             }else
                 skip(parser);
         }

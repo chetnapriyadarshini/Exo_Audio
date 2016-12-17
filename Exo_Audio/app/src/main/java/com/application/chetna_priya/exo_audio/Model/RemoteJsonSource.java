@@ -23,6 +23,14 @@ import java.util.Iterator;
 class RemoteJsonSource implements MediaProviderSource {
 
     final String TAG = RemoteJsonSource.class.getSimpleName();
+    private ArrayList<Podcast> podcastChannelLists = new ArrayList<>();
+
+
+    @Override
+    public Iterator<Podcast> albumsIterator() {
+        return podcastChannelLists.iterator();
+    }
+
     @Override
     public Iterator<MediaMetadataCompat> iterator(Context context) {
         try {
@@ -31,7 +39,6 @@ class RemoteJsonSource implements MediaProviderSource {
             Log.d(TAG, genres.toString());
             if(genres == null)
                 return tracks.iterator();
-            ArrayList<Podcast> podcastChannelLists = new ArrayList<>();
             LoadAvailablePodcastChannels loadChannels = new LoadAvailablePodcastChannels();
             for(int i = 0; i< genres.size(); i++)
             {
@@ -73,6 +80,7 @@ class RemoteJsonSource implements MediaProviderSource {
         }
     }
 
+
     private MediaMetadataCompat buildFromPodcastEntity(Episode episode) throws JSONException {
 
         // Adding the music source to the MediaMetadata (and consequently using it in the
@@ -97,6 +105,7 @@ class RemoteJsonSource implements MediaProviderSource {
                 .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration)
                 .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, episode.getPodcast().getAlbum_title())
                 .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, episode.getPodcast().getArtist())
+                .putString(MediaMetadataCompat.METADATA_KEY_DATE, episode.getEpisode_published_on())
                 .putString(MediaMetadataCompat.METADATA_KEY_GENRE, episode.getPodcast().getGenre())
                 .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, episode.getPodcast().getArtwork_uri())
                 .putString(MediaMetadataCompat.METADATA_KEY_TITLE, episode.getEpisode_title())
@@ -133,16 +142,20 @@ class RemoteJsonSource implements MediaProviderSource {
         int currIndex = 0;
 
         if(durArr.length == 3) {
+            durArr[currIndex] = durArr[currIndex].trim();
             hr = Long.parseLong(durArr[currIndex]) * 60 * 60 * 1000;//in msecs
             currIndex++;
         }
 
 
         if(durArr.length >= 2) {
+            durArr[currIndex] = durArr[currIndex].trim();
             min = Long.parseLong(durArr[currIndex]) * 60 * 1000;//in msecs
             currIndex++;
         }
 
+
+        durArr[currIndex] = durArr[currIndex].trim();
         sec = Long.parseLong(durArr[currIndex])*1000;//in msecs
 
         duration = hr + min + sec;

@@ -124,7 +124,17 @@ public class CustomPlaybackControlView extends FrameLayout{
 
         mMediaBrowser = new MediaBrowserCompat(mContext,
                 new ComponentName(mContext, PodcastService.class), mConnectionCallback, null);
-        mMediaBrowser.connect();
+      }
+
+
+    public void onPause() {
+        if(mMediaBrowser != null && mMediaBrowser.isConnected())
+            mMediaBrowser.disconnect();
+    }
+
+    public void onResume() {
+        if(mMediaBrowser != null && !mMediaBrowser.isConnected())
+            mMediaBrowser.connect();
     }
 
 
@@ -198,7 +208,7 @@ public class CustomPlaybackControlView extends FrameLayout{
         activityCallbacks.setSupportMediaControllerForActivity(mediaController);*/
         mediaController.registerCallback(mCallback);
         mLastPlaybackState = mediaController.getPlaybackState();
-     //   updateAll();
+        updateAll();
         MediaMetadataCompat metadata = mediaController.getMetadata();
         if (metadata != null) {
             //   updateMediaDescription(metadata.getDescription());

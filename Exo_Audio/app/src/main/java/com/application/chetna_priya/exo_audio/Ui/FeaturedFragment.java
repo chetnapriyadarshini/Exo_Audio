@@ -29,10 +29,17 @@ public class FeaturedFragment extends Fragment {
 
     public static final int REQUEST_CODE_ADD_GENRES = 2;
     private static final String ARG_MEDIA_ID = "media_id";
-    private TestAdapter testAdapter;
+    private static final String FRAGMENT_MEDIA_ID = "featured_fragment_media_id";
+    // private TestAdapter testAdapter;
     private final String TAG = FeaturedFragment.class.getSimpleName();
-    private String mMediaId;
-    private RecyclerView recyclerView;
+    private MediaBrowserCompat.MediaItem mMediaId;
+    private FeatureRecyViewAdapter mRecyViewAdapter;
+
+    interface MediaFragmentListener extends MediaBrowserProvider {
+        void setToolbarTitle(CharSequence title);
+    }
+
+    public MediaFragmentListener mMediaFragmentListener;
 
     /*
     This fragment needs both podcast and three episodes, we need to fetch 2 roots
@@ -48,6 +55,7 @@ public class FeaturedFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+        mMediaFragmentListener = (MediaFragmentListener) getActivity();
     }
 
     @Nullable
@@ -59,6 +67,11 @@ public class FeaturedFragment extends Fragment {
         This is the view consisting of many recycler view diff category podcast and a cardview of add
         new categories all enclosed in a scroll view
          */
+        if(savedInstanceState != null && savedInstanceState.getParcelable(FRAGMENT_MEDIA_ID) != null) {
+            mMediaId = savedInstanceState.getParcelable(FRAGMENT_MEDIA_ID);
+            setMediaId(mMediaId);
+        }
+
         CardView add = (CardView) rootView.findViewById(R.id.add_new_categories_cardview);
         add.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,69 +81,20 @@ public class FeaturedFragment extends Fragment {
                 getActivity().startActivityForResult(genreIntent, REQUEST_CODE_ADD_GENRES);
             }
         });
-        recyclerView = (RecyclerView) rootView.findViewById(R.id.album_category_recycler_view);
+        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.album_category_recycler_view);
         recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        testAdapter = new TestAdapter(getActivity());
-        Log.d(TAG, "createeeeeeeeeeeeeee viewwwwwwwwwwwwwwwww");
-        //commenting now we want to inflate the recycler view once the items are loaded
-        //recyclerView.setAdapter(testAdapter);
+        mRecyViewAdapter  = new FeatureRecyViewAdapter(getActivity(), getMediaId(), mMediaFragmentListener);
+        recyclerView.setAdapter(mRecyViewAdapter);
         return rootView;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable(FRAGMENT_MEDIA_ID, mMediaId);
+        super.onSaveInstanceState(outState);
+    }
 
-    // Receive callbacks from the MediaController. Here we update our state such as which queue
-    // is being shown, the current title and description and the PlaybackState.
-    private final MediaControllerCompat.Callback mMediaControllerCallback =
-            new MediaControllerCompat.Callback() {
-                @Override
-                public void onMetadataChanged(MediaMetadataCompat metadata) {
-                    super.onMetadataChanged(metadata);
-                    if (metadata == null) {
-                        return;
-                    }
-                    Log.d(TAG, "Received metadata change to media "+metadata.getDescription().getMediaId());
-                    testAdapter.notifyDataSetChanged();
-                }
-
-                @Override
-                public void onPlaybackStateChanged(@NonNull PlaybackStateCompat state) {
-                    super.onPlaybackStateChanged(state);
-                    Log.d(TAG, "Received state change: "+ state);
-
-                    testAdapter.notifyDataSetChanged();
-                }
-            };
-
-    private final MediaBrowserCompat.SubscriptionCallback mSubscriptionCallback =
-            new MediaBrowserCompat.SubscriptionCallback() {
-                @Override
-                public void onChildrenLoaded(@NonNull String parentId,
-                                             @NonNull List<MediaBrowserCompat.MediaItem> children) {
-                    try {
-                        Log.d(TAG, "fragment onChildrenLoaded, parentId=" + parentId +
-                                "  count=" + children.size());
-                        ArrayList<MediaBrowserCompat.MediaItem> itemArrayList = new ArrayList<>();
-                        //itemArrayList.clear();
-                     //   testAdapter.clear();
-                        for (MediaBrowserCompat.MediaItem item : children) {
-                      //      testAdapter.add(item);
-                            itemArrayList.add(item);
-                        }
-                        testAdapter.setData(itemArrayList);
-                        recyclerView.setAdapter(testAdapter);
-                     //   testAdapter.notifyDataSetChanged();
-                    } catch (Throwable t) {
-                        Log.e(TAG, "Error on childrenloaded", t);
-                    }
-                }
-
-                @Override
-                public void onError(@NonNull String id) {
-                    Log.e(TAG, "browse fragment subscription onError, id=" + id);
-                    Toast.makeText(getActivity(), R.string.error_loading_media, Toast.LENGTH_LONG).show();
-                }
-            };
 
 
     @Override
@@ -138,7 +102,7 @@ public class FeaturedFragment extends Fragment {
         super.onStart();
 
         // fetch browsing information to fill the listview:
-        MediaBrowserCompat mediaBrowser = testAdapter.mMediaFragmentListener.getMediaBrowser();
+        MediaBrowserCompat mediaBrowser = mMediaFragmentListener.getMediaBrowser();
 
         Log.d(TAG, "fragment.onStart, mediaId=" + mMediaId +
                 "  onConnected=" + mediaBrowser.isConnected());
@@ -152,85 +116,47 @@ public class FeaturedFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        MediaBrowserCompat mediaBrowser = testAdapter.mMediaFragmentListener.getMediaBrowser();
-        if (mediaBrowser != null && mediaBrowser.isConnected() && mMediaId != null) {
-            mediaBrowser.unsubscribe(mMediaId);
-        }
-        MediaControllerCompat controller = ((FragmentActivity) getActivity())
-                .getSupportMediaController();
-        if (controller != null) {
-            controller.unregisterCallback(mMediaControllerCallback);
-        }
+        mRecyViewAdapter.onStop();
     }
 
 
     @Override
     public void onDetach() {
         super.onDetach();
-        testAdapter.mMediaFragmentListener = null;
+        mMediaFragmentListener = null;
     }
 
-    public String getMediaId() {
+    public MediaBrowserCompat.MediaItem getMediaId() {
         Bundle args = getArguments();
         if (args != null) {
-            return args.getString(ARG_MEDIA_ID);
+            return args.getParcelable(ARG_MEDIA_ID);
         }
         return null;
     }
 
-    public void setMediaId(String mediaId) {
+    public void setMediaId(MediaBrowserCompat.MediaItem mediaId) {
         Bundle args = new Bundle(1);
-        args.putString(FeaturedFragment.ARG_MEDIA_ID, mediaId);
+        args.putParcelable(FeaturedFragment.ARG_MEDIA_ID, mediaId);
         setArguments(args);
     }
 
-
-    // Called when the MediaBrowser is connected. This method is either called by the
-    // fragment.onStart() or explicitly by the activity in the case where the connection
-    // completes after the onStart()
-    public void onConnected() {
-        if (isDetached()) {
-            return;
-        }
+    public void onConnected(){
         mMediaId = getMediaId();
-        Log.d(TAG, "ON CONNNECCCTEDDDDDDDDDDD "+mMediaId);
-        if (mMediaId == null) {
-            mMediaId = testAdapter.mMediaFragmentListener.getMediaBrowser().getRoot();
-        }
         updateTitle();
-
-        // Unsubscribing before subscribing is required if this mediaId already has a subscriber
-        // on this MediaBrowser instance. Subscribing to an already subscribed mediaId will replace
-        // the callback, but won't trigger the initial callback.onChildrenLoaded.
-        //
-        // This is temporary: A bug is being fixed that will make subscribe
-        // consistently call onChildrenLoaded initially, no matter if it is replacing an existing
-        // subscriber or not. Currently this only happens if the mediaID has no previous
-        // subscriber or if the media content changes on the service side, so we need to
-        // unsubscribe first.
-        testAdapter.mMediaFragmentListener.getMediaBrowser().unsubscribe(mMediaId);
-
-        testAdapter.mMediaFragmentListener.getMediaBrowser().subscribe(mMediaId, mSubscriptionCallback);
-
-        // Add MediaController callback so we can redraw the list when metadata changes:
-        MediaControllerCompat controller = ((FragmentActivity) getActivity())
-                .getSupportMediaController();
-        if (controller != null) {
-            controller.registerCallback(mMediaControllerCallback);
-        }
+        mRecyViewAdapter.onConnected();
     }
 
     private void updateTitle() {
-        if (MediaIDHelper.MEDIA_ID_ROOT.equals(mMediaId)) {
-            testAdapter.mMediaFragmentListener.setToolbarTitle(null);
+        if (MediaIDHelper.MEDIA_ID_ROOT.equals(mMediaId.getMediaId())) {
+            mMediaFragmentListener.setToolbarTitle(null);
             return;
         }
 
-        MediaBrowserCompat mediaBrowser = testAdapter.mMediaFragmentListener.getMediaBrowser();
-        mediaBrowser.getItem(mMediaId, new MediaBrowserCompat.ItemCallback() {
+        MediaBrowserCompat mediaBrowser = mMediaFragmentListener.getMediaBrowser();
+        mediaBrowser.getItem(mMediaId.getMediaId(), new MediaBrowserCompat.ItemCallback() {
             @Override
             public void onItemLoaded(MediaBrowserCompat.MediaItem item) {
-                testAdapter.mMediaFragmentListener.setToolbarTitle(
+                mMediaFragmentListener.setToolbarTitle(
                         item.getDescription().getTitle());
             }
         });

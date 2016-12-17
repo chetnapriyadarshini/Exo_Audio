@@ -3,6 +3,8 @@ package com.application.chetna_priya.exo_audio.Ui;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.media.MediaBrowserCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -11,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.application.chetna_priya.exo_audio.Entity.Podcast;
 import com.application.chetna_priya.exo_audio.Network.LoadAvailablePodcastChannels;
@@ -18,6 +21,7 @@ import com.application.chetna_priya.exo_audio.R;
 import com.application.chetna_priya.exo_audio.Utils.GenreHelper;
 import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -25,9 +29,6 @@ import butterknife.ButterKnife;
 class AllPodcastsInCategory extends BaseActivity {
 
     private static final String TAG = AllPodcastsInCategory.class.getSimpleName();
-    public static final String PODCAST_OBJ = "podcast_obj";
-    String selected_category;
-    ArrayList<Podcast> podcastArrayList;
 
     /*
     This fragment needs both podcast and three episodes, we need to fetch 2 roots
@@ -38,33 +39,61 @@ class AllPodcastsInCategory extends BaseActivity {
                                        |
                                 Start here
      */
+    MediaBrowserCompat.MediaItem mMediaItem;
+    ArrayList<MediaBrowserCompat.MediaItem> mPodcastMediaItemList = new ArrayList<>();
+    private AllpodAdapter allpodAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_all_albums);
-        if(getIntent().hasExtra(FeatureRecyViewAdapter.ALBUM_CATEGORY)){
-            selected_category = getIntent().getStringExtra(FeatureRecyViewAdapter.ALBUM_CATEGORY);
+        if(getIntent().hasExtra(BaseActivity.EXTRA_MEDIA_ITEM)){
+            mMediaItem = getIntent().getParcelableExtra(BaseActivity.EXTRA_MEDIA_ITEM);
         }else
             finish();
-        Log.d(TAG, "Selected Categoryyyyyyyyy "+selected_category);
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                String url = GenreHelper.getGenreUrl(selected_category, -1);
-                podcastArrayList = new LoadAvailablePodcastChannels().load(url, selected_category);
-                return null;
-            }
 
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-                RecyclerView podcastsRecyclerView = (RecyclerView) findViewById(R.id.allPodcast_recycler_view);
-                podcastsRecyclerView.setLayoutManager(new LinearLayoutManager(AllPodcastsInCategory.this));
-                podcastsRecyclerView.setAdapter(new AllpodAdapter());
-            }
-        }.execute();
+        RecyclerView podcastsRecyclerView = (RecyclerView) findViewById(R.id.allPodcast_recycler_view);
+        podcastsRecyclerView.setLayoutManager(new LinearLayoutManager(AllPodcastsInCategory.this));
+        allpodAdapter = new AllpodAdapter();
+        podcastsRecyclerView.setAdapter(allpodAdapter);
     }
+
+
+    @Override
+    protected void onMediaControllerConnected() {
+        super.onMediaControllerConnected();
+        getMediaBrowser().unsubscribe(mMediaItem.getMediaId());
+        getMediaBrowser().subscribe(mMediaItem.getMediaId(), mSubscriptionCallback);//We load the children of root that is album
+    }
+
+
+    private final MediaBrowserCompat.SubscriptionCallback mSubscriptionCallback =
+            new MediaBrowserCompat.SubscriptionCallback() {
+                @Override
+                public void onChildrenLoaded(@NonNull String parentId,
+                                             @NonNull List<MediaBrowserCompat.MediaItem> children) {
+                    try {
+                        Log.d(TAG, "fragment onChildrenLoaded, parentId=" + parentId +
+                                "  count=" + children.size());
+                        mPodcastMediaItemList.clear();
+                        for (MediaBrowserCompat.MediaItem item : children) {
+                            mPodcastMediaItemList.add(item);
+                        }
+                        //    sortArrayList();
+                        allpodAdapter.notifyDataSetChanged();
+
+                    } catch (Throwable t) {
+                        Log.e(TAG, "Error on childrenloaded", t);
+                    }
+                }
+
+                @Override
+                public void onError(@NonNull String id) {
+                    Log.e(TAG, "browse fragment subscription onError, id=" + id);
+                    Toast.makeText(AllPodcastsInCategory.this, R.string.error_loading_media, Toast.LENGTH_LONG).show();
+                }
+            };
+
 
     private class AllpodAdapter extends RecyclerView.Adapter<ViewHolder> {
         @Override
@@ -78,12 +107,12 @@ class AllPodcastsInCategory extends BaseActivity {
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
             Picasso.with(AllPodcastsInCategory.this)
-                    .load(podcastArrayList.get(position).getArtwork_uri())
+                    .load(mPodcastMediaItemList.get(position).getDescription().getIconUri())
                     .placeholder(R.drawable.placeholder)
                     .fit()
                     .into(holder.icon_view);
 
-            String text = podcastArrayList.get(position).getAlbum_title();
+            String text = mPodcastMediaItemList.get(position).getDescription().getTitle().toString();
             int maxLength = getResources().getInteger(R.integer.max_podcast_title_length);
             if(text.length() > maxLength)
                 text = text.substring(0, maxLength).concat("...");
@@ -93,7 +122,7 @@ class AllPodcastsInCategory extends BaseActivity {
 
         @Override
         public int getItemCount() {
-            return podcastArrayList.size();
+            return mPodcastMediaItemList.size();
         }
     }
 
@@ -111,7 +140,7 @@ class AllPodcastsInCategory extends BaseActivity {
                 @Override
                 public void onClick(View view) {
                     Intent episodesIntent = new Intent(AllPodcastsInCategory.this, AllEpisodes.class);
-                    episodesIntent.putExtra(PODCAST_OBJ, podcastArrayList.get(getAdapterPosition()));
+                    episodesIntent.putExtra(BaseActivity.EXTRA_MEDIA_ITEM, mPodcastMediaItemList.get(getAdapterPosition()));
                     startActivity(episodesIntent);
                 }
             });

@@ -3,7 +3,11 @@ package com.application.chetna_priya.exo_audio.Ui;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -11,11 +15,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.application.chetna_priya.exo_audio.Data.LocalPersistence;
-import com.application.chetna_priya.exo_audio.Entity.Episode;
-import com.application.chetna_priya.exo_audio.Entity.Podcast;
-import com.application.chetna_priya.exo_audio.Network.FetchIndividualPodcastEpisodes;
 import com.application.chetna_priya.exo_audio.R;
 
 import java.util.ArrayList;
@@ -23,6 +25,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -41,8 +44,8 @@ public class AllEpisodes extends BaseActivity {
      */
 
     private static final String TAG = AllEpisodes.class.getSimpleName();
-    Podcast mPodcast;
-    ArrayList<Episode> episodes;
+
+   // ArrayList<Episode> episodes;
 
     @BindView(R.id.podcast_title)
     TextView podcastTtile;
@@ -50,71 +53,104 @@ public class AllEpisodes extends BaseActivity {
     @BindView(R.id.podcast_summary)
     TextView podcastSummary;
 
+    MediaBrowserCompat.MediaItem mMediaItem;
 
-    private boolean isPodcastSummarySet;
+    ArrayList<MediaBrowserCompat.MediaItem> mEpisodeMediaItemList = new ArrayList<>();
+    private EpisodesAdapter episodesAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /*
-        Get the podcast album for which we will fetch all the albums
-         */
-        if(getIntent().hasExtra(AllPodcastsInCategory.PODCAST_OBJ)){
-            mPodcast = (Podcast) getIntent().getSerializableExtra(AllPodcastsInCategory.PODCAST_OBJ);
+
+        if(getIntent().hasExtra(BaseActivity.EXTRA_MEDIA_ITEM)){
+            mMediaItem = getIntent().getParcelableExtra(EXTRA_MEDIA_ITEM);
         }else
             finish();
+
         setContentView(R.layout.layout_all_episodes);
 
+
         ButterKnife.bind(this);
-        podcastTtile.setText(mPodcast.getAlbum_title());
+        podcastTtile.setText(mMediaItem.getDescription().getTitle());
+        String summary = mMediaItem.getDescription().getExtras().getString(EXTRA_SUMMARY);
+        podcastSummary.setText(summary);
 
         final CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         collapsingToolbarLayout.setTitle(" ");
 
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
-             //   episodes = new FetchIndividualPodcastEpisodes().load(mPodcast);
-                return null;
-            }
 
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                /*
+        RecyclerView episodeRecyclerView = (RecyclerView) findViewById(R.id.episode_recycler_view);
+        episodeRecyclerView.setNestedScrollingEnabled(false);
+        episodeRecyclerView.setLayoutManager(new LinearLayoutManager(AllEpisodes.this));
+        episodesAdapter =  new EpisodesAdapter();
+        episodeRecyclerView.setAdapter(episodesAdapter);
+    }
+
+    void sortArrayList(){
+                      /*
                 We attempt to sort the episodes in descending order
                 with the newest episodes at top before displaying the list to the users
                  */
-                Collections.sort(episodes, new Comparator<Episode>() {
-                    @Override
-                    public int compare(Episode episode1, Episode episode2) {
-                        String releaseDate1 = episode1.getEpisode_published_on();
-                        String releaseDate2 = episode2.getEpisode_published_on();
-                        //   Month Day Year
-                        String[] dateArr1 = releaseDate1.split(" ");
-                        String[] dateArr2 = releaseDate2.split(" ");
-                        int relyear1 = Integer.parseInt(dateArr1[2]);
-                        int relyear2 = Integer.parseInt(dateArr2[2]);
-                        //if the year is same check for the month
-                        if(relyear1 == relyear2){
-                            int compare = new MonthComparator().compare(dateArr1[1], dateArr2[1]);
-                            //If months are equal we check for day
-                            if(compare == 0){
-                                return new DateComaprator().compare(dateArr1[0], dateArr2[0]);
-                            }else
-                                return  compare;
-                        }else
-                            return relyear1 < relyear2 ? 1 : -1;
-                    }
-                });
-
-                isPodcastSummarySet = false;
-                RecyclerView episodeRecyclerView = (RecyclerView) findViewById(R.id.episode_recycler_view);
-                episodeRecyclerView.setNestedScrollingEnabled(false);
-                episodeRecyclerView.setLayoutManager(new LinearLayoutManager(AllEpisodes.this));
-                episodeRecyclerView.setAdapter(new EpisodesAdapter());
+        Collections.sort(mEpisodeMediaItemList, new Comparator<MediaBrowserCompat.MediaItem>() {
+            @Override
+            public int compare(MediaBrowserCompat.MediaItem mediaItem1, MediaBrowserCompat.MediaItem mediaItem2) {
+                String releaseDate1 = mediaItem1.getDescription().getExtras().getString(MediaMetadataCompat.METADATA_KEY_DATE);
+                String releaseDate2 = mediaItem2.getDescription().getExtras().getString(MediaMetadataCompat.METADATA_KEY_DATE);
+                //   Month Day Year
+                String[] dateArr1 = releaseDate1.split(" ");
+                String[] dateArr2 = releaseDate2.split(" ");
+                int relyear1 = Integer.parseInt(dateArr1[2]);
+                int relyear2 = Integer.parseInt(dateArr2[2]);
+                //if the year is same check for the month
+                if(relyear1 == relyear2){
+                    int compare = new MonthComparator().compare(dateArr1[1], dateArr2[1]);
+                    //If months are equal we check for day
+                    if(compare == 0){
+                        return new DateComaprator().compare(dateArr1[0], dateArr2[0]);
+                    }else
+                        return  compare;
+                }else
+                    return relyear1 < relyear2 ? 1 : -1;
             }
-        }.execute();
+        });
     }
+
+    @Override
+    protected void onMediaControllerConnected() {
+        super.onMediaControllerConnected();
+        getMediaBrowser().unsubscribe(mMediaItem.getMediaId());
+        getMediaBrowser().subscribe(mMediaItem.getMediaId(), mSubscriptionCallback);//We load the children of root that is album
+    }
+
+    private final MediaBrowserCompat.SubscriptionCallback mSubscriptionCallback =
+            new MediaBrowserCompat.SubscriptionCallback() {
+                @Override
+                public void onChildrenLoaded(@NonNull String parentId,
+                                             @NonNull List<MediaBrowserCompat.MediaItem> children) {
+                    try {
+                        Log.d(TAG, "fragment onChildrenLoaded, parentId=" + parentId +
+                                "  count=" + children.size());
+                        mEpisodeMediaItemList.clear();
+                        for (MediaBrowserCompat.MediaItem item : children) {
+                            mEpisodeMediaItemList.add(item);
+                        }
+                        sortArrayList();
+                        episodesAdapter.notifyDataSetChanged();
+                    } catch (Throwable t) {
+                        Log.e(TAG, "Error on childrenloaded", t);
+                    }
+                }
+
+                @Override
+                public void onError(@NonNull String id) {
+                    Log.e(TAG, "browse fragment subscription onError, id=" + id);
+                    Toast.makeText(AllEpisodes.this, R.string.error_loading_media, Toast.LENGTH_LONG).show();
+                }
+            };
+
+
+
 
     private class EpisodesAdapter extends RecyclerView.Adapter<ViewHolder> {
         @Override
@@ -126,15 +162,18 @@ public class AllEpisodes extends BaseActivity {
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            String releaseDate = episodes.get(position).getEpisode_published_on();
+            Bundle epBundle = mEpisodeMediaItemList.get(position).getDescription().getExtras();
+            Log.d(TAG, "BUNDLEEEEEEEEEEEE "+mEpisodeMediaItemList.get(position).getDescription()
+                    .getExtras().getString(MediaMetadataCompat.METADATA_KEY_TITLE));
+            String releaseDate = epBundle.getString(MediaMetadataCompat.METADATA_KEY_DATE)/*getEpisode_published_on()*/;
             holder.release_date.setText(formatDate(releaseDate));
-            holder.episode_title.setText(episodes.get(position).getEpisode_title());
-            if(!isPodcastSummarySet)
+            holder.episode_title.setText(epBundle.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
+            /*if(!isPodcastSummarySet)
             {
                 isPodcastSummarySet = true;
                 podcastSummary.setText(episodes.get(position).getPodcastSummary());
                 Log.d(TAG, "EPISDODE SUMMARRRRYYY SET AS "+episodes.get(position).getPodcastSummary());
-            }
+            }*/
         }
 
         private String formatDate(String releaseDate) {
@@ -154,7 +193,7 @@ public class AllEpisodes extends BaseActivity {
 
         @Override
         public int getItemCount() {
-            return episodes.size();
+            return mEpisodeMediaItemList.size();
         }
     }
 
@@ -172,10 +211,18 @@ public class AllEpisodes extends BaseActivity {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    LocalPersistence.witeObjectToFile(AllEpisodes.this, episodes.get(getAdapterPosition()),
+                    /*LocalPersistence.witeObjectToFile(AllEpisodes.this, mEpisodeMediaItemList.get(getAdapterPosition()),
                             getString(R.string.current_episode));
                     Intent audioIntent = new Intent(AllEpisodes.this, AudioActivity.class);
-                    audioIntent.putExtra(AudioActivity.CURRENT_EPISODE, episodes.get(getAdapterPosition()));
+                    audioIntent.putExtra(AudioActivity.CURRENT_EPISODE, mEpisodeMediaItemList.get(getAdapterPosition()));
+                    startActivity(audioIntent);*/
+
+
+                    getSupportMediaController().getTransportControls()
+                            .playFromMediaId(mEpisodeMediaItemList.get(getAdapterPosition()).getMediaId(), null);
+
+                    Intent audioIntent = new Intent(AllEpisodes.this, AudioActivity.class);
+                 //   audioIntent.putExtra(BaseActivity.EXTRA_MEDIA_ITEM, mEpisodeMediaItemList.get(getAdapterPosition()));
                     startActivity(audioIntent);
                 }
             });
