@@ -1,4 +1,4 @@
-package com.application.chetna_priya.exo_audio.Ui;
+package com.application.chetna_priya.exo_audio.ui;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -22,7 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.application.chetna_priya.exo_audio.R;
-import com.application.chetna_priya.exo_audio.Utils.AlbumArtCache;
+import com.application.chetna_priya.exo_audio.utils.AlbumArtCache;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

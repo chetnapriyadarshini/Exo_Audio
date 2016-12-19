@@ -11,7 +11,7 @@
     <!-- App name -->
     <string name="app_version_number">1.0</string>
     <string name="menu_settings">Settings</string>
-
+    <string name="content_authority">com.application.chetna_priya.exo_audio</string>
     <string name="cd_repeat">Repeat one or all</string>
     <string name="cd_previous">Skip backwards</string>
     <string name="cd_play">Play and pause</string>
@@ -56,4 +56,7 @@
     <string name="error_loading_media">Error Loading Media</string>
     <string name="browse_podcast_by_genre_by_name_subtitle">%1$s podcast</string>
     <string name="download_episode">Download episode to listen offline later</string>
+    <string name="download_in_progress">Download in progress</string>
+    <string name="podcast_download">Podcast episode download</string>
+    <string name="download_complete">Download Complete</string>
 </resources>

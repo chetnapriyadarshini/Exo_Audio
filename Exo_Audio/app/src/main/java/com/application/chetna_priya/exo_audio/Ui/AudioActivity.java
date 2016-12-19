@@ -1,12 +1,10 @@
-package com.application.chetna_priya.exo_audio.Ui;
+package com.application.chetna_priya.exo_audio.ui;
 
-import android.support.v4.media.MediaBrowserCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.application.chetna_priya.exo_audio.Entity.Episode;
 import com.application.chetna_priya.exo_audio.R;
-import com.application.chetna_priya.exo_audio.Ui.PlaybackControlView.CustomPlaybackControlView;
+import com.application.chetna_priya.exo_audio.ui.playbackControlView.CustomPlaybackControlView;
 
 public class AudioActivity extends AppCompatActivity implements CustomPlaybackControlView.Listener{
 

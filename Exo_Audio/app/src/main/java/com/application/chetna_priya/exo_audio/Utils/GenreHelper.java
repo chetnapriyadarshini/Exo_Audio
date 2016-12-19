@@ -1,16 +1,11 @@
-package com.application.chetna_priya.exo_audio.Utils;
+package com.application.chetna_priya.exo_audio.utils;
 
-import android.content.Context;
 import android.net.Uri;
-import android.util.Log;
 
-import com.application.chetna_priya.exo_audio.Entity.Genre;
+import com.application.chetna_priya.exo_audio.entity.Genre;
 import com.application.chetna_priya.exo_audio.R;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.List;
 
 
 public  class GenreHelper {

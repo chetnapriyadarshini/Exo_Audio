@@ -1,4 +1,4 @@
-package com.application.chetna_priya.exo_audio.Entity;
+package com.application.chetna_priya.exo_audio.entity;
 
 
 /**

@@ -5,7 +5,7 @@
     android:layout_height="match_parent">
 
 
-    <com.application.chetna_priya.exo_audio.Ui.PlaybackControlView.SmallPlaybackControlView
+    <com.application.chetna_priya.exo_audio.ui.playbackControlView.SmallPlaybackControlView
         android:id="@+id/current_audio_view"
         layout="@layout/layout_current_audio"
         android:layout_height="wrap_content"

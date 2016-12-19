@@ -1,4 +1,4 @@
-package com.application.chetna_priya.exo_audio.ExoPlayer.PlayerService;
+package com.application.chetna_priya.exo_audio.exoPlayer.playerService;
 
 import android.app.PendingIntent;
 import android.content.Context;
@@ -14,16 +14,16 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
-import com.application.chetna_priya.exo_audio.ExoPlayer.Playback.PlayerImpl;
-import com.application.chetna_priya.exo_audio.ExoPlayer.Playback.QueueManager;
-import com.application.chetna_priya.exo_audio.Ui.AudioActivity;
-import com.application.chetna_priya.exo_audio.ExoPlayer.Playback.PlaybackListener;
-import com.application.chetna_priya.exo_audio.Model.PodcastProvider;
+import com.application.chetna_priya.exo_audio.exoPlayer.playback.PlayerImpl;
+import com.application.chetna_priya.exo_audio.exoPlayer.playback.QueueManager;
+import com.application.chetna_priya.exo_audio.ui.AudioActivity;
+import com.application.chetna_priya.exo_audio.exoPlayer.playback.PlaybackListener;
+import com.application.chetna_priya.exo_audio.model.PodcastProvider;
 import com.application.chetna_priya.exo_audio.R;
 
 import java.util.List;
 
-import static com.application.chetna_priya.exo_audio.Utils.MediaIDHelper.MEDIA_ID_ROOT;
+import static com.application.chetna_priya.exo_audio.utils.MediaIDHelper.MEDIA_ID_ROOT;
 
 public class PodcastService extends MediaBrowserServiceCompat implements PlaybackListener.PlaybackServiceCallback{
 

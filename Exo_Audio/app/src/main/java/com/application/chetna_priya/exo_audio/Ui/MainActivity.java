@@ -1,19 +1,16 @@
-package com.application.chetna_priya.exo_audio.Ui;
+package com.application.chetna_priya.exo_audio.ui;
 
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.view.ViewPager;
-import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.application.chetna_priya.exo_audio.R;
-import com.application.chetna_priya.exo_audio.Utils.PreferenceHelper;
 
 import java.util.List;
 

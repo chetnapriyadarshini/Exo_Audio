@@ -1,4 +1,4 @@
-package com.application.chetna_priya.exo_audio.ExoPlayer.Playback;
+package com.application.chetna_priya.exo_audio.exoPlayer.playback;
 
 import android.support.v4.media.session.MediaSessionCompat;
 

@@ -1,4 +1,4 @@
-package com.application.chetna_priya.exo_audio.Ui.PlaybackControlView;
+package com.application.chetna_priya.exo_audio.ui.playbackControlView;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -21,8 +21,7 @@ import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.application.chetna_priya.exo_audio.Entity.Episode;
-import com.application.chetna_priya.exo_audio.ExoPlayer.PlayerService.PodcastService;
+import com.application.chetna_priya.exo_audio.exoPlayer.playerService.PodcastService;
 import com.application.chetna_priya.exo_audio.R;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlayer;
@@ -34,8 +33,8 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.application.chetna_priya.exo_audio.Ui.PlaybackControlView.SmallPlaybackControlView.CUSTOM_ACTION_SPEED_CHANGE;
-import static com.application.chetna_priya.exo_audio.Ui.PlaybackControlView.SmallPlaybackControlView.SPEED;
+import static com.application.chetna_priya.exo_audio.ui.playbackControlView.SmallPlaybackControlView.CUSTOM_ACTION_SPEED_CHANGE;
+import static com.application.chetna_priya.exo_audio.ui.playbackControlView.SmallPlaybackControlView.SPEED;
 
 /**
  * A view to control video playback of an {@link ExoPlayer}.

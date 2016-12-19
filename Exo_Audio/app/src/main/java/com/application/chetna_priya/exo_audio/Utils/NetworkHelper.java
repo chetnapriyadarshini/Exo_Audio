@@ -14,7 +14,7 @@
 * limitations under the License.
 */
 
-package com.application.chetna_priya.exo_audio.Utils;
+package com.application.chetna_priya.exo_audio.utils;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

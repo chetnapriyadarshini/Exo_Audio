@@ -1,8 +1,6 @@
-package com.application.chetna_priya.exo_audio.Entity;
+package com.application.chetna_priya.exo_audio.entity;
 
 import android.support.annotation.NonNull;
-
-import com.application.chetna_priya.exo_audio.Utils.GenreHelper;
 
 import java.io.Serializable;
 

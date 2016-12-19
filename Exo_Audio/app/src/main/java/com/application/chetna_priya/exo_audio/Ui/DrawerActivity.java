@@ -1,4 +1,4 @@
-package com.application.chetna_priya.exo_audio.Ui;
+package com.application.chetna_priya.exo_audio.ui;
 
 import android.app.ActivityOptions;
 import android.app.FragmentManager;

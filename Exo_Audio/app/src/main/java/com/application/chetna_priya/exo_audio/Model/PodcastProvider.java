@@ -1,4 +1,4 @@
-package com.application.chetna_priya.exo_audio.Model;
+package com.application.chetna_priya.exo_audio.model;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -11,10 +11,10 @@ import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.util.Log;
 
-import com.application.chetna_priya.exo_audio.Entity.Podcast;
+import com.application.chetna_priya.exo_audio.entity.Podcast;
 import com.application.chetna_priya.exo_audio.R;
-import com.application.chetna_priya.exo_audio.Ui.BaseActivity;
-import com.application.chetna_priya.exo_audio.Utils.MediaIDHelper;
+import com.application.chetna_priya.exo_audio.ui.BaseActivity;
+import com.application.chetna_priya.exo_audio.utils.MediaIDHelper;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,12 +25,10 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import static android.support.v4.media.MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI;
-import static com.application.chetna_priya.exo_audio.Utils.MediaIDHelper.MEDIA_ID_PODCASTS_BY_GENRE;
-import static com.application.chetna_priya.exo_audio.Utils.MediaIDHelper.MEDIA_ID_PODCASTS_BY_GENRE_AND_CHANNEL_NAME;
-import static com.application.chetna_priya.exo_audio.Utils.MediaIDHelper.MEDIA_ID_ROOT;
-import static com.application.chetna_priya.exo_audio.Utils.MediaIDHelper.createMediaID;
-import static com.application.chetna_priya.exo_audio.Utils.MediaIDHelper.createMediaIDForGenre;
+import static com.application.chetna_priya.exo_audio.utils.MediaIDHelper.MEDIA_ID_PODCASTS_BY_GENRE;
+import static com.application.chetna_priya.exo_audio.utils.MediaIDHelper.MEDIA_ID_PODCASTS_BY_GENRE_AND_CHANNEL_NAME;
+import static com.application.chetna_priya.exo_audio.utils.MediaIDHelper.MEDIA_ID_ROOT;
+import static com.application.chetna_priya.exo_audio.utils.MediaIDHelper.createMediaID;
 
 public class PodcastProvider {
 
@@ -393,7 +391,7 @@ public class PodcastProvider {
         // on where the music was selected from (by artist, by genre, random, etc)
         String channel = metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM);
         Bundle bundle = new Bundle(metadata.getBundle());
-        bundle.putString(BaseActivity.EXTRA_EPISODE_PUBLISHED_DATE, metadata.getString(MediaMetadataCompat.METADATA_KEY_DATE));
+        /*bundle.putString(BaseActivity.EXTRA_EPISODE_PUBLISHED_DATE, metadata.getString(MediaMetadataCompat.METADATA_KEY_DATE));*/
 
         String hierarchyAwareMediaID = createMediaID(
                 metadata.getDescription().getMediaId(), MEDIA_ID_PODCASTS_BY_GENRE_AND_CHANNEL_NAME, channel);

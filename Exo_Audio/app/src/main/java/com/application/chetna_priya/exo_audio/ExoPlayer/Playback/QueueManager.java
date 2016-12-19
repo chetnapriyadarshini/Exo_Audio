@@ -1,18 +1,17 @@
-package com.application.chetna_priya.exo_audio.ExoPlayer.Playback;
+package com.application.chetna_priya.exo_audio.exoPlayer.playback;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
 
-import com.application.chetna_priya.exo_audio.Model.PodcastProvider;
+import com.application.chetna_priya.exo_audio.model.PodcastProvider;
 import com.application.chetna_priya.exo_audio.R;
-import com.application.chetna_priya.exo_audio.Utils.AlbumArtCache;
-import com.application.chetna_priya.exo_audio.Utils.MediaIDHelper;
-import com.application.chetna_priya.exo_audio.Utils.QueueHelper;
+import com.application.chetna_priya.exo_audio.utils.AlbumArtCache;
+import com.application.chetna_priya.exo_audio.utils.MediaIDHelper;
+import com.application.chetna_priya.exo_audio.utils.QueueHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;

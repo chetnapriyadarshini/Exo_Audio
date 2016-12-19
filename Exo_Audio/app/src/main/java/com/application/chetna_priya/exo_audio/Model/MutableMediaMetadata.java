@@ -1,4 +1,4 @@
-package com.application.chetna_priya.exo_audio.Model;
+package com.application.chetna_priya.exo_audio.model;
 
 import android.support.v4.media.MediaMetadataCompat;
 import android.text.TextUtils;

@@ -1,4 +1,4 @@
-package com.application.chetna_priya.exo_audio.ExoPlayer.PlayerService;
+package com.application.chetna_priya.exo_audio.exoPlayer.playerService;
 
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -6,7 +6,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Bitmap;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationManagerCompat;
@@ -18,8 +17,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
-import com.application.chetna_priya.exo_audio.ExoPlayer.Playback.Playback;
-import com.application.chetna_priya.exo_audio.Ui.AudioActivity;
+import com.application.chetna_priya.exo_audio.ui.AudioActivity;
 import com.application.chetna_priya.exo_audio.R;
 
 /**

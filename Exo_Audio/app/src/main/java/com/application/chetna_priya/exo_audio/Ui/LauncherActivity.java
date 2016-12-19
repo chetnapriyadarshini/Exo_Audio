@@ -1,11 +1,11 @@
-package com.application.chetna_priya.exo_audio.Ui;
+package com.application.chetna_priya.exo_audio.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
-import com.application.chetna_priya.exo_audio.Utils.PreferenceHelper;
+import com.application.chetna_priya.exo_audio.utils.PreferenceHelper;
 
 /**
  * Created by chetna_priya on 12/12/2016.

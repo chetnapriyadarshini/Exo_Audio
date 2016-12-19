@@ -1,10 +1,8 @@
-package com.application.chetna_priya.exo_audio.Ui;
+package com.application.chetna_priya.exo_audio.ui;
 
 import android.content.Context;
 import android.support.v7.widget.CardView;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,10 +10,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.application.chetna_priya.exo_audio.Entity.Genre;
+import com.application.chetna_priya.exo_audio.entity.Genre;
 import com.application.chetna_priya.exo_audio.R;
-import com.application.chetna_priya.exo_audio.Utils.GenreHelper;
-import com.application.chetna_priya.exo_audio.Utils.PreferenceHelper;
+import com.application.chetna_priya.exo_audio.utils.GenreHelper;
+import com.application.chetna_priya.exo_audio.utils.PreferenceHelper;
 
 import java.util.ArrayList;
 

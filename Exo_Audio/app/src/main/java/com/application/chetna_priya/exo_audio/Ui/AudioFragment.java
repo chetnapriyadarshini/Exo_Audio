@@ -1,32 +1,19 @@
-package com.application.chetna_priya.exo_audio.Ui;
+package com.application.chetna_priya.exo_audio.ui;
 
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.media.MediaMetadataCompat;
-import android.support.v4.media.session.MediaControllerCompat;
-import android.support.v4.media.session.PlaybackStateCompat;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.application.chetna_priya.exo_audio.Ui.PlaybackControlView.CustomPlaybackControlView;
+import com.application.chetna_priya.exo_audio.ui.playbackControlView.CustomPlaybackControlView;
 import com.application.chetna_priya.exo_audio.R;
-import com.application.chetna_priya.exo_audio.Utils.AlbumArtCache;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static android.content.ContentValues.TAG;
 
 public class AudioFragment extends Fragment {
     private static final String TAG = AudioFragment.class.getSimpleName();

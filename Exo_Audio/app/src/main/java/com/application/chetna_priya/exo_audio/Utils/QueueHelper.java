@@ -1,17 +1,16 @@
-package com.application.chetna_priya.exo_audio.Utils;
+package com.application.chetna_priya.exo_audio.utils;
 
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
 
-import com.application.chetna_priya.exo_audio.Model.PodcastProvider;
+import com.application.chetna_priya.exo_audio.model.PodcastProvider;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.application.chetna_priya.exo_audio.Utils.MediaIDHelper.MEDIA_ID_PODCASTS_BY_GENRE;
-import static com.application.chetna_priya.exo_audio.Utils.MediaIDHelper.MEDIA_ID_PODCASTS_BY_GENRE_AND_CHANNEL_NAME;
-import static com.application.chetna_priya.exo_audio.Utils.MediaIDHelper.MEDIA_ID_PODCASTS_BY_SEARCH;
+import static com.application.chetna_priya.exo_audio.utils.MediaIDHelper.MEDIA_ID_PODCASTS_BY_GENRE_AND_CHANNEL_NAME;
+import static com.application.chetna_priya.exo_audio.utils.MediaIDHelper.MEDIA_ID_PODCASTS_BY_SEARCH;
 
 public class QueueHelper
 {

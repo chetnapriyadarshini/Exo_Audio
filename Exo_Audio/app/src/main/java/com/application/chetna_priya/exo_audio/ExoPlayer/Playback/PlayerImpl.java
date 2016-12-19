@@ -1,4 +1,4 @@
-package com.application.chetna_priya.exo_audio.ExoPlayer.Playback;
+package com.application.chetna_priya.exo_audio.exoPlayer.playback;
 
 import android.content.Context;
 import android.media.AudioManager;
@@ -15,10 +15,10 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.application.chetna_priya.exo_audio.DemoApplication;
-import com.application.chetna_priya.exo_audio.Model.MediaProviderSource;
-import com.application.chetna_priya.exo_audio.Model.PodcastProvider;
+import com.application.chetna_priya.exo_audio.model.MediaProviderSource;
+import com.application.chetna_priya.exo_audio.model.PodcastProvider;
 import com.application.chetna_priya.exo_audio.R;
-import com.application.chetna_priya.exo_audio.Utils.MediaIDHelper;
+import com.application.chetna_priya.exo_audio.utils.MediaIDHelper;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;

@@ -1,10 +1,7 @@
-package com.application.chetna_priya.exo_audio.Network;
+package com.application.chetna_priya.exo_audio.network;
 
-import android.util.Log;
-
-import com.application.chetna_priya.exo_audio.Entity.Episode;
-import com.application.chetna_priya.exo_audio.Entity.Podcast;
-import com.application.chetna_priya.exo_audio.Network.FeedParser;
+import com.application.chetna_priya.exo_audio.entity.Episode;
+import com.application.chetna_priya.exo_audio.entity.Podcast;
 
 import java.io.IOException;
 import java.net.URL;

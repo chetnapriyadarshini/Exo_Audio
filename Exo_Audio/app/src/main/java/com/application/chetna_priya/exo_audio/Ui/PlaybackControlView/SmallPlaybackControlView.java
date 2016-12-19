@@ -1,26 +1,11 @@
-package com.application.chetna_priya.exo_audio.Ui.PlaybackControlView;
+package com.application.chetna_priya.exo_audio.ui.playbackControlView;
 
-import android.content.ComponentName;
 import android.content.Context;
-import android.os.RemoteException;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.media.MediaBrowserCompat;
-import android.support.v4.media.MediaMetadataCompat;
-import android.support.v4.media.session.MediaControllerCompat;
-import android.support.v4.media.session.MediaSessionCompat;
-import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 
-import com.application.chetna_priya.exo_audio.ExoPlayer.PlayerService.PodcastService;
 import com.application.chetna_priya.exo_audio.R;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 /**
  * Created by chetna_priya on 10/23/2016.
