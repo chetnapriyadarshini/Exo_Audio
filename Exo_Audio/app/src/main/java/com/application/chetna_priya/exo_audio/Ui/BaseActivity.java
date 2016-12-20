@@ -1,4 +1,4 @@
-package com.application.chetna_priya.exo_audio.Ui;
+package com.application.chetna_priya.exo_audio.ui;
 
 import android.content.ComponentName;
 import android.os.RemoteException;
@@ -11,9 +11,9 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
-import com.application.chetna_priya.exo_audio.ExoPlayer.PlayerService.PodcastService;
+import com.application.chetna_priya.exo_audio.exoPlayer.playerService.PodcastService;
 import com.application.chetna_priya.exo_audio.R;
-import com.application.chetna_priya.exo_audio.Utils.NetworkHelper;
+import com.application.chetna_priya.exo_audio.utils.NetworkHelper;
 
 
 /**
@@ -26,6 +26,7 @@ public abstract class BaseActivity extends DrawerActivity implements MediaBrowse
     public static final String EXTRA_MEDIA_ITEM = "extra_media_item";
     public static final String EXTRA_SUMMARY = "extra_summary";
     public static final java.lang.String EXTRA_EPISODE_PUBLISHED_DATE = "episode_extra_published_date";
+    public static final String EXTRA_BITMAP_POSTER = "extra_bitmap_poster";
 
     private MediaBrowserCompat mMediaBrowser;
     private PlaybackControlsFragment mControlsFragment;

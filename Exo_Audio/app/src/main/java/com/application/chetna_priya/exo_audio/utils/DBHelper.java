@@ -14,7 +14,7 @@ import com.application.chetna_priya.exo_audio.model.MediaProviderSource;
 
 public class DBHelper {
 
-    public static Uri insertInDb(Context context, MediaBrowserCompat.MediaItem mediaItem, Bitmap iconBitmap){
+    public static Uri insertInDb(Context context, MediaBrowserCompat.MediaItem mediaItem, Bitmap iconBitmap, String epName){
         Bundle epBundle = mediaItem.getDescription().getExtras();
         if(epBundle == null)
             throw new IllegalArgumentException("Bundle sent is nulll");
@@ -28,10 +28,6 @@ public class DBHelper {
         contentValues.put(PodcastContract.PodcastEntry.COLUMN_PODCAST_TITLE, podcastTitle);
         contentValues.put(PodcastContract.PodcastEntry.COLUMN_PODCAST_TRACK_ID, podcastTrack);
 
-        byte[] data = new byte[0];
-        if(iconBitmap != null)
-            data = BitmapHelper.getBitmapAsByteArray(iconBitmap);
-        contentValues.put(PodcastContract.PodcastEntry.COLUMN_PODCAST_ALBUM_COVER_IMAGE, data);
         Uri insertedUri = context.getContentResolver().insert(
                 PodcastContract.PodcastEntry.CONTENT_URI,
                 contentValues
@@ -43,18 +39,26 @@ public class DBHelper {
          */
         String title = epBundle.getString(MediaMetadataCompat.METADATA_KEY_TITLE);
         ContentValues episodeValues = new ContentValues();
+
+        byte[] data = new byte[0];
+        if(iconBitmap != null)
+            data = BitmapHelper.getBitmapAsByteArray(iconBitmap);
+        episodeValues.put(PodcastContract.EpisodeEntry.COLUMN_PODCAST_ALBUM_COVER_IMAGE, data);
         episodeValues.put(PodcastContract.EpisodeEntry.COLUMN_PODCAST_EPISODE_TITLE,
             title == null ? "" : title);
         episodeValues.put(PodcastContract.EpisodeEntry.COLUMN_PODCAST_EPISODE_RELEASE_DATE,
                 epBundle.getString(MediaMetadataCompat.METADATA_KEY_DATE));
         episodeValues.put(PodcastContract.EpisodeEntry.COLUMN_PODCAST_EPISODE_DURATION,
-                epBundle.getString(MediaMetadataCompat.METADATA_KEY_DURATION));
+                epBundle.getLong(MediaMetadataCompat.METADATA_KEY_DURATION));
         episodeValues.put(PodcastContract.EpisodeEntry.COLUMN_PODCAST_EPISODE_LINK,
                 epBundle.getString(MediaProviderSource.CUSTOM_METADATA_TRACK_SOURCE));
         episodeValues.put(PodcastContract.EpisodeEntry.COLUMN_PODCAST_EPISODE_SUMMARY,
                 epBundle.getString(MediaProviderSource.CUSTOM_METADATA_EPISODE_TRACK_SUMMARY));
         episodeValues.put(PodcastContract.EpisodeEntry.COLUMN_PODCAST_ALBUM_KEY, podcastId);
-
+        episodeValues.put(PodcastContract.EpisodeEntry.COLUMN_PODCAST_EPISODE_MEDIA_ID, mediaItem.getMediaId());
+        episodeValues.put(PodcastContract.EpisodeEntry.COLUMN_PODCAST_EPISODE_NAME, epName);
+        /*
+        episodeValues.put(PodcastContract.EpisodeEntry.COLUMN_PODCAST_EPISODE_URI_DEVICE, localUri);*/
 
         return context.getContentResolver().insert(
                 PodcastContract.EpisodeEntry.CONTENT_URI,

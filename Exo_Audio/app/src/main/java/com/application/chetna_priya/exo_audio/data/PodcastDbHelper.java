@@ -27,8 +27,7 @@ public class PodcastDbHelper extends SQLiteOpenHelper {
                 PodcastEntry._ID + " INTEGER PRIMARY KEY," +
                 PodcastEntry.COLUMN_PODCAST_TRACK_ID + " REAL NOT NULL, " +
                 PodcastEntry.COLUMN_PODCAST_TITLE + " TEXT NOT NULL, " +
-                PodcastEntry.COLUMN_PODCAST_SUMMARY + " TEXT NOT NULL " +
-                PodcastEntry.COLUMN_PODCAST_ALBUM_COVER_IMAGE + " BLOB NOT NULL, " +
+                PodcastEntry.COLUMN_PODCAST_SUMMARY + " TEXT " +
                 " );";
 
         final String SQL_CREATE_ALBUM_EPISODE_TABLE = "CREATE TABLE " + EpisodeEntry.TABLE_NAME + " (" +
@@ -43,10 +42,14 @@ public class PodcastDbHelper extends SQLiteOpenHelper {
                 EpisodeEntry.COLUMN_PODCAST_ALBUM_KEY + " INTEGER NOT NULL, " +
                 EpisodeEntry.COLUMN_PODCAST_EPISODE_RELEASE_DATE + " TEXT NOT NULL, " +
                 EpisodeEntry.COLUMN_PODCAST_EPISODE_TITLE + " TEXT NOT NULL," +
-                EpisodeEntry.COLUMN_PODCAST_EPISODE_SUMMARY + " TEXT NOT NULL, " +
+                EpisodeEntry.COLUMN_PODCAST_EPISODE_SUMMARY + " TEXT, " +
 
                 EpisodeEntry.COLUMN_PODCAST_EPISODE_DURATION + " REAL NOT NULL, " +
                 EpisodeEntry.COLUMN_PODCAST_EPISODE_LINK + " TEXT NOT NULL, " +
+                EpisodeEntry.COLUMN_PODCAST_EPISODE_MEDIA_ID + " TEXT NOT NULL, " +
+                EpisodeEntry.COLUMN_PODCAST_EPISODE_NAME + " TEXT NOT NULL, " +
+                EpisodeEntry.COLUMN_PODCAST_ALBUM_COVER_IMAGE + " BLOB NOT NULL, " +/*
+                EpisodeEntry.COLUMN_PODCAST_EPISODE_URI_DEVICE + " TEXT NOT NULL, " +*/
 
                 // Set up the album column as a foreign key to episode table.
                 " FOREIGN KEY (" + EpisodeEntry.COLUMN_PODCAST_ALBUM_KEY + ") REFERENCES " +

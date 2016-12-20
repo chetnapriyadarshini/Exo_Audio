@@ -17,7 +17,7 @@ public class PermissionHelper {
 
     public static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_USAGE = 1;
 
-    public static void requestForPermission(Context context, String permission) {
+    public static boolean requestForPermission(Context context, String permission) {
         if (ContextCompat.checkSelfPermission(context, permission)
                 != PackageManager.PERMISSION_GRANTED) {
 
@@ -44,6 +44,8 @@ public class PermissionHelper {
                 // app-defined int constant. The callback method gets the
                 // result of the request.
             }
+            return false;
         }
+        return true;
     }
 }

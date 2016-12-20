@@ -59,4 +59,6 @@
     <string name="download_in_progress">Download in progress</string>
     <string name="podcast_download">Podcast episode download</string>
     <string name="download_complete">Download Complete</string>
+    <string name="subscribed">Subscribed</string>
+    <string name="downloaded">Downloaded</string>
 </resources>

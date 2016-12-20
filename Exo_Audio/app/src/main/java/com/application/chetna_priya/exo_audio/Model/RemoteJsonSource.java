@@ -1,17 +1,15 @@
-package com.application.chetna_priya.exo_audio.Model;
+package com.application.chetna_priya.exo_audio.model;
 
 import android.content.Context;
 import android.support.v4.media.MediaMetadataCompat;
 import android.util.Log;
 
-import com.application.chetna_priya.exo_audio.Data.LocalPersistence;
-import com.application.chetna_priya.exo_audio.Entity.Episode;
-import com.application.chetna_priya.exo_audio.Entity.Podcast;
-import com.application.chetna_priya.exo_audio.Network.FetchIndividualPodcastEpisodes;
-import com.application.chetna_priya.exo_audio.Network.LoadAvailablePodcastChannels;
-import com.application.chetna_priya.exo_audio.R;
-import com.application.chetna_priya.exo_audio.Utils.GenreHelper;
-import com.application.chetna_priya.exo_audio.Utils.PreferenceHelper;
+import com.application.chetna_priya.exo_audio.entity.Episode;
+import com.application.chetna_priya.exo_audio.entity.Podcast;
+import com.application.chetna_priya.exo_audio.network.FetchIndividualPodcastEpisodes;
+import com.application.chetna_priya.exo_audio.network.LoadAvailablePodcastChannels;
+import com.application.chetna_priya.exo_audio.utils.GenreHelper;
+import com.application.chetna_priya.exo_audio.utils.PreferenceHelper;
 
 import org.json.JSONException;
 
@@ -102,6 +100,9 @@ class RemoteJsonSource implements MediaProviderSource {
         return new MediaMetadataCompat.Builder()
                 .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, episode.getId())
                 .putString(MediaProviderSource.CUSTOM_METADATA_TRACK_SOURCE, episode.getEpisode_pod_link())
+                .putString(MediaProviderSource.CUSTOM_METADATA_EPISODE_TRACK_SUMMARY, episode.getEpisode_summary())
+                .putString(MediaProviderSource.CUSTOM_METADATA_PODCAST_SUMMARY, episode.getPodcast().getSummary())
+                .putLong(MediaProviderSource.CUSTOM_METADATA_PODCASTID, episode.getPodcast().getTrackNumber())
                 .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration)
                 .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, episode.getPodcast().getAlbum_title())
                 .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, episode.getPodcast().getArtist())

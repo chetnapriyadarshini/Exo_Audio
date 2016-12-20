@@ -52,7 +52,7 @@ public class MainActivity extends BaseActivity implements FeaturedFragment.Media
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        initializeToolbar();
         /*if(!PreferenceHelper.isInitialGenrePreferenceSet(this)){
             Intent genreIntent = new Intent(this,GenreActivity.class);
             Bundle bundle = new Bundle();

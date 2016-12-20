@@ -16,7 +16,7 @@ public class PodcastContract {
     // relationship between a domain name and its website.  A convenient string to use for the
     // content authority is the package name for the app, which is guaranteed to be unique on the
     // device.
-    public static final String CONTENT_AUTHORITY = "com.example.chetna_priya.itunestestproj";
+    public static final String CONTENT_AUTHORITY = "com.application.chetna_priya.exo_audio";
 
     // Use CONTENT_AUTHORITY to create the base of all URI's which apps will use to contact
     // the content provider.
@@ -56,7 +56,6 @@ public class PodcastContract {
         public static final String COLUMN_PODCAST_TITLE = "podcast_title";
         public static final String COLUMN_PODCAST_TRACK_ID = "podcast_track_id";
 
-        public static final String COLUMN_PODCAST_ALBUM_COVER_IMAGE = "podcast_image";
         public static final String COLUMN_PODCAST_SUMMARY = "podcast_summary";
 
 
@@ -92,6 +91,10 @@ public class PodcastContract {
         public static final String COLUMN_PODCAST_EPISODE_SUMMARY = "podcast_episode_summary";
         public static final String COLUMN_PODCAST_EPISODE_DURATION = "podcast_episode_duration";
         public static final String COLUMN_PODCAST_EPISODE_RELEASE_DATE = "podcast_episode_release_date";
+        public static final String COLUMN_PODCAST_ALBUM_COVER_IMAGE = "podcast_image";
+        public static final String COLUMN_PODCAST_EPISODE_MEDIA_ID = "podcast_episode_mediaid";
+        public static final String COLUMN_PODCAST_EPISODE_NAME = "podcast_episode_name";
+        /*public static final String COLUMN_PODCAST_EPISODE_URI_DEVICE = "podcast_episode_location";*/
 
         public static final int INDEX_PODCAST_KEY = 0;
         public static final int INDEX_PODCAST_EPISODE_TITLE = 1;
@@ -99,6 +102,7 @@ public class PodcastContract {
         public static final int INDEX_PODCAST_EPISODE_SUMMARY = 3;
         public static final int INDEX_PODCAST_EPISODE_DURATION = 4;
         public static final int INDEX_PODCAST_EPISODE_RELEASE_DATE = 5;
+        public static final Uri FILE_URI = Uri.parse("file://" + CONTENT_AUTHORITY);
 
 
         public static Uri buildPodcastEpisodeUri(long id) {

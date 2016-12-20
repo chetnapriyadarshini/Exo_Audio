@@ -35,7 +35,4 @@ public class PreferenceHelper {
         return new ArrayList<>(set);
     }
 
-    public static long[] getSavedDownloadEnqueueId(Context context) {
-        return new long[0];
-    }
 }

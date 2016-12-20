@@ -1,7 +1,7 @@
-package com.application.chetna_priya.exo_audio.Ui;
+package com.application.chetna_priya.exo_audio.ui;
 
 import android.content.Intent;
-import android.os.AsyncTask;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.media.MediaBrowserCompat;
@@ -14,11 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.application.chetna_priya.exo_audio.Entity.Podcast;
-import com.application.chetna_priya.exo_audio.Network.LoadAvailablePodcastChannels;
 import com.application.chetna_priya.exo_audio.R;
-import com.application.chetna_priya.exo_audio.Utils.GenreHelper;
 import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,19 +22,10 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-class AllPodcastsInCategory extends BaseActivity {
+public class AllPodcastsInCategory extends BaseActivity {
 
     private static final String TAG = AllPodcastsInCategory.class.getSimpleName();
 
-    /*
-    This fragment needs both podcast and three episodes, we need to fetch 2 roots
-    both of which belong to the browsable category
-
-    Genres -- Health/Comedy -- All Podcasts
-                                       |
-                                       |
-                                Start here
-     */
     MediaBrowserCompat.MediaItem mMediaItem;
     ArrayList<MediaBrowserCompat.MediaItem> mPodcastMediaItemList = new ArrayList<>();
     private AllpodAdapter allpodAdapter;
@@ -141,6 +128,8 @@ class AllPodcastsInCategory extends BaseActivity {
                 public void onClick(View view) {
                     Intent episodesIntent = new Intent(AllPodcastsInCategory.this, AllEpisodes.class);
                     episodesIntent.putExtra(BaseActivity.EXTRA_MEDIA_ITEM, mPodcastMediaItemList.get(getAdapterPosition()));
+                    BitmapDrawable bitmapDrawable = (BitmapDrawable) icon_view.getDrawable();
+                    episodesIntent.putExtra(BaseActivity.EXTRA_BITMAP_POSTER, bitmapDrawable.getBitmap());
                     startActivity(episodesIntent);
                 }
             });

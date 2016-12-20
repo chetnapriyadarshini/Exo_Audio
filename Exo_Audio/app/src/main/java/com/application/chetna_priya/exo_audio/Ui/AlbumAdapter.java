@@ -1,4 +1,4 @@
-package com.application.chetna_priya.exo_audio.Ui;
+package com.application.chetna_priya.exo_audio.ui;
 
 import android.content.Context;
 import android.content.Intent;
@@ -201,6 +201,10 @@ class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHolder> im
                 public void onClick(View view) {
                     Intent intent = new Intent(mContext, AllEpisodes.class);
                     intent.putExtra(BaseActivity.EXTRA_MEDIA_ITEM, itemArrayList.get(getAdapterPosition()));
+                    //We send the bitmap so that it can be saved in database in case user
+                    //decides to download the episode and view it offline
+                    BitmapDrawable bitmapDrawable = (BitmapDrawable) album_img.getDrawable();
+                    intent.putExtra(BaseActivity.EXTRA_BITMAP_POSTER, bitmapDrawable.getBitmap());
                     mContext.startActivity(intent);
                 }
             });

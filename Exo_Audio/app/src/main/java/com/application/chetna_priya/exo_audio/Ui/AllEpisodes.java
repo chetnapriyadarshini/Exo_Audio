@@ -1,30 +1,44 @@
-package com.application.chetna_priya.exo_audio.Ui;
+package com.application.chetna_priya.exo_audio.ui;
 
+import android.Manifest;
+import android.app.DownloadManager;
+import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
-import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v7.app.NotificationCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.application.chetna_priya.exo_audio.Data.LocalPersistence;
+import com.application.chetna_priya.exo_audio.data.PodcastContract;
+import com.application.chetna_priya.exo_audio.model.MediaProviderSource;
 import com.application.chetna_priya.exo_audio.R;
+import com.application.chetna_priya.exo_audio.utils.BitmapHelper;
+import com.application.chetna_priya.exo_audio.utils.DBHelper;
+import com.application.chetna_priya.exo_audio.utils.PathHelper;
+import com.application.chetna_priya.exo_audio.utils.PermissionHelper;
+import com.application.chetna_priya.exo_audio.utils.SortingHelper;
 
+import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import butterknife.BindView;
@@ -33,19 +47,7 @@ import butterknife.ButterKnife;
 
 public class AllEpisodes extends BaseActivity {
 
-/*
-    This fragment needs both podcast and three episodes, we need to fetch 2 roots
-    both of which belong to the browsable category
-
-    Genres -- Health/Comedy -- All Podcasts -- All Episodes
-                                                   |
-                                                   |
-                                                Start here
-     */
-
     private static final String TAG = AllEpisodes.class.getSimpleName();
-
-   // ArrayList<Episode> episodes;
 
     @BindView(R.id.podcast_title)
     TextView podcastTtile;
@@ -55,8 +57,15 @@ public class AllEpisodes extends BaseActivity {
 
     MediaBrowserCompat.MediaItem mMediaItem;
 
+    static MediaBrowserCompat.MediaItem selMediaItem;
+
+
     ArrayList<MediaBrowserCompat.MediaItem> mEpisodeMediaItemList = new ArrayList<>();
     private EpisodesAdapter episodesAdapter;
+    private DownloadManager dm;
+    private static long enqueue;
+    private DownloadManager.Request request;
+    static  Bitmap iconBitmap = null;
 
 
     @Override
@@ -70,11 +79,15 @@ public class AllEpisodes extends BaseActivity {
 
         setContentView(R.layout.layout_all_episodes);
 
-
+     //   setDownloadBroadcastReceiver();
         ButterKnife.bind(this);
         podcastTtile.setText(mMediaItem.getDescription().getTitle());
         String summary = mMediaItem.getDescription().getExtras().getString(EXTRA_SUMMARY);
         podcastSummary.setText(summary);
+
+        if(getIntent().hasExtra(BaseActivity.EXTRA_BITMAP_POSTER)){
+            iconBitmap = getIntent().getParcelableExtra(EXTRA_BITMAP_POSTER);
+        }
 
         final CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         collapsingToolbarLayout.setTitle(" ");
@@ -87,34 +100,26 @@ public class AllEpisodes extends BaseActivity {
         episodeRecyclerView.setAdapter(episodesAdapter);
     }
 
-    void sortArrayList(){
-                      /*
-                We attempt to sort the episodes in descending order
-                with the newest episodes at top before displaying the list to the users
-                 */
-        Collections.sort(mEpisodeMediaItemList, new Comparator<MediaBrowserCompat.MediaItem>() {
+/*
+    private void setDownloadBroadcastReceiver() {
+        BroadcastReceiver receiver = new BroadcastReceiver() {
             @Override
-            public int compare(MediaBrowserCompat.MediaItem mediaItem1, MediaBrowserCompat.MediaItem mediaItem2) {
-                String releaseDate1 = mediaItem1.getDescription().getExtras().getString(MediaMetadataCompat.METADATA_KEY_DATE);
-                String releaseDate2 = mediaItem2.getDescription().getExtras().getString(MediaMetadataCompat.METADATA_KEY_DATE);
-                //   Month Day Year
-                String[] dateArr1 = releaseDate1.split(" ");
-                String[] dateArr2 = releaseDate2.split(" ");
-                int relyear1 = Integer.parseInt(dateArr1[2]);
-                int relyear2 = Integer.parseInt(dateArr2[2]);
-                //if the year is same check for the month
-                if(relyear1 == relyear2){
-                    int compare = new MonthComparator().compare(dateArr1[1], dateArr2[1]);
-                    //If months are equal we check for day
-                    if(compare == 0){
-                        return new DateComaprator().compare(dateArr1[0], dateArr2[0]);
-                    }else
-                        return  compare;
-                }else
-                    return relyear1 < relyear2 ? 1 : -1;
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
+                    long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
+                    DownloadManager.Query query = new DownloadManager.Query();
+                    query.setFilterById(enqueue);
+                    Cursor c = dm.query(query);
+                    if (c.moveToFirst()) {
+                        int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI);
+                        Log.d(TAG, "COLUMMMMMMMNNNNNNNNN "+columnIndex);
+
+                    }
+                }
             }
-        });
-    }
+        };
+    }*/
 
     @Override
     protected void onMediaControllerConnected() {
@@ -135,7 +140,7 @@ public class AllEpisodes extends BaseActivity {
                         for (MediaBrowserCompat.MediaItem item : children) {
                             mEpisodeMediaItemList.add(item);
                         }
-                        sortArrayList();
+                        new SortingHelper().sortArrayList(mEpisodeMediaItemList);
                         episodesAdapter.notifyDataSetChanged();
                     } catch (Throwable t) {
                         Log.e(TAG, "Error on childrenloaded", t);
@@ -163,17 +168,11 @@ public class AllEpisodes extends BaseActivity {
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
             Bundle epBundle = mEpisodeMediaItemList.get(position).getDescription().getExtras();
-            Log.d(TAG, "BUNDLEEEEEEEEEEEE "+mEpisodeMediaItemList.get(position).getDescription()
+           /* Log.d(TAG, "BUNDLEEEEEEEEEEEE "+mEpisodeMediaItemList.get(position).getDescription()
                     .getExtras().getString(MediaMetadataCompat.METADATA_KEY_TITLE));
-            String releaseDate = epBundle.getString(MediaMetadataCompat.METADATA_KEY_DATE)/*getEpisode_published_on()*/;
+            */String releaseDate = epBundle.getString(MediaMetadataCompat.METADATA_KEY_DATE)/*getEpisode_published_on()*/;
             holder.release_date.setText(formatDate(releaseDate));
             holder.episode_title.setText(epBundle.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
-            /*if(!isPodcastSummarySet)
-            {
-                isPodcastSummarySet = true;
-                podcastSummary.setText(episodes.get(position).getPodcastSummary());
-                Log.d(TAG, "EPISDODE SUMMARRRRYYY SET AS "+episodes.get(position).getPodcastSummary());
-            }*/
         }
 
         private String formatDate(String releaseDate) {
@@ -205,6 +204,9 @@ public class AllEpisodes extends BaseActivity {
         @BindView(R.id.episode_title)
         TextView episode_title;
 
+        @BindView(R.id.img_download)
+        ImageView download_episode;
+
          ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
@@ -222,32 +224,103 @@ public class AllEpisodes extends BaseActivity {
                             .playFromMediaId(mEpisodeMediaItemList.get(getAdapterPosition()).getMediaId(), null);
 
                     Intent audioIntent = new Intent(AllEpisodes.this, AudioActivity.class);
-                 //   audioIntent.putExtra(BaseActivity.EXTRA_MEDIA_ITEM, mEpisodeMediaItemList.get(getAdapterPosition()));
                     startActivity(audioIntent);
                 }
             });
+
+             download_episode.setOnClickListener(new View.OnClickListener() {
+                 @Override
+                 public void onClick(View view) {
+                     boolean shouldstart = true;
+                     if(!PermissionHelper.requestForPermission(AllEpisodes.this, Manifest.permission.WRITE_EXTERNAL_STORAGE))
+                         shouldstart = false;
+                     String uri = mEpisodeMediaItemList.get(getAdapterPosition()).getDescription().
+                             getExtras().getString(MediaProviderSource.CUSTOM_METADATA_TRACK_SOURCE);
+                     selMediaItem = mEpisodeMediaItemList.get(getAdapterPosition());
+                     if(dm == null)
+                         dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+                     request = new DownloadManager.Request(Uri.parse(uri));
+                     request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                     request.setMimeType("audio/MP3");
+                     if(shouldstart)
+                         startDownload();
+                    //  request.setDestinationInExternalFilesDir(AllEpisodes.this,null,uri/*
+                             /*getString(R.string.app_name) + "/" + podcastTtile.getText() + "/" + episode_title.getText());*/
+
+                 }
+             });
         }
     }
 
-    private String[] monthList = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
-        "Aug", "Sept", "Oct", "Nov", "Dec"};
-    private ArrayList<String> monthArrayList = new ArrayList<>(Arrays.asList(monthList));
-    private class MonthComparator implements Comparator<String> {
-
-        @Override
-        public int compare(String month1, String month2) {
-            int index1 = monthArrayList.indexOf(month1);
-            int index2 = monthArrayList.indexOf(month2);
-            return index1 < index2 ? 1 : index1 == index2 ? 0 : -1;
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode){
+            case PermissionHelper.MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_USAGE:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    startDownload();
+                  //  notifyUser();
+                }
         }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
-    private class DateComaprator implements Comparator<String> {
+    private void startDownload() {
+       /* File direct = new File(Environment.getExternalStorageDirectory()
+                +"/" +getString(R.string.app_name));
+
+        if (!direct.exists()) {
+            direct.mkdirs();
+        }*/
+
+
+        //  request.setDestinationUri(PodcastContract.EpisodeEntry.FILE_URI);
+        String name = selMediaItem.getDescription().getExtras().getString(MediaMetadataCompat.METADATA_KEY_TITLE);
+        int maxfileNamelength = 10;
+        if(name.length() > maxfileNamelength)
+            name = name.substring(0, maxfileNamelength);
+        //Remove all spaces from the name
+        name = name.replaceAll("\\s+","").concat(".m4v");
+        request.setTitle(name);
+        request.setDestinationInExternalPublicDir(PathHelper.getDownloadPodcastPath(AllEpisodes.this),name);
+
+        enqueue = dm.enqueue(request);
+    }
+
+
+    public static class DownloadListener extends BroadcastReceiver {
+
+        public DownloadListener(){}
+
         @Override
-        public int compare(String day1, String day2) {
-            int firstDay = Integer.parseInt(day1);
-            int secondDay = Integer.parseInt(day2);
-            return firstDay < secondDay ? 1 : firstDay == secondDay ? 0 : -1;
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
+                long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
+                if(enqueue != downloadId)
+                    return;
+                DownloadManager dm  = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+                DownloadManager.Query query = new DownloadManager.Query();
+                query.setFilterById(downloadId);
+                Cursor c = dm.query(query);
+                if (c.moveToFirst()) {
+                    int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_TITLE);
+                    String title = c.getString(columnIndex);
+                    Log.d(TAG, "COLUMMMMMMMNNNNNNNNN "+title);
+                    String localUri = c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
+                    Log.d(TAG, "COLUMMMMMMMNNNNNNNNN "+localUri);
+
+                    int status = c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS));
+                    Log.d(TAG, "COLUMMMMMMMNNNNNNNNN "+status);
+
+                    int reason = c.getInt(c.getColumnIndex(DownloadManager.COLUMN_REASON));
+                    Log.d(TAG, "COLUMMMMMMMNNNNNNNNN "+reason);
+
+                    if(status == DownloadManager.STATUS_SUCCESSFUL)
+                        DBHelper.insertInDb(context, selMediaItem, iconBitmap,title );
+
+                }
+            }
         }
     }
 }

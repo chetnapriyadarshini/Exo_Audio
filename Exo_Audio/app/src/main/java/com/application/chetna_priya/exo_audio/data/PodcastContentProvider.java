@@ -101,7 +101,7 @@ public class PodcastContentProvider extends ContentProvider {
             // "episode/*/*"
             case PODCAST_EPISODE:
                 retCursor = mOpenHelper.getReadableDatabase().query(
-                        PodcastContract.PodcastEntry.TABLE_NAME,
+                        PodcastContract.EpisodeEntry.TABLE_NAME,
                         projection,
                         selection,
                         selectionArgs,

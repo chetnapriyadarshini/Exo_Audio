@@ -18,13 +18,17 @@
     <group android:checkableBehavior="single">
        <!-- //TODO add items later-->
         <item
-            android:id="@+id/navigation_allmusic"
+            android:id="@+id/navigation_featured"
+            android:icon="@drawable/ic_playlist_music_black_24dp"
+            android:title="@string/featured"/>
+        <item
+            android:id="@+id/navigation_subscribed"
             android:checked="true"
             android:icon="@drawable/ic_allmusic_black_24dp"
-            android:title="All Music"/>
+            android:title="@string/subscribed"/>
         <item
-            android:id="@+id/navigation_playlists"
+            android:id="@+id/navigation_downloaded"
             android:icon="@drawable/ic_playlist_music_black_24dp"
-            android:title="Playlists"/>
+            android:title="@string/downloaded"/>
     </group>
 </menu>

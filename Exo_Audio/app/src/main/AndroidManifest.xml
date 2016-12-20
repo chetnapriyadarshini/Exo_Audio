@@ -70,9 +70,16 @@
             android:name=".ui.AllPodcastsInCategory"
             android:screenOrientation="portrait" />
         <activity android:name=".ui.AllEpisodes" android:screenOrientation="portrait"/>
-
+        <activity android:name=".ui.DownloadedActivity" android:screenOrientation="portrait"/>
+<!--
         <receiver
             android:name="com.application.chetna_priya.exo_audio.utils.DownloadListener"
+            android:exported="true">
+            <intent-filter>
+                <action android:enabled="true" android:name="android.intent.action.DOWNLOAD_COMPLETE" />
+            </intent-filter>
+        </receiver>-->
+        <receiver android:name=".ui.AllEpisodes$DownloadListener"
             android:exported="true">
             <intent-filter>
                 <action android:enabled="true" android:name="android.intent.action.DOWNLOAD_COMPLETE" />

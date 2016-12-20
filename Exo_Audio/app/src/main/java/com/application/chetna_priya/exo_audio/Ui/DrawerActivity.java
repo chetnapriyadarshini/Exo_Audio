@@ -41,13 +41,14 @@ public class DrawerActivity extends AppCompatActivity {
 
                 Class activityClass = null;
                 switch (mItemToOpenWhenDrawerCloses) {
-                    //TODO Add items and activity classes later
-                    //case R.id.navigation_allmusic:
-                      //  activityClass = MusicPlayerActivity.class;
-                      //  break;
-                    //case R.id.navigation_playlists:
-                      //  activityClass = PlaceholderActivity.class;
-                        //break;
+                    case R.id.navigation_downloaded:
+                        activityClass = DownloadedActivity.class;
+                        break;
+                    case R.id.navigation_featured:
+                        activityClass = MainActivity.class;
+                        break;
+                    case R.id.navigation_subscribed:
+                        activityClass = SubscribedActivity.class;
                 }
                 if (activityClass != null) {
                     startActivity(new Intent(DrawerActivity.this, activityClass), extras);
@@ -149,11 +150,11 @@ public class DrawerActivity extends AppCompatActivity {
     }
 
     protected void initializeToolbar() {
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        /*mToolbar = (Toolbar) findViewById(R.id.toolbar);
         if (mToolbar == null) {
             throw new IllegalStateException("Layout is required to include a Toolbar with id " +
                     "'toolbar'");
-        }
+        }*/
       //  mToolbar.inflateMenu(R.menu.main);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -167,9 +168,10 @@ public class DrawerActivity extends AppCompatActivity {
             // Create an ActionBarDrawerToggle that will handle opening/closing of the drawer:
             mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                     mToolbar, R.string.open_content_drawer, R.string.close_content_drawer);
-            mDrawerLayout.setDrawerListener(mDrawerListener);
+            mDrawerLayout.addDrawerListener(mDrawerListener);
+           // mDrawerLayout.setDrawerListener(mDrawerListener);
             populateDrawerItems(navigationView);
-            setSupportActionBar(mToolbar);
+//            setSupportActionBar(mToolbar);
             updateDrawerToggle();
         } else {
             setSupportActionBar(mToolbar);
@@ -191,11 +193,16 @@ public class DrawerActivity extends AppCompatActivity {
                     }
                 });
         //TODO Implementation of navigation view
-        if (DrawerActivity.class.isAssignableFrom(getClass())) {
-         //   navigationView.setCheckedItem(R.id.navigation_allmusic);
-        } //else if (PlaceholderActivity.class.isAssignableFrom(getClass()))
+        if (MainActivity.class.isAssignableFrom(getClass())) {
+            navigationView.setCheckedItem(R.id.navigation_featured);
+        }
+        else if (DownloadedActivity.class.isAssignableFrom(getClass()))
         {
-         //   navigationView.setCheckedItem(R.id.navigation_playlists);
+            navigationView.setCheckedItem(R.id.navigation_downloaded);
+        }
+        else if (SubscribedActivity.class.isAssignableFrom(getClass()))
+        {
+            navigationView.setCheckedItem(R.id.navigation_subscribed);
         }
     }
 
