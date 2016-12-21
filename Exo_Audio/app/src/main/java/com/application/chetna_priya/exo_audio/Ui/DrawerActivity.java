@@ -4,9 +4,8 @@ import android.app.ActivityOptions;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -17,16 +16,10 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.application.chetna_priya.exo_audio.R;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
 
 import static com.application.chetna_priya.exo_audio.R.id.drawer_layout;
 
-public class DrawerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class DrawerActivity extends AppCompatActivity {
 
     private static final String TAG = DrawerActivity.class.getSimpleName();
 
@@ -42,22 +35,6 @@ public class DrawerActivity extends AppCompatActivity implements GoogleApiClient
     private int mItemToOpenWhenDrawerCloses = -1;
 
 
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
-
     private final DrawerLayout.DrawerListener mDrawerListener = new DrawerLayout.DrawerListener() {
         @Override
         public void onDrawerClosed(View drawerView) {
@@ -69,17 +46,23 @@ public class DrawerActivity extends AppCompatActivity implements GoogleApiClient
                 Class activityClass = null;
                 switch (mItemToOpenWhenDrawerCloses) {
                     case R.id.navigation_downloaded:
-                        activityClass = DownloadedActivity.class;
+                            DownloadFragment fragment = new DownloadFragment();
+                            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                            /*transaction.setCustomAnimations(
+                                    R.animator.slide_in_from_right, R.animator.slide_out_to_left,
+                                    R.animator.slide_in_from_left, R.animator.slide_out_to_right);
+                           */
+                            transaction.replace(R.id.container, fragment);
+                            transaction.addToBackStack(null);
+                            transaction.commit();
                         break;
                     case R.id.navigation_featured:
                         activityClass = MainActivity.class;
+                        startActivity(new Intent(DrawerActivity.this, activityClass), extras);
+                        finish();
                         break;
                     case R.id.navigation_subscribed:
-                        activityClass = SubscribedActivity.class;
-                }
-                if (activityClass != null) {
-                    startActivity(new Intent(DrawerActivity.this, activityClass), extras);
-                    finish();
+                        activityClass = SubscribedFragment.class;
                 }
             }
         }
@@ -219,15 +202,14 @@ public class DrawerActivity extends AppCompatActivity implements GoogleApiClient
                         return true;
                     }
                 });
-        //TODO Implementation of navigation view
         if (MainActivity.class.isAssignableFrom(getClass())) {
             navigationView.setCheckedItem(R.id.navigation_featured);
         }
-        else if (DownloadedActivity.class.isAssignableFrom(getClass()))
+        else if (DownloadFragment.class.isAssignableFrom(getClass()))
         {
             navigationView.setCheckedItem(R.id.navigation_downloaded);
         }
-        else if (SubscribedActivity.class.isAssignableFrom(getClass()))
+        else if (SubscribedFragment.class.isAssignableFrom(getClass()))
         {
             navigationView.setCheckedItem(R.id.navigation_subscribed);
         }

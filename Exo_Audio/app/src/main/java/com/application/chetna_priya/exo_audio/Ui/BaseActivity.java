@@ -170,7 +170,7 @@ public abstract class BaseActivity extends DrawerActivity implements MediaBrowse
             new MediaBrowserCompat.ConnectionCallback() {
                 @Override
                 public void onConnected() {
-                    Log.d(TAG, "onConnected");
+                    Log.d(TAG, "onConnected11111111111111111111111111111111");
                     try {
                         connectToSession(mMediaBrowser.getSessionToken());
                     } catch (RemoteException e) {

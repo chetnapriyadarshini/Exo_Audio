@@ -5,8 +5,11 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,22 +22,25 @@ import com.application.chetna_priya.exo_audio.data.PodcastContract;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class DownloadedActivity extends BaseActivity
+public class DownloadFragment extends Fragment
 {
 
     private Cursor cursor;
     private DownloadEpisodesAdapter adapter;
-
+    String TAG = DownloadFragment.class.getSimpleName();
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_download);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Log.d(TAG, "viewwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.download_recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        View rootView = inflater.inflate(R.layout.fragment_download, container, false);
+        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.download_recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         adapter = new DownloadEpisodesAdapter();
         recyclerView.setAdapter(adapter);
+        return rootView;
     }
+
 
     @Override
     public void onPause() {
@@ -46,10 +52,11 @@ public class DownloadedActivity extends BaseActivity
     @Override
     public void onResume() {
         super.onResume();
-        cursor = getContentResolver().query(
+        cursor = getActivity().getContentResolver().query(
                 PodcastContract.EpisodeEntry.CONTENT_URI,
                 null, null, null, null);
         if(cursor!= null && cursor.moveToFirst()) {
+            Log.d(TAG, "resumeeeeeeeeeeeeeeeeeeeeeeeeeeee");
             //  cursor.close();
             adapter.notifyDataSetChanged();
         }
@@ -104,10 +111,10 @@ public class DownloadedActivity extends BaseActivity
                     String mediaId = cursor.getString(
                             (cursor.getColumnIndex(PodcastContract.EpisodeEntry.COLUMN_PODCAST_EPISODE_MEDIA_ID)));
 
-                    getSupportMediaController().getTransportControls()
+                    getActivity().getSupportMediaController().getTransportControls()
                             .playFromMediaId(mediaId, null);
 
-                    Intent audioIntent = new Intent(DownloadedActivity.this, AudioActivity.class);
+                    Intent audioIntent = new Intent(getActivity(), AudioActivity.class);
                     startActivity(audioIntent);
                 }
             });

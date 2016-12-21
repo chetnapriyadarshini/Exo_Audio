@@ -71,6 +71,7 @@ public class MainActivity extends BaseActivity implements FeaturedFragment.Media
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Log.d(TAG, "IN ON CREATEEEEEEEEEEEEEEEE");
         initializeToolbar();
         /*if(!PreferenceHelper.isInitialGenrePreferenceSet(this)){
             Intent genreIntent = new Intent(this,GenreActivity.class);
@@ -83,8 +84,6 @@ public class MainActivity extends BaseActivity implements FeaturedFragment.Media
                 .build();
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
         startSignInActivity();
