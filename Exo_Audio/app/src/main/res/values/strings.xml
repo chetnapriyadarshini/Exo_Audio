@@ -62,4 +62,16 @@
     <string name="subscribed">Subscribed</string>
     <string name="downloaded">Downloaded</string>
     <string name="user_image">User google plus image</string>
+    <string name="see_all_pod">View all podcasts in category</string>
+    <string name="by">by</string>
+    <string name="select">Select</string>
+    <string name="genre">genre</string>
+    <string name="remove">Remove</string>
+    <string name="clicktolisten">Click to listen now</string>
+    <string name="pause">Pause</string>
+    <string name="play">Play</string>
+    <string name="episode_length">Episode length</string>
+    <string name="seek_episode">Seek episode forward or backward</string>
+    <string name="elapsed_time">Time elapsed</string>
+    <string name="out_of">out of</string>
 </resources>

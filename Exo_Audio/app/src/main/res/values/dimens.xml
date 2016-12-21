@@ -43,6 +43,7 @@
     <dimen name="detail_backdrop_height">200dp</dimen>
     <dimen name="profile_image_size">50dp</dimen>
     <dimen name="audio_activity_album_size">150dp</dimen>
+    <dimen name="genre_right_margin">0dp</dimen>
 
     <!-- Notification related dimens -->
 

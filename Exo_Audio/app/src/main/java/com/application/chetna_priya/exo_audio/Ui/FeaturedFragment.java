@@ -26,6 +26,7 @@ public class FeaturedFragment extends Fragment {
     private MediaBrowserCompat.MediaItem mMediaId;
     private FeatureRecyViewAdapter mRecyViewAdapter;
 
+
     interface MediaFragmentListener extends MediaBrowserProvider {
         void setToolbarTitle(CharSequence title);
     }
@@ -64,6 +65,7 @@ public class FeaturedFragment extends Fragment {
         }
 
         CardView add = (CardView) rootView.findViewById(R.id.add_new_categories_cardview);
+        add.setContentDescription(getActivity().getString(R.string.add_new_categories));
         add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -79,6 +81,7 @@ public class FeaturedFragment extends Fragment {
         recyclerView.setAdapter(mRecyViewAdapter);
         return rootView;
     }
+
 
     @Override
     public void onSaveInstanceState(Bundle outState) {

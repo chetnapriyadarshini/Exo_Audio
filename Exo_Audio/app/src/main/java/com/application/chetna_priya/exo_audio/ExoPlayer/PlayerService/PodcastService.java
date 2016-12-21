@@ -132,6 +132,11 @@ public class PodcastService extends MediaBrowserServiceCompat implements Playbac
 
 
     @Override
+    public void notifyChildrenChanged(@NonNull String parentId) {
+        super.notifyChildrenChanged(parentId);
+    }
+
+    @Override
     public void onLoadChildren(@NonNull final String parentMediaId,
                                @NonNull final Result<List<MediaBrowserCompat.MediaItem>> result) {
         Log.d(TAG, "OnLoadChildren: parentMediaId="+ parentMediaId+" resulttttt "+result.toString());
@@ -148,6 +153,8 @@ public class PodcastService extends MediaBrowserServiceCompat implements Playbac
                 }
             }, getApplicationContext());
         }
+
+
     }
 
 

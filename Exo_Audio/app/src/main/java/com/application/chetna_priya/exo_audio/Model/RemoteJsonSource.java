@@ -69,6 +69,7 @@ class RemoteJsonSource implements MediaProviderSource {
                 if(metadata != null)
                     tracks.add(metadata);
             }
+            Log.d(TAG, "Returningggggggggg iterator -----------------");
             return tracks.iterator();
         } catch (Exception e) {
             Log.e(TAG, "Could not retrieve music list \n" + e);

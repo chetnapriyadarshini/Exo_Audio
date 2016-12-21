@@ -38,10 +38,12 @@ class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.ViewHolder> {
         void onGenreSaved(int totalGenreSaved);
     }
     private ArrayList<Genre> genreArrayList;
+    private Context mContext;
     private static final String TAG = GenreAdapter.class.getSimpleName();
 
     GenreAdapter(Context context){
         listener = (Listener) context;
+        mContext = context;
         GenreHelper helper = new GenreHelper();
         this.genreArrayList = helper.getGenreList();
         savedGenres = PreferenceHelper.getSavedGenres(context);
@@ -73,6 +75,13 @@ class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.ViewHolder> {
             if(holder.isGenreSelected(genreDesc)){
                 holder.itemView.setBackgroundColor(R.color.colorAccent);
             }
+
+        if(holder.isGenreSelected(genreArrayList.get(position).getGenre_desc()))
+            holder.itemView.setContentDescription(mContext.getString(R.string.remove)+genreArrayList.get(position).getGenre_desc()
+                    +mContext.getString(R.string.genre));
+        else
+            holder.itemView.setContentDescription(mContext.getString(R.string.select)+genreArrayList.get(position).getGenre_desc()
+                    +mContext.getString(R.string.genre));
     }
 
     @Override

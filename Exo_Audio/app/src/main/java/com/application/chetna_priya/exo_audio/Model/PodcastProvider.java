@@ -369,12 +369,23 @@ public class PodcastProvider {
 
     private MediaBrowserCompat.MediaItem createBrowsableMediaItemForPodcast(Podcast album,
                                                                           Resources resources) {
-      //  String albumTitle = metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM);
+        String albumTitle = album.getAlbum_title();
+      //  Log.d(TAG, "TITLEEEEEEEEEEEEEEEEEEE beforeeeeeeeeeeeee"+albumTitle);
+        /*
+        |  & / is an invalid character that is leading to crash as it is used in
+        creating thr media item, we remove this char if found in media title
+         */
+        if(albumTitle.indexOf('|') > -1){
+            albumTitle = albumTitle.replaceAll("[\\|\\/]","");
+
+        }
+      //  Log.d(TAG, "TITLEEEEEEEEEEEEEEEEEEE"+albumTitle);
+
         Bundle bundle = new Bundle();
         bundle.putString(BaseActivity.EXTRA_SUMMARY, album.getSummary());
         MediaDescriptionCompat description = new MediaDescriptionCompat.Builder()
                 .setMediaId(createMediaID(null, MEDIA_ID_PODCASTS_BY_GENRE_AND_CHANNEL_NAME,
-                        album.getAlbum_title()))
+                        albumTitle))
                 .setTitle(album.getAlbum_title())
                 .setIconUri(Uri.parse(album.getArtwork_uri()))
                 .setSubtitle(album.getArtist())

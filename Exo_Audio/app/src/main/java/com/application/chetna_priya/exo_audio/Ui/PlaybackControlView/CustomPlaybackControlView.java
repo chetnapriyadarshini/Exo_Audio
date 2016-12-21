@@ -249,7 +249,6 @@ public class CustomPlaybackControlView extends FrameLayout{
         Log.d(TAG, "METADATTTTTTTTTAAAAAAA "+metadata);
         long duration = metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
         long currentPosition = state.getPosition();
-        //TODO come up with a robust implementation below
       //  Timeline currentTimeline = player != null ? player.getCurrentTimeline() : null;
         boolean haveTimeline = currentPosition < duration/*currentTimeline != null*/;
         boolean isSeekable = false;
@@ -311,6 +310,10 @@ public class CustomPlaybackControlView extends FrameLayout{
         if (!dragging) {
             progressBar.setProgress(progressBarValue(currentPosition));
         }
+        time.setContentDescription(mContext.getString(R.string.episode_length)+time.getText().toString());
+        timeCurrent.setContentDescription(mContext.getString(R.string.elapsed_time)+timeCurrent.getText().toString()
+                +mContext.getString(R.string.out_of)+time.getText().toString());
+
 //        progressBar.setSecondaryProgress(progressBarValue(currentPosition+mLastPlaybackState.getBufferedPosition()));
         // Remove scheduled updates.
         removeCallbacks(updateProgressAction);

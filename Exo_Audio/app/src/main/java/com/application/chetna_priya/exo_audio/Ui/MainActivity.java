@@ -29,6 +29,8 @@ import java.util.List;
 
 import butterknife.BindView;
 
+import static com.application.chetna_priya.exo_audio.ui.FeaturedFragment.REQUEST_CODE_ADD_GENRES;
+
 public class MainActivity extends BaseActivity implements FeaturedFragment.MediaFragmentListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -66,6 +68,7 @@ public class MainActivity extends BaseActivity implements FeaturedFragment.Media
     private GoogleApiClient mGoogleApiClient;
     @BindView(R.id.profile_image)
     ImageView profileImage;
+    boolean needReload = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,6 +134,10 @@ public class MainActivity extends BaseActivity implements FeaturedFragment.Media
                 });
             }
         }
+        if(requestCode == REQUEST_CODE_ADD_GENRES){
+            Log.d(TAG, "SHOULD RELOADDDDDDDDDDDDDD HEREEEEEEEEEEEEEEE");
+            needReload = true;
+        }
     }
 
     @Override
@@ -142,11 +149,14 @@ public class MainActivity extends BaseActivity implements FeaturedFragment.Media
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        if(savedInstanceState.getString(MEDIA_ID) != null)
+        if(savedInstanceState.getString(MEDIA_ID) != null) {
             mMediaId = savedInstanceState.getString(MEDIA_ID);
+        }
     }
 
-/*
+
+
+    /*
     private void performIntialization() {
        // initializeToolbar();
         mPodcastPagerAdapter = new PodcastPagerAdapter(getSupportFragmentManager(), this);
@@ -183,7 +193,7 @@ public class MainActivity extends BaseActivity implements FeaturedFragment.Media
         FeaturedFragment fragment = getBrowseFragment();
 
         //if (fragment == null || !TextUtils.equals(fragment.getMediaId(), mediaItem))
-        if(fragment == null)
+        if(fragment == null || needReload)
         {
             fragment = new FeaturedFragment();
             fragment.setMediaId(mediaItem);
@@ -236,6 +246,7 @@ public class MainActivity extends BaseActivity implements FeaturedFragment.Media
 
     @Override
     protected void onMediaControllerConnected() {
+        Log.d(TAG, "MEDIA CONTROLLLLERRRRRRRRR CONNNECTEDDDDDDDDDDDD");
         mMediaId = getMediaBrowser().getRoot();
         getMediaBrowser().unsubscribe(mMediaId);
         getMediaBrowser().subscribe(mMediaId, mSubscriptionCallback);//We load the children of root that is genre

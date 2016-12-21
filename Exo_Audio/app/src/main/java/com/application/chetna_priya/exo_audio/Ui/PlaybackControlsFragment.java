@@ -148,7 +148,9 @@ public class PlaybackControlsFragment extends Fragment {
         }
 
         mTitle.setText(metadata.getDescription().getTitle());
+        mTitle.setContentDescription(mTitle.getText());
         mSubtitle.setText(metadata.getDescription().getSubtitle());
+        mSubtitle.setText(mSubtitle.getText());
         String artUrl = null;
         if (metadata.getDescription().getIconUri() != null) {
             artUrl = metadata.getDescription().getIconUri().toString();
@@ -206,9 +208,11 @@ public class PlaybackControlsFragment extends Fragment {
         if (enablePlay) {
             mPlayPause.setImageDrawable(
                     ContextCompat.getDrawable(getActivity(), R.drawable.ic_play_arrow_black_36dp));
+            mPlayPause.setContentDescription(getString(R.string.play));
         } else {
             mPlayPause.setImageDrawable(
                     ContextCompat.getDrawable(getActivity(), R.drawable.ic_pause_black_36dp));
+            mPlayPause.setContentDescription(getString(R.string.pause));
         }
 
         MediaControllerCompat controller = ((FragmentActivity) getActivity())

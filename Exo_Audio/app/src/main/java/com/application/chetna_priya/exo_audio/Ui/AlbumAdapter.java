@@ -100,7 +100,11 @@ class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHolder> im
                     "  count=" + children.size());
             itemArrayList.clear();
             //We only want to load first three for the main page
-            for (int i = 0; i < NUM_ALBUMS; i++) {
+            int max=  NUM_ALBUMS;
+            if(max > children.size())
+                max = children.size();
+
+            for (int i = 0; i < max; i++) {
                 //      testAdapter.add(item);
                 itemArrayList.add(children.get(i));
             }
@@ -208,6 +212,7 @@ class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHolder> im
                     mContext.startActivity(intent);
                 }
             });
+            itemView.setContentDescription(album_info.getText()+mContext.getString(R.string.by)+album_artist.getText());
         }
     }
 }

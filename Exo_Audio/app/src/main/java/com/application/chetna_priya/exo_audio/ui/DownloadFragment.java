@@ -118,6 +118,7 @@ public class DownloadFragment extends Fragment
                     startActivity(audioIntent);
                 }
             });
+            itemView.setContentDescription(albumTitle.getText());
         }
     }
 }

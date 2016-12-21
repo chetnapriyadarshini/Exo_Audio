@@ -150,6 +150,8 @@ class FeatureRecyViewAdapter extends RecyclerView.Adapter<FeatureRecyViewAdapter
              */
             albumRecyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
             albumRecyclerView.setNestedScrollingEnabled(false);
+            seeAll.setContentDescription(mContext.getString(R.string.see_all_pod)+titleView.getText());
+            titleView.setContentDescription(titleView.getText());
         }
     }
 

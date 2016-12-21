@@ -56,7 +56,9 @@ public class AudioActivity extends AppCompatActivity{
         }
 
         final ImageView album_img = (ImageView) findViewById(R.id.album_img);
+        album_img.setContentDescription(title);
         final TextView titleView = (TextView) findViewById(R.id.tv_episode_title);
+        titleView.setContentDescription(title);
         final RelativeLayout rlLayout = (RelativeLayout) findViewById(R.id.rl_backgr);
         final FrameLayout frameLayout = (FrameLayout) findViewById(R.id.frame_audio);
 

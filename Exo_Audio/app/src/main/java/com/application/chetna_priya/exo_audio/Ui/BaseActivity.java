@@ -27,20 +27,10 @@ public abstract class BaseActivity extends DrawerActivity implements MediaBrowse
     public static final String EXTRA_SUMMARY = "extra_summary";
     public static final java.lang.String EXTRA_EPISODE_PUBLISHED_DATE = "episode_extra_published_date";
     public static final String EXTRA_BITMAP_POSTER = "extra_bitmap_poster";
+    public static final String EXTRA_GENRE_CHANGED = "extra_genre_changed";
 
     private MediaBrowserCompat mMediaBrowser;
     private PlaybackControlsFragment mControlsFragment;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        // Connect a media browser just to get the media session token. There are other ways
-        // this can be done, for example by sharing the session token directly.
-        mMediaBrowser = new MediaBrowserCompat(this,
-                new ComponentName(this, PodcastService.class), mConnectionCallback, null);
-    }
-
 
     @Override
     protected void onStart() {
@@ -55,6 +45,11 @@ public abstract class BaseActivity extends DrawerActivity implements MediaBrowse
 
         hidePlaybackControls();
 
+
+        // Connect a media browser just to get the media session token. There are other ways
+        // this can be done, for example by sharing the session token directly.
+        mMediaBrowser = new MediaBrowserCompat(this,
+                new ComponentName(this, PodcastService.class), mConnectionCallback, null);
         mMediaBrowser.connect();
     }
 

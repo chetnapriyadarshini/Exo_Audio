@@ -82,8 +82,10 @@ public class AllEpisodes extends BaseActivity {
      //   setDownloadBroadcastReceiver();
         ButterKnife.bind(this);
         podcastTtile.setText(mMediaItem.getDescription().getTitle());
+        podcastTtile.setContentDescription(podcastTtile.getText());
         String summary = mMediaItem.getDescription().getExtras().getString(EXTRA_SUMMARY);
         podcastSummary.setText(summary);
+        podcastSummary.setContentDescription(podcastSummary.getText());
 
         if(getIntent().hasExtra(BaseActivity.EXTRA_BITMAP_POSTER)){
             iconBitmap = getIntent().getParcelableExtra(EXTRA_BITMAP_POSTER);
@@ -172,7 +174,9 @@ public class AllEpisodes extends BaseActivity {
                     .getExtras().getString(MediaMetadataCompat.METADATA_KEY_TITLE));
             */String releaseDate = epBundle.getString(MediaMetadataCompat.METADATA_KEY_DATE)/*getEpisode_published_on()*/;
             holder.release_date.setText(formatDate(releaseDate));
+            holder.release_date.setContentDescription(holder.release_date.getText());
             holder.episode_title.setText(epBundle.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
+            holder.episode_title.setContentDescription(holder.episode_title.getText());
         }
 
         private String formatDate(String releaseDate) {
@@ -243,6 +247,7 @@ public class AllEpisodes extends BaseActivity {
 
                  }
              });
+             download_episode.setContentDescription(getString(R.string.download_episode));
         }
     }
 

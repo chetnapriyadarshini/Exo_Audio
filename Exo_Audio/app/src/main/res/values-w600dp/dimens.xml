@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="genre_grid_span_count">4</integer>
+    <dimen name="audio_activity_album_size">200dp</dimen>
+    <dimen name="genre_right_margin">0dp</dimen>
+</resources>

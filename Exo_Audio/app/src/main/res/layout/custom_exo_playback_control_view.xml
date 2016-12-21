@@ -48,6 +48,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="32dp"
+            android:contentDescription="@string/seek_episode"
             style="?android:attr/progressBarStyleHorizontal"/>
 
         <TextView android:id="@+id/tv_time"
@@ -81,6 +82,7 @@
             android:layout_gravity="center_vertical"
             style="@style/Base.TextAppearance.AppCompat.Headline"
             android:textColor="@android:color/white"
+            android:contentDescription="@string/custom_action_speed"
             android:textStyle="bold"
             tools:text="1.00x"/>
 

@@ -133,6 +133,7 @@ public class AllPodcastsInCategory extends BaseActivity {
                     startActivity(episodesIntent);
                 }
             });
+            itemView.setContentDescription(albumTitle.getText());
         }
     }
 }

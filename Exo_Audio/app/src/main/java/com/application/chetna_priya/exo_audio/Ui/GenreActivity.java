@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -46,18 +47,33 @@ public class GenreActivity extends AppCompatActivity implements GenreAdapter.Lis
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setFocusable(false);
 
+        boolean shouldStartMainActivity = false;
         if(getIntent().getBooleanExtra(IS_FIRST_TIME, true)) {
+            shouldStartMainActivity = true;
             genreButton.setEnabled(false);
             onGenreSaved(0);
         }
+
+        final boolean finalShouldStartMainActivity = shouldStartMainActivity;
+        genreButton.setContentDescription(genreButton.getText());
         genreButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view) {/*
+                Log.d(AudioActivity.class.getSimpleName(), "GENREEEEEEEEE SIZEEEEEE "+
+                        PreferenceHelper.getSavedGenres(GenreActivity.this));*/
                 PreferenceHelper.saveGenrePreferences(getApplicationContext(), mAdapter.getSavedGenres());
-                setResult(RESULT_OK);
-                /*finish();*/
-                Intent intent = new Intent(GenreActivity.this,MainActivity.class);
-                startActivity(intent);
+/*
+                Log.d(AudioActivity.class.getSimpleName(), "GENREEEEEEEEE SIZEEEEEE NOWWWWWWWWW"+
+                        PreferenceHelper.getSavedGenres(GenreActivity.this));*/
+
+                if(finalShouldStartMainActivity) {
+                    Intent intent = new Intent(GenreActivity.this, MainActivity.class);
+                    intent.putExtra(BaseActivity.EXTRA_GENRE_CHANGED, true);
+                    startActivity(intent);
+                }else {
+                    setResult(RESULT_OK);
+                    finish();
+                }
             }
         });
     }

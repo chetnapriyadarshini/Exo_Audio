@@ -35,6 +35,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_below="@id/genre_header"
             android:gravity="center_horizontal"
+            android:layout_centerHorizontal="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/genre_hello_text_top_margin"
@@ -46,6 +47,7 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/my_recycler_view"
             android:layout_below="@id/genre_sub_header"
+            android:layout_centerHorizontal="true"
             android:layout_marginTop="@dimen/genre_hello_text_top_margin"
             android:paddingBottom="@dimen/genre_recycler_view_bottom_pad"
             android:layout_width="match_parent"
