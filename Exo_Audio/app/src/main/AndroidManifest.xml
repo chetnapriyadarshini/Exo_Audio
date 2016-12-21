@@ -18,7 +18,12 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".ui.AudioActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:parentActivityName=".ui.AllEpisodes">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.application.chetna_priya.exo_audio.ui.AllEpisodes" />
+        </activity>
         <activity android:name=".ui.LauncherActivity"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -68,9 +73,28 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.AllPodcastsInCategory"
-            android:screenOrientation="portrait" />
-        <activity android:name=".ui.AllEpisodes" android:screenOrientation="portrait"/>
-        <activity android:name=".ui.DownloadedActivity" android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:parentActivityName=".ui.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.application.chetna_priya.exo_audio.ui.MainActivity" />
+        </activity>
+
+        <activity android:name=".ui.AllEpisodes"
+            android:parentActivityName=".ui.AllPodcastsInCategory"
+            android:screenOrientation="portrait">
+            <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value="com.application.chetna_priya.exo_audio.ui.AllPodcastsInCategory" />
+        </activity>
+
+        <activity android:name=".ui.DownloadedActivity"
+            android:parentActivityName=".ui.MainActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.application.chetna_priya.exo_audio.ui.MainActivity" />
+        </activity>
 <!--
         <receiver
             android:name="com.application.chetna_priya.exo_audio.utils.DownloadListener"

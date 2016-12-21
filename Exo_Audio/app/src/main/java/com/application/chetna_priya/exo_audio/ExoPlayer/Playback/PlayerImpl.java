@@ -418,6 +418,7 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
             MediaMetadataCompat track = mPodcastProvider.getPodcast(
                     MediaIDHelper.extractPodcastIDFromMediaID(mediaId));
            String source = track.getString(MediaProviderSource.CUSTOM_METADATA_TRACK_SOURCE);
+
             Cursor cursor = mContext.getContentResolver().query(PodcastContract.EpisodeEntry.CONTENT_URI,
                     new String[]{PodcastContract.EpisodeEntry.COLUMN_PODCAST_EPISODE_NAME},
                     PodcastContract.EpisodeEntry.COLUMN_PODCAST_EPISODE_MEDIA_ID+ " = ?",
@@ -428,9 +429,9 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
                 source = path+"/"+name;
                 cursor.close();
                 //We want the exoplayer to play from local resources so we have to do a new setup
-                dataSource = NETWORK;
-            }else
                 dataSource = LOCAL;
+            }else
+                dataSource = NETWORK;
             //If the data source has changed we need to reinitialize the exoplayer
             /*
             We need to check here if the exoplayer has changed its data source

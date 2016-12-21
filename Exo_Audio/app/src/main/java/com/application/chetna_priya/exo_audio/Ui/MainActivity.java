@@ -1,6 +1,8 @@
 package com.application.chetna_priya.exo_audio.ui;
 
 
+import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -8,11 +10,24 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.application.chetna_priya.exo_audio.R;
+import com.application.chetna_priya.exo_audio.utils.BitmapHelper;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
+
+import butterknife.BindView;
 
 public class MainActivity extends BaseActivity implements FeaturedFragment.MediaFragmentListener {
 
@@ -47,6 +62,10 @@ public class MainActivity extends BaseActivity implements FeaturedFragment.Media
      * The {@link ViewPager} that will host the section contents.
      */
    // private ViewPager mViewPager;
+    private static final int RC_SIGN_IN = 1;
+    private GoogleApiClient mGoogleApiClient;
+    @BindView(R.id.profile_image)
+    ImageView profileImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +78,60 @@ public class MainActivity extends BaseActivity implements FeaturedFragment.Media
             bundle.putBoolean(GenreActivity.IS_FIRST_TIME, true);
             startActivityForResult(genreIntent, REQUEST_CODE_GENRE_ACTIVITY, bundle);
         }*/
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+        startSignInActivity();
+    }
+
+    private void startSignInActivity() {
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    @Override public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Result returned from launching the Intent from
+        //   GoogleSignInApi.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            if (result.isSuccess()) {
+                GoogleSignInAccount acct = result.getSignInAccount();
+                final ImageView profileImage = (ImageView) findViewById(R.id.profile_image);
+
+                Picasso.with(this)
+                        .load(acct.getPhotoUrl())
+                        .placeholder(R.drawable.placeholder)
+                        .fit()
+                        .into(profileImage, new Callback() {
+                            @Override
+                            public void onSuccess() {
+                                BitmapDrawable bitmapDrawable = (BitmapDrawable) profileImage.getDrawable();
+                                profileImage.setImageBitmap(BitmapHelper.getCircleBitmap(bitmapDrawable.getBitmap()));
+                            }
+
+                            @Override
+                            public void onError() {
+                                profileImage.setImageDrawable(getResources().getDrawable(R.drawable.placeholder));
+                            }
+                        });
+                TextView nameView = (TextView) findViewById(R.id.username);
+                nameView.setText(acct.getDisplayName());
+                profileImage.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        startSignInActivity();
+                    }
+                });
+            }
+        }
     }
 
     @Override
