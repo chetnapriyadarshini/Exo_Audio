@@ -78,12 +78,6 @@ public class CustomPlaybackControlView extends FrameLayout{
     };
     private Context mContext;
 
-    public interface Listener {
-        void onMediaControllerSet();
-    }
-
-    Listener listener;
-
     public CustomPlaybackControlView(Context context) {
         this(context, null);
     }
@@ -95,7 +89,6 @@ public class CustomPlaybackControlView extends FrameLayout{
     public CustomPlaybackControlView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mContext = context;
-        listener = (Listener) mContext;
         currentWindow = new Timeline.Window();
         formatBuilder = new StringBuilder();
         formatter = new Formatter(formatBuilder, Locale.getDefault());
@@ -196,10 +189,7 @@ public class CustomPlaybackControlView extends FrameLayout{
         MediaControllerCompat mediaController = new MediaControllerCompat(
                 mContext, token);
         ((FragmentActivity)mContext).setSupportMediaController(mediaController);
-        /*
-        We invoke the listener method signalling that the media can start playing
-         */
-        listener.onMediaControllerSet();
+        
        /* if (mediaController.getMetadata() == null) {
             activityCallbacks.finishActivity();
             return;

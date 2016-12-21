@@ -213,17 +213,11 @@ public class AllEpisodes extends BaseActivity {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    /*LocalPersistence.witeObjectToFile(AllEpisodes.this, mEpisodeMediaItemList.get(getAdapterPosition()),
-                            getString(R.string.current_episode));
-                    Intent audioIntent = new Intent(AllEpisodes.this, AudioActivity.class);
-                    audioIntent.putExtra(AudioActivity.CURRENT_EPISODE, mEpisodeMediaItemList.get(getAdapterPosition()));
-                    startActivity(audioIntent);*/
-
-
                     getSupportMediaController().getTransportControls()
                             .playFromMediaId(mEpisodeMediaItemList.get(getAdapterPosition()).getMediaId(), null);
 
                     Intent audioIntent = new Intent(AllEpisodes.this, AudioActivity.class);
+                    audioIntent.putExtra(BaseActivity.EXTRA_MEDIA_ITEM, mEpisodeMediaItemList.get(getAdapterPosition()));
                     startActivity(audioIntent);
                 }
             });
@@ -266,15 +260,6 @@ public class AllEpisodes extends BaseActivity {
     }
 
     private void startDownload() {
-       /* File direct = new File(Environment.getExternalStorageDirectory()
-                +"/" +getString(R.string.app_name));
-
-        if (!direct.exists()) {
-            direct.mkdirs();
-        }*/
-
-
-        //  request.setDestinationUri(PodcastContract.EpisodeEntry.FILE_URI);
         String name = selMediaItem.getDescription().getExtras().getString(MediaMetadataCompat.METADATA_KEY_TITLE);
         int maxfileNamelength = 10;
         if(name.length() > maxfileNamelength)
@@ -283,7 +268,6 @@ public class AllEpisodes extends BaseActivity {
         name = name.replaceAll("\\s+","").concat(".m4v");
         request.setTitle(name);
         request.setDestinationInExternalPublicDir(PathHelper.getDownloadPodcastPath(AllEpisodes.this),name);
-
         enqueue = dm.enqueue(request);
     }
 
@@ -302,23 +286,33 @@ public class AllEpisodes extends BaseActivity {
                 DownloadManager dm  = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
                 DownloadManager.Query query = new DownloadManager.Query();
                 query.setFilterById(downloadId);
-                Cursor c = dm.query(query);
-                if (c.moveToFirst()) {
-                    int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_TITLE);
-                    String title = c.getString(columnIndex);
-                    Log.d(TAG, "COLUMMMMMMMNNNNNNNNN "+title);
-                    String localUri = c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
-                    Log.d(TAG, "COLUMMMMMMMNNNNNNNNN "+localUri);
+                Cursor cursor = dm.query(query);
+                if (cursor.moveToFirst()) {
+                    int columnIndex = cursor.getColumnIndex(DownloadManager.COLUMN_TITLE);
+                    String title = cursor.getString(columnIndex);
+                  //  Log.d(TAG, "COLUMMMMMMMNNNNNNNNN "+title);
+                    String localUri = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
+                    //Log.d(TAG, "COLUMMMMMMMNNNNNNNNN "+localUri);
 
-                    int status = c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS));
-                    Log.d(TAG, "COLUMMMMMMMNNNNNNNNN "+status);
+                    int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
+                    //Log.d(TAG, "COLUMMMMMMMNNNNNNNNN "+status);
 
-                    int reason = c.getInt(c.getColumnIndex(DownloadManager.COLUMN_REASON));
-                    Log.d(TAG, "COLUMMMMMMMNNNNNNNNN "+reason);
+                    int reason = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_REASON));
+                    //Log.d(TAG, "COLUMMMMMMMNNNNNNNNN "+reason);
 
                     if(status == DownloadManager.STATUS_SUCCESSFUL)
-                        DBHelper.insertInDb(context, selMediaItem, iconBitmap,title );
+                        DBHelper.insertInDb(context, selMediaItem, iconBitmap,title);
+                    cursor.close();
 
+                }
+            }else if(DownloadManager.ACTION_NOTIFICATION_CLICKED.equals(action)){
+                /*if(cursor == null){
+                    Intent resultIntent = new Intent(context, AllEpisodes.class);
+                    context.startActivity(resultIntent);
+                }else*/{
+                    Intent resultIntent = new Intent(context, MainActivity.class);
+                    resultIntent.putExtra(DrawerActivity.OPEN_DOWNLOAD, true);
+                    context.startActivity(resultIntent);
                 }
             }
         }

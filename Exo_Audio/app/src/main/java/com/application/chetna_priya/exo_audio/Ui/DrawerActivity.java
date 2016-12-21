@@ -4,6 +4,7 @@ import android.app.ActivityOptions;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -24,6 +25,7 @@ public class DrawerActivity extends AppCompatActivity {
     private static final String TAG = DrawerActivity.class.getSimpleName();
 
     private static final int DELAY_MILLIS = 1000;
+    public static final String OPEN_DOWNLOAD = "open_download";
 
 
     private Toolbar mToolbar;
@@ -34,6 +36,13 @@ public class DrawerActivity extends AppCompatActivity {
 
     private int mItemToOpenWhenDrawerCloses = -1;
 
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if(getIntent().hasExtra(OPEN_DOWNLOAD)&& getIntent().getBooleanExtra(OPEN_DOWNLOAD, false)){
+            openDownloadFragment();
+        }
+    }
 
     private final DrawerLayout.DrawerListener mDrawerListener = new DrawerLayout.DrawerListener() {
         @Override
@@ -46,15 +55,7 @@ public class DrawerActivity extends AppCompatActivity {
                 Class activityClass = null;
                 switch (mItemToOpenWhenDrawerCloses) {
                     case R.id.navigation_downloaded:
-                            DownloadFragment fragment = new DownloadFragment();
-                            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                            /*transaction.setCustomAnimations(
-                                    R.animator.slide_in_from_right, R.animator.slide_out_to_left,
-                                    R.animator.slide_in_from_left, R.animator.slide_out_to_right);
-                           */
-                            transaction.replace(R.id.container, fragment);
-                            transaction.addToBackStack(null);
-                            transaction.commit();
+                        openDownloadFragment();
                         break;
                     case R.id.navigation_featured:
                         activityClass = MainActivity.class;
@@ -84,6 +85,19 @@ public class DrawerActivity extends AppCompatActivity {
                     .setTitle(R.string.app_name);
         }
     };
+
+    private void openDownloadFragment() {
+
+        DownloadFragment fragment = new DownloadFragment();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                            /*transaction.setCustomAnimations(
+                                    R.animator.slide_in_from_right, R.animator.slide_out_to_left,
+                                    R.animator.slide_in_from_left, R.animator.slide_out_to_right);
+                           */
+        transaction.replace(R.id.container, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
 
     private final FragmentManager.OnBackStackChangedListener mBackStackChangedListener =
             new FragmentManager.OnBackStackChangedListener() {

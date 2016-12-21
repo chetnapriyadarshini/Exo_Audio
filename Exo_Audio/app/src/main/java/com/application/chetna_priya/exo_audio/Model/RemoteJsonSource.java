@@ -65,8 +65,6 @@ class RemoteJsonSource implements MediaProviderSource {
             Finally build the metadata from the episodes and add it to the tracks
              */
             for(int i=0; i<episodeList.size();i++) {
-             //   Episode episode = (Episode) LocalPersistence.readObjectFromFile(context, context.getString(R.string.current_episode));
-             //   Log.d(TAG, "Retrievedddddddd " + episode);
                 MediaMetadataCompat metadata = buildFromPodcastEntity(episodeList.get(i));
                 if(metadata != null)
                     tracks.add(metadata);

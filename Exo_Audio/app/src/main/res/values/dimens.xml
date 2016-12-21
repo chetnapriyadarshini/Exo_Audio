@@ -42,6 +42,7 @@
     <dimen name="album_icon_left_margin">10dp</dimen>
     <dimen name="detail_backdrop_height">200dp</dimen>
     <dimen name="profile_image_size">50dp</dimen>
+    <dimen name="audio_activity_album_size">150dp</dimen>
 
     <!-- Notification related dimens -->
 
