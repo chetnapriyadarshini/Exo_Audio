@@ -50,7 +50,7 @@
         android:layout_height="2dp"
         android:layout_marginLeft="40dp"
         android:layout_marginStart="40dp"
-        android:background="@color/light_grey"/>
+        android:background="@color/background_grey"/>
 
 
 

@@ -61,4 +61,5 @@
     <string name="download_complete">Download Complete</string>
     <string name="subscribed">Subscribed</string>
     <string name="downloaded">Downloaded</string>
+    <string name="user_image">User google plus image</string>
 </resources>

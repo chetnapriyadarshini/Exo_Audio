@@ -1,6 +1,7 @@
 package com.application.chetna_priya.exo_audio.exoPlayer.playback;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.media.AudioManager;
 import android.media.PlaybackParams;
 import android.net.Uri;
@@ -15,10 +16,12 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.application.chetna_priya.exo_audio.DemoApplication;
+import com.application.chetna_priya.exo_audio.data.PodcastContract;
 import com.application.chetna_priya.exo_audio.model.MediaProviderSource;
 import com.application.chetna_priya.exo_audio.model.PodcastProvider;
 import com.application.chetna_priya.exo_audio.R;
 import com.application.chetna_priya.exo_audio.utils.MediaIDHelper;
+import com.application.chetna_priya.exo_audio.utils.PathHelper;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -91,6 +94,9 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
     private String mCurrentMediaId;
     private final WifiManager.WifiLock mWifiLock;
     private boolean isDurationSet = false;
+    private String NETWORK = "network";
+    private String LOCAL = "local";
+    private String dataSource = NETWORK;
 
 
     public PlayerImpl(Context context, PodcastProvider podcastProvider){
@@ -136,7 +142,10 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
             }
 
             eventLogger = new EventLogger();
-            mediaDataSourceFactory = buildDataSourceFactory(true);
+            if(dataSource.equals(LOCAL))
+                mediaDataSourceFactory = buildLocalDataSourceFactory();
+            else
+                mediaDataSourceFactory = buildDataSourceFactory(true);
         }
 
     }
@@ -146,7 +155,7 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
                 : new ConcatenatingMediaSource(mediaSources);
         exoPlayer.prepare(mediaSource, !shouldRestorePosition);
         // Prepare the exoPlayer with the source.
-        exoPlayer.prepare(mediaSource);
+     //  exoPlayer.prepare(mediaSource);
         exoPlayer.setPlayWhenReady(true);/*
         if(mCallback != null)
             mCallback.onPlaybackStatusChanged(mState);*/
@@ -175,6 +184,11 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
     private DataSource.Factory buildDataSourceFactory(boolean useBandwidthMeter) {
         return ((DemoApplication) mContext.getApplicationContext())
                 .buildDataSourceFactory(useBandwidthMeter ? BANDWIDTH_METER : null);
+    }
+
+    private DataSource.Factory buildLocalDataSourceFactory() {
+        return ((DemoApplication) mContext.getApplicationContext())
+                .buildFileDataSourceFactory();
     }
 
     private HttpDataSource.Factory buildHttpDataSourceFactory(boolean useBandwidthMeter) {
@@ -402,10 +416,27 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
             mState = PlaybackStateCompat.STATE_STOPPED;
             relaxResources(false); // release everything except ExoPlayer
             MediaMetadataCompat track = mPodcastProvider.getPodcast(
-                    MediaIDHelper.extractPodcastIDFromMediaID(item.getDescription().getMediaId()));
-
+                    MediaIDHelper.extractPodcastIDFromMediaID(mediaId));
+           String source = track.getString(MediaProviderSource.CUSTOM_METADATA_TRACK_SOURCE);
+            Cursor cursor = mContext.getContentResolver().query(PodcastContract.EpisodeEntry.CONTENT_URI,
+                    new String[]{PodcastContract.EpisodeEntry.COLUMN_PODCAST_EPISODE_NAME},
+                    PodcastContract.EpisodeEntry.COLUMN_PODCAST_EPISODE_MEDIA_ID+ " = ?",
+                    new String[]{mediaId}, null);
+            if(cursor!= null && cursor.moveToFirst()){
+                String name = cursor.getString(cursor.getColumnIndex(PodcastContract.EpisodeEntry.COLUMN_PODCAST_EPISODE_NAME));
+                String path = PathHelper.getDownloadPodcastPath(mContext);
+                source = path+"/"+name;
+                cursor.close();
+                //We want the exoplayer to play from local resources so we have to do a new setup
+                dataSource = NETWORK;
+            }else
+                dataSource = LOCAL;
+            //If the data source has changed we need to reinitialize the exoplayer
+            /*
+            We need to check here if the exoplayer has changed its data source
+             */
             //noinspection ResourceType
-            String source = track.getString(MediaProviderSource.CUSTOM_METADATA_TRACK_SOURCE);
+
             Log.d(TAG, "The Duration set by us is "+track.getLong(MediaMetadataCompat.METADATA_KEY_DURATION));
 
             try{

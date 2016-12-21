@@ -4,6 +4,8 @@ import android.app.ActivityOptions;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -15,12 +17,21 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.application.chetna_priya.exo_audio.R;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 
-public class DrawerActivity extends AppCompatActivity {
+import static com.application.chetna_priya.exo_audio.R.id.drawer_layout;
+
+public class DrawerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private static final String TAG = DrawerActivity.class.getSimpleName();
 
     private static final int DELAY_MILLIS = 1000;
+
 
     private Toolbar mToolbar;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -30,6 +41,22 @@ public class DrawerActivity extends AppCompatActivity {
 
     private int mItemToOpenWhenDrawerCloses = -1;
 
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
 
     private final DrawerLayout.DrawerListener mDrawerListener = new DrawerLayout.DrawerListener() {
         @Override
@@ -157,7 +184,7 @@ public class DrawerActivity extends AppCompatActivity {
         }*/
       //  mToolbar.inflateMenu(R.menu.main);
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerLayout = (DrawerLayout) findViewById(drawer_layout);
         if (mDrawerLayout != null) {
             NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
             if (navigationView == null) {
