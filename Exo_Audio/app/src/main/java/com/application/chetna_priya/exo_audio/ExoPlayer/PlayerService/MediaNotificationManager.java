@@ -6,6 +6,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationManagerCompat;
@@ -19,6 +22,8 @@ import android.util.Log;
 
 import com.application.chetna_priya.exo_audio.ui.AudioActivity;
 import com.application.chetna_priya.exo_audio.R;
+import com.application.chetna_priya.exo_audio.utils.AlbumArtCache;
+import com.application.chetna_priya.exo_audio.utils.ResourceHelper;
 
 /**
  * Keeps track of a notification and updates it automatically for a given
@@ -35,7 +40,6 @@ public class MediaNotificationManager extends BroadcastReceiver {
     public static final String ACTION_PLAY = "com.example.android.uamp.play";
     public static final String ACTION_PREV = "com.example.android.uamp.prev";
     public static final String ACTION_NEXT = "com.example.android.uamp.next";
-    public static final String ACTION_STOP_CASTING = "com.example.android.uamp.stop_cast";
 
     private final PodcastService mService;
     private MediaSessionCompat.Token mSessionToken;
@@ -61,8 +65,9 @@ public class MediaNotificationManager extends BroadcastReceiver {
         mService = service;
         updateSessionToken();
 
-        mNotificationColor = R.color.background_grey;/*ResourceHelper.getThemeColor(mService, R.attr.colorPrimary,
-                Color.DKGRAY);*/
+        mNotificationColor =
+        ResourceHelper.getThemeColor(mService, R.attr.colorPrimary,
+                Color.DKGRAY);
 
         mNotificationManager = NotificationManagerCompat.from(service);
 
@@ -253,9 +258,9 @@ public class MediaNotificationManager extends BroadcastReceiver {
                     mService.getString(R.string.label_next), mNextIntent);
         }
 
-//        MediaDescriptionCompat description = mMetadata.getDescription();
+        MediaDescriptionCompat description = mMetadata.getDescription();
 
-        /*String fetchArtUrl = null;
+        String fetchArtUrl = null;
         Bitmap art = null;
         if (description.getIconUri() != null) {
             // This sample assumes the iconUri will be a valid URL formatted String, but
@@ -269,7 +274,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 art = BitmapFactory.decodeResource(mService.getResources(),
                         R.drawable.ic_launcher);
             }
-        }*/
+        }
 
 
 
@@ -284,11 +289,10 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 .setSmallIcon(android.R.drawable.ic_notification_clear_all)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setUsesChronometer(true)
-                /*
                 .setContentIntent(createContentIntent(description))
-                .setContentTitle(description.getAlbum_title())
-                .setContentText(description.getSubtitle())*/;
-               /* .setLargeIcon(art);*/
+                .setContentTitle(description.getTitle())
+                .setContentText(description.getSubtitle())
+                .setLargeIcon(art);
 
         if (mController != null && mController.getExtras() != null) {
            /* String castName = mController.getExtras().getString(MusicService.EXTRA_CONNECTED_CAST);
@@ -302,9 +306,9 @@ public class MediaNotificationManager extends BroadcastReceiver {
         }
 
         setNotificationPlaybackState(notificationBuilder);
-       /* if (fetchArtUrl != null) {
+        if (fetchArtUrl != null) {
             fetchBitmapFromURLAsync(fetchArtUrl, notificationBuilder);
-        }*/
+        }
 
         return notificationBuilder.build();
     }
@@ -354,7 +358,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
         // Make sure that the notification can be dismissed by the user when we are not playing:
         builder.setOngoing(mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING);
     }
-/*
+
     private void fetchBitmapFromURLAsync(final String bitmapUrl,
                                          final NotificationCompat.Builder builder) {
         AlbumArtCache.getInstance().fetch(bitmapUrl, new AlbumArtCache.FetchListener() {
@@ -369,5 +373,5 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 }
             }
         });
-    }*/
+    }
 }

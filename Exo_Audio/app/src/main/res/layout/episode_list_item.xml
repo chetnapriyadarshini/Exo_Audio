@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
     xmlns:tools="http://schemas.android.com/tools">
 
     <TextView
@@ -25,6 +26,8 @@
         android:layout_marginBottom="@dimen/album_icon_left_margin"
         android:layout_marginTop="@dimen/album_icon_left_margin"
         android:layout_marginEnd="@dimen/album_icon_left_margin"
+        android:maxLines="1"
+        android:ellipsize="end"
         android:maxLength="@integer/max_podcast_title_length"
         android:layout_marginRight="@dimen/album_icon_left_margin"
         android:layout_toRightOf="@id/episode_release_date"

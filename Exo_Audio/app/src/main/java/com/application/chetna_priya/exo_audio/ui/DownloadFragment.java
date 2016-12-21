@@ -28,12 +28,15 @@ public class DownloadFragment extends Fragment
     private Cursor cursor;
     private DownloadEpisodesAdapter adapter;
     String TAG = DownloadFragment.class.getSimpleName();
+    private TextView mEmptyView;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Log.d(TAG, "viewwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
 
         View rootView = inflater.inflate(R.layout.fragment_download, container, false);
+        mEmptyView = (TextView) rootView.findViewById(R.id.recyclerview_empty);
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.download_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         adapter = new DownloadEpisodesAdapter();
@@ -59,7 +62,9 @@ public class DownloadFragment extends Fragment
             Log.d(TAG, "resumeeeeeeeeeeeeeeeeeeeeeeeeeeee");
             //  cursor.close();
             adapter.notifyDataSetChanged();
-        }
+            mEmptyView.setVisibility(View.GONE);
+        }else
+            mEmptyView.setVisibility(View.VISIBLE);
     }
 
     private class DownloadEpisodesAdapter extends RecyclerView.Adapter<ViewHolder> {
