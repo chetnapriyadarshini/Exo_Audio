@@ -24,6 +24,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -66,6 +67,7 @@ public class AllEpisodes extends BaseActivity {
     private static long enqueue;
     private DownloadManager.Request request;
     static  Bitmap iconBitmap = null;
+    private LinearLayout linlaHeaderProgress;
 
 
     @Override
@@ -83,13 +85,19 @@ public class AllEpisodes extends BaseActivity {
         ButterKnife.bind(this);
         podcastTtile.setText(mMediaItem.getDescription().getTitle());
         podcastTtile.setContentDescription(podcastTtile.getText());
+        int sum_length = getResources().getInteger(R.integer.summary_length);
         String summary = mMediaItem.getDescription().getExtras().getString(EXTRA_SUMMARY);
+        if(summary.length() > sum_length)
+            summary = summary.substring(0, sum_length).concat("...");
         podcastSummary.setText(summary);
         podcastSummary.setContentDescription(podcastSummary.getText());
 
         if(getIntent().hasExtra(BaseActivity.EXTRA_BITMAP_POSTER)){
             iconBitmap = getIntent().getParcelableExtra(EXTRA_BITMAP_POSTER);
         }
+
+        linlaHeaderProgress = (LinearLayout) findViewById(R.id.linlaHeaderProgress);
+        linlaHeaderProgress.setVisibility(View.VISIBLE);
 
         final CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         collapsingToolbarLayout.setTitle(" ");
@@ -100,6 +108,7 @@ public class AllEpisodes extends BaseActivity {
         episodeRecyclerView.setLayoutManager(new LinearLayoutManager(AllEpisodes.this));
         episodesAdapter =  new EpisodesAdapter();
         episodeRecyclerView.setAdapter(episodesAdapter);
+
     }
 
 /*
@@ -136,6 +145,7 @@ public class AllEpisodes extends BaseActivity {
                 public void onChildrenLoaded(@NonNull String parentId,
                                              @NonNull List<MediaBrowserCompat.MediaItem> children) {
                     try {
+                        linlaHeaderProgress.setVisibility(View.GONE);
                         Log.d(TAG, "fragment onChildrenLoaded, parentId=" + parentId +
                                 "  count=" + children.size());
                         mEpisodeMediaItemList.clear();
@@ -308,10 +318,6 @@ public class AllEpisodes extends BaseActivity {
                     if(status == DownloadManager.STATUS_SUCCESSFUL)
                         DBHelper.insertInDb(context, selMediaItem, iconBitmap,title);
                     cursor.close();
-                    Intent intentBrod = new Intent();
-                    intentBrod.setAction(context.getString(R.string.action_db_update));
-                    context.sendBroadcast(intentBrod);
-                    Log.d(TAG, "Boradcastttttttttt sendddddddddddddd");
 
                 }
             }else if(DownloadManager.ACTION_NOTIFICATION_CLICKED.equals(action)){

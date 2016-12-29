@@ -2,4 +2,5 @@
 <resources>
     <integer name="num_albums">3</integer>
     <integer name="max_podcast_title_length">30</integer>
+    <integer name="summary_length">200</integer>
 </resources>
