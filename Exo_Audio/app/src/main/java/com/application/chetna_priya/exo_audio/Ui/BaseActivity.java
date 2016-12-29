@@ -28,6 +28,7 @@ public abstract class BaseActivity extends DrawerActivity implements MediaBrowse
     public static final java.lang.String EXTRA_EPISODE_PUBLISHED_DATE = "episode_extra_published_date";
     public static final String EXTRA_BITMAP_POSTER = "extra_bitmap_poster";
     public static final String EXTRA_GENRE_CHANGED = "extra_genre_changed";
+    public static final String PLAYBACK_STATE = "playback_state";
 
     private MediaBrowserCompat mMediaBrowser;
     private PlaybackControlsFragment mControlsFragment;
@@ -165,7 +166,7 @@ public abstract class BaseActivity extends DrawerActivity implements MediaBrowse
             new MediaBrowserCompat.ConnectionCallback() {
                 @Override
                 public void onConnected() {
-                    Log.d(TAG, "onConnected11111111111111111111111111111111");
+                  //  Log.d(TAG, "onConnected11111111111111111111111111111111");
                     try {
                         connectToSession(mMediaBrowser.getSessionToken());
                     } catch (RemoteException e) {

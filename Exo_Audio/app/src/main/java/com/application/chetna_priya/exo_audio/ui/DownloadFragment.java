@@ -59,7 +59,6 @@ public class DownloadFragment extends Fragment
                 PodcastContract.EpisodeEntry.CONTENT_URI,
                 null, null, null, null);
         if(cursor!= null && cursor.moveToFirst()) {
-            Log.d(TAG, "resumeeeeeeeeeeeeeeeeeeeeeeeeeeee");
             //  cursor.close();
             adapter.notifyDataSetChanged();
             mEmptyView.setVisibility(View.GONE);

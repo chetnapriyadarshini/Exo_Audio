@@ -1,6 +1,7 @@
 package com.application.chetna_priya.exo_audio.exoPlayer.playerService;
 
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -186,6 +187,5 @@ public class PodcastService extends MediaBrowserServiceCompat implements Playbac
     public void onPlaybackStateUpdated(PlaybackStateCompat newState) {
         mSession.setPlaybackState(newState);
     }
-
 
 }

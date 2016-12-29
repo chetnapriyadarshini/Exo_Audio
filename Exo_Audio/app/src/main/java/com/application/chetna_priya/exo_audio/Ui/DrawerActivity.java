@@ -62,8 +62,8 @@ public class DrawerActivity extends AppCompatActivity {
                         startActivity(new Intent(DrawerActivity.this, activityClass), extras);
                         finish();
                         break;
-                    case R.id.navigation_subscribed:
-                        activityClass = SubscribedFragment.class;
+                   /* case R.id.navigation_subscribed:
+                        activityClass = SubscribedFragment.class;*/
                 }
             }
         }
@@ -223,10 +223,10 @@ public class DrawerActivity extends AppCompatActivity {
         {
             navigationView.setCheckedItem(R.id.navigation_downloaded);
         }
-        else if (SubscribedFragment.class.isAssignableFrom(getClass()))
+       /* else if (SubscribedFragment.class.isAssignableFrom(getClass()))
         {
             navigationView.setCheckedItem(R.id.navigation_subscribed);
-        }
+        }*/
     }
 
     protected void updateDrawerToggle() {

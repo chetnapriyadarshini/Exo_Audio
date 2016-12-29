@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/widget"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_centerInParent="true"
+    android:background="@color/black"
+    android:gravity="center"
+    android:padding="8dp">
+
+    <TextView
+        android:id="@+id/widget_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/album_right_margin"
+        android:layout_marginStart="@dimen/album_right_margin"
+        android:layout_gravity="center_vertical"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        tools:text="This is the current albummmmm"
+        />
+
+
+    <ImageView
+        android:id="@+id/widget_play_pause"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:src="@drawable/ic_play_arrow_black_36dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginRight="@dimen/album_right_margin"
+        android:layout_marginEnd="@dimen/album_right_margin"/>
+
+</LinearLayout>

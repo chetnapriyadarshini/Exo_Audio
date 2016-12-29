@@ -21,6 +21,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.application.chetna_priya.exo_audio.R;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -42,6 +45,7 @@ tabs maybe 5.
 class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHolder> implements FeatureRecyViewAdapter.Listener {
 
     private static final String TAG = AlbumAdapter.class.getSimpleName();
+    private final InterstitialAd mInterstitialAd;
     private int NUM_ALBUMS = 3;
     private Context mContext;
     private FeaturedFragment.MediaFragmentListener mMediaFragmentListener;
@@ -64,6 +68,9 @@ class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHolder> im
             controller.unregisterCallback(mMediaControllerCallback);
             controller.registerCallback(mMediaControllerCallback);
         }
+
+        mInterstitialAd = new InterstitialAd(mContext);
+        mInterstitialAd.setAdUnitId(mContext.getResources().getString(R.string.interstitial_ad_unit_id));
     }
 
 
@@ -203,17 +210,45 @@ class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHolder> im
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(mContext, AllEpisodes.class);
-                    intent.putExtra(BaseActivity.EXTRA_MEDIA_ITEM, itemArrayList.get(getAdapterPosition()));
-                    //We send the bitmap so that it can be saved in database in case user
-                    //decides to download the episode and view it offline
-                    BitmapDrawable bitmapDrawable = (BitmapDrawable) album_img.getDrawable();
-                    intent.putExtra(BaseActivity.EXTRA_BITMAP_POSTER, bitmapDrawable.getBitmap());
-                    mContext.startActivity(intent);
+                    loadInterstitialAd(album_img,getAdapterPosition());
+                    if(mInterstitialAd.isLoaded()){
+                        mInterstitialAd.show();
+                    }else
+                        startDisplayAllEpisodedIntent(album_img,getAdapterPosition());
                 }
             });
             itemView.setContentDescription(album_info.getText()+mContext.getString(R.string.by)+album_artist.getText());
         }
+    }
+
+    private void startDisplayAllEpisodedIntent(ImageView album_img, int position) {
+
+        Intent intent = new Intent(mContext, AllEpisodes.class);
+        intent.putExtra(BaseActivity.EXTRA_MEDIA_ITEM, itemArrayList.get(position));
+        //We send the bitmap so that it can be saved in database in case user
+        //decides to download the episode and view it offline
+        BitmapDrawable bitmapDrawable = (BitmapDrawable) album_img.getDrawable();
+        intent.putExtra(BaseActivity.EXTRA_BITMAP_POSTER, bitmapDrawable.getBitmap());
+        mContext.startActivity(intent);
+    }
+
+
+    private void loadInterstitialAd(final ImageView album_img, final int position) {
+        requestNewInterstitial();
+        mInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                startDisplayAllEpisodedIntent(album_img, position);
+            }
+        });
+    }
+
+
+    private void requestNewInterstitial() {
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice("LGH63176f3d6ec")
+                .build();
+        mInterstitialAd.loadAd(adRequest);
     }
 }
 

@@ -48,6 +48,7 @@
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
         </receiver>
+
         <!--
         Main music service, provides media browsing and media playback services to
         consumers through MediaBrowserService and MediaSession. Consumers connect to it through
@@ -99,6 +100,24 @@
             android:authorities="@string/content_authority"
             android:exported="false"
             android:syncable="true"/>
+
+
+        <!-- Today Widget -->
+        <receiver
+            android:name=".widget.CurrentAudioProvider"
+            android:label="@string/title_widget_current_audio">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.application.chetna_priya.exo_audio.default_back" />
+                <action android:name="com.application.chetna_priya.exo_audio.playback_state_changed"/>
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_current" />
+        </receiver>
+
+        <service android:name=".widget.CurrentAudioIntentService" />
 
     </application>
 

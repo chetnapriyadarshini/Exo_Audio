@@ -29,7 +29,7 @@ public  class GenreHelper {
     private static final String GOVERNMENT_ORIGANIZATION = "Government & Organization";
     public static final String TOP_PODCASTS = "Top Podcasts";
 
-    final int resId = R.drawable.ic_launcher;
+    final int resId = R.drawable.ic_comedy;
 
     /*
     Some genre have sub genres, we want to accomodate all the sub genres in one

@@ -264,8 +264,6 @@ public class CustomPlaybackControlView extends FrameLayout{
           //  enableNext = (currentWindowIndex < currentTimeline.getWindowCount() - 1)
             //        || currentWindow.isDynamic;
         }
-      //  Log.d(TAG, "TIMELINEEEEEEE "+haveTimeline+" isSeekable "+isSeekable);
-        //Log.d(TAG, "CURRENT POSITIONNNN "+currentPosition+" currentPosition < duration - 30000 "+duration);
         setButtonEnabled(enablePrevious , previousButton);
         setButtonEnabled(enableNext, nextButton);
         setButtonEnabled(isSeekable, fastForwardButton);

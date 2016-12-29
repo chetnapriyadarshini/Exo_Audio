@@ -14,6 +14,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.application.chetna_priya.exo_audio.R;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +35,7 @@ class FeatureRecyViewAdapter extends RecyclerView.Adapter<FeatureRecyViewAdapter
     private FeaturedFragment.MediaFragmentListener mMediaFragmentListener;
     private final String TAG = FeatureRecyViewAdapter.class.getSimpleName();
     private CopyOnWriteArrayList<Listener> listeners;
+    private InterstitialAd mInterstitialAd;
 
     FeatureRecyViewAdapter(Context context, MediaBrowserCompat.MediaItem mediaItem,
                            FeaturedFragment.MediaFragmentListener mediaFragmentListener){
@@ -42,6 +46,9 @@ class FeatureRecyViewAdapter extends RecyclerView.Adapter<FeatureRecyViewAdapter
         numAlbums = mContext.getResources().getInteger(R.integer.num_albums);
         mMediaFragmentListener = mediaFragmentListener;
         listeners = new CopyOnWriteArrayList<>();
+
+        mInterstitialAd = new InterstitialAd(mContext);
+        mInterstitialAd.setAdUnitId(mContext.getResources().getString(R.string.interstitial_ad_unit_id));
     }
 
     private final MediaBrowserCompat.SubscriptionCallback mSubscriptionCallback =
@@ -83,14 +90,16 @@ class FeatureRecyViewAdapter extends RecyclerView.Adapter<FeatureRecyViewAdapter
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.titleView.setText(categoriesList.get(position).getDescription().getTitle());
         holder.seeAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent allpodcasts = new Intent(mContext, AllPodcastsInCategory.class);
-                allpodcasts.putExtra(BaseActivity.EXTRA_MEDIA_ITEM, categoriesList.get(holder.getAdapterPosition()));
-                mContext.startActivity(allpodcasts);
+                loadInterstitialAd(position);
+                if(mInterstitialAd.isLoaded()){
+                    mInterstitialAd.show();
+                }else
+                    startDisplayAllPodcastsIntent(position);
             }
         });
         Log.d(TAG, "Initializing with media item "+categoriesList.get(position).getMediaId());
@@ -99,6 +108,31 @@ class FeatureRecyViewAdapter extends RecyclerView.Adapter<FeatureRecyViewAdapter
         holder.albumRecyclerView.setAdapter(holder.albumAdapter);
         listeners.add(holder.albumAdapter);
 
+    }
+
+    private void loadInterstitialAd(final int position) {
+        requestNewInterstitial();
+        mInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                startDisplayAllPodcastsIntent(position);
+            }
+        });
+    }
+
+    private void startDisplayAllPodcastsIntent(int position) {
+
+        Intent allpodcasts = new Intent(mContext, AllPodcastsInCategory.class);
+        allpodcasts.putExtra(BaseActivity.EXTRA_MEDIA_ITEM, categoriesList.get(position));
+        mContext.startActivity(allpodcasts);
+    }
+
+
+    private void requestNewInterstitial() {
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice("LGH63176f3d6ec")
+                .build();
+        mInterstitialAd.loadAd(adRequest);
     }
 
 

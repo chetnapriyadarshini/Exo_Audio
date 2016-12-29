@@ -308,6 +308,10 @@ public class AllEpisodes extends BaseActivity {
                     if(status == DownloadManager.STATUS_SUCCESSFUL)
                         DBHelper.insertInDb(context, selMediaItem, iconBitmap,title);
                     cursor.close();
+                    Intent intentBrod = new Intent();
+                    intentBrod.setAction(context.getString(R.string.action_db_update));
+                    context.sendBroadcast(intentBrod);
+                    Log.d(TAG, "Boradcastttttttttt sendddddddddddddd");
 
                 }
             }else if(DownloadManager.ACTION_NOTIFICATION_CLICKED.equals(action)){

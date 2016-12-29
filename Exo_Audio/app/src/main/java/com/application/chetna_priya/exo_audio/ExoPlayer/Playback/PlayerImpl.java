@@ -64,8 +64,7 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
  //   private AbstractPlaybackControlView exoPlayerView;
     private Context mContext;
     private DataSource.Factory mediaDataSourceFactory;
-    private SimpleExoPlayer
-            exoPlayer;
+    private SimpleExoPlayer exoPlayer;
     private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
     private EventLogger eventLogger;
     private Handler mainHandler = new Handler();

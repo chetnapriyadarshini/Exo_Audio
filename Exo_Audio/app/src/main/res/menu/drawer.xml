@@ -20,15 +20,15 @@
         <item
             android:id="@+id/navigation_featured"
             android:icon="@drawable/ic_playlist_music_black_24dp"
-            android:title="@string/featured"/>
+            android:title="@string/featured"/><!--
         <item
             android:id="@+id/navigation_subscribed"
             android:checked="true"
             android:icon="@drawable/ic_allmusic_black_24dp"
-            android:title="@string/subscribed"/>
+            android:title="@string/subscribed"/>-->
         <item
             android:id="@+id/navigation_downloaded"
-            android:icon="@drawable/ic_playlist_music_black_24dp"
+            android:icon="@drawable/ic_download"
             android:title="@string/downloaded"/>
     </group>
 </menu>

@@ -2,6 +2,7 @@ package com.application.chetna_priya.exo_audio.ui;
 
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.application.chetna_priya.exo_audio.R;
+import com.application.chetna_priya.exo_audio.data.PodcastContract;
 import com.application.chetna_priya.exo_audio.utils.BitmapHelper;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -89,7 +91,16 @@ public class MainActivity extends BaseActivity implements FeaturedFragment.Media
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
-        startSignInActivity();
+
+        Cursor cursor = getContentResolver().query(PodcastContract.EpisodeEntry.CONTENT_URI,
+                new String[]{PodcastContract.EpisodeEntry.COLUMN_PODCAST_EPISODE_MEDIA_ID}, null, null,null);
+        if(cursor != null && cursor.moveToFirst()) {
+            Intent intentBrod = new Intent();
+            intentBrod.setAction(getString(R.string.action_db_update));
+            sendBroadcast(intentBrod);
+            startSignInActivity();
+            cursor.close();
+        }
     }
 
     private void startSignInActivity() {
@@ -154,29 +165,6 @@ public class MainActivity extends BaseActivity implements FeaturedFragment.Media
         }
     }
 
-
-
-    /*
-    private void performIntialization() {
-       // initializeToolbar();
-        mPodcastPagerAdapter = new PodcastPagerAdapter(getSupportFragmentManager(), this);
-
-        // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.pager_container);
-        mViewPager.setAdapter(mPodcastPagerAdapter);
-
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.pager_tab);
-        tabLayout.setupWithViewPager(mViewPager);
-*//*
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*//*
-    }*/
 
     /*@Override
     public void setToolbarTitle(CharSequence title) {

@@ -37,13 +37,13 @@
                     <ImageView
                         android:id="@+id/icon_add_catg"
                         android:layout_gravity="center_vertical|start|left"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="@dimen/genre_icon_size"
+                        android:layout_height="@dimen/genre_icon_size"
                         android:layout_marginLeft="@dimen/activity_horizontal_margin"
                         android:layout_marginStart="@dimen/activity_horizontal_margin"
                         android:layout_marginTop="10dp"
                         android:layout_marginBottom="10dp"
-                        android:src="@drawable/ic_by_genre"
+                        android:src="@drawable/ic_by_genre_new"
                         android:contentDescription="@string/add_new_categories"/>
 
                     <TextView

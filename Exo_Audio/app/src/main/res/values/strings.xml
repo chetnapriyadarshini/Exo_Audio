@@ -75,4 +75,9 @@
     <string name="elapsed_time">Time elapsed</string>
     <string name="out_of">out of</string>
     <string name="empty_download">No downloads yet.</string>
+    <string name="interstitial_ad_unit_id">ca-app-pub-3940256099942544/1033173712</string>
+    <string name="title_widget_detail">Downloaded Podcasts</string>
+    <string name="action_db_update">com.application.chetna_priya.exo_audio.DATABASE_UPDATED</string>
+    <string name="title_widget_current_audio">Current Audio Widget</string>
+    <string name="no_media_played">No media played</string>
 </resources>

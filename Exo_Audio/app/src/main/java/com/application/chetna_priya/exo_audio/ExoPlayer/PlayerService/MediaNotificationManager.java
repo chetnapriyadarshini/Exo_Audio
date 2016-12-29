@@ -35,13 +35,19 @@ public class MediaNotificationManager extends BroadcastReceiver {
 
     private static final int NOTIFICATION_ID = 412;
     private static final int REQUEST_CODE = 100;
+    private static final int REQ_DELETE = 101;
 
-    public static final String ACTION_PAUSE = "com.example.android.uamp.pause";
-    public static final String ACTION_PLAY = "com.example.android.uamp.play";
-    public static final String ACTION_PREV = "com.example.android.uamp.prev";
-    public static final String ACTION_NEXT = "com.example.android.uamp.next";
+    public static final String ACTION_PAUSE = "com.application.chetna_priya.exo_audio.pause";
+    public static final String ACTION_PLAY = "com.application.chetna_priya.exo_audio.play";
+    public static final String ACTION_PREV = "com.application.chetna_priya.exo_audio.prev";
+    public static final String ACTION_NEXT = "com.application.chetna_priya.exo_audio.next";
+    public static final String ACTION_DEFAULT_BACK = "com.application.chetna_priya.exo_audio.default_back";
+    public static final String ACTION_PLAYBACK_STATE_CHANGED  = "com.application.chetna_priya.exo_audio.playback_state_changed";
+    public static final String PLAYBACK_STATE_KEY = "playback_state_key";
+    public static final String METADATA_KEY = "metadata_key";
 
-    private final PodcastService mService;
+
+    private PodcastService mService;
     private MediaSessionCompat.Token mSessionToken;
     private MediaControllerCompat mController;
     private MediaControllerCompat.TransportControls mTransportControls;
@@ -49,15 +55,15 @@ public class MediaNotificationManager extends BroadcastReceiver {
     private PlaybackStateCompat mPlaybackState;
     private MediaMetadataCompat mMetadata;
 
-    private final NotificationManagerCompat mNotificationManager;
+    private  NotificationManagerCompat mNotificationManager;
 
-    private final PendingIntent mPauseIntent;
-    private final PendingIntent mPlayIntent;
-    private final PendingIntent mPreviousIntent;
-    private final PendingIntent mNextIntent;
+    private  PendingIntent mPauseIntent;
+    private  PendingIntent mPlayIntent;
+    private  PendingIntent mPreviousIntent;
+    private  PendingIntent mNextIntent;
 
 
-    private final int mNotificationColor;
+    private  int mNotificationColor;
 
     private boolean mStarted = false;
 
@@ -110,6 +116,10 @@ public class MediaNotificationManager extends BroadcastReceiver {
 
                 mService.startForeground(NOTIFICATION_ID, notification);
                 mStarted = true;
+                /*
+                Broadcast the new info to widget
+                 */
+                broadcastToWidget();
             }
         }
     }
@@ -129,6 +139,8 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 // ignore if the receiver is not registered.
             }
             mService.stopForeground(true);
+            Intent broadIntent = new Intent(ACTION_DEFAULT_BACK);
+            mService.sendBroadcast(broadIntent);
         }
     }
 
@@ -196,7 +208,14 @@ public class MediaNotificationManager extends BroadcastReceiver {
             if (state.getState() == PlaybackStateCompat.STATE_STOPPED ||
                     state.getState() == PlaybackStateCompat.STATE_NONE) {
                 stopNotification();
+
+                Intent broadIntent = new Intent(ACTION_DEFAULT_BACK);
+                mService.sendBroadcast(broadIntent);
+
+                Log.d(TAG, "Broadcasssssstttt sentttttttttttttttttttt");
             } else {
+                broadcastToWidget();
+
                 Notification notification = createNotification();
                 if (notification != null) {
                     mNotificationManager.notify(NOTIFICATION_ID, notification);
@@ -207,6 +226,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
         @Override
         public void onMetadataChanged(MediaMetadataCompat metadata) {
             mMetadata = metadata;
+
             Log.d(TAG, "Received new metadata " + metadata);
             Notification notification = createNotification();
             if (notification != null) {
@@ -219,12 +239,21 @@ public class MediaNotificationManager extends BroadcastReceiver {
             super.onSessionDestroyed();
        //     Log.d(TAG, "Session was destroyed, resetting to the new session token");
             try {
+                Intent broadIntent = new Intent(ACTION_DEFAULT_BACK);
+                mService.sendBroadcast(broadIntent);
                 updateSessionToken();
             } catch (RemoteException e) {
                 Log.e(TAG, e + "could not connect media controller");
             }
         }
     };
+
+    private void broadcastToWidget() {
+        Intent broadIntent = new Intent(ACTION_PLAYBACK_STATE_CHANGED);
+        broadIntent.putExtra(PLAYBACK_STATE_KEY, mPlaybackState.getState());
+        broadIntent.putExtra(METADATA_KEY, mMetadata);
+        mService.sendBroadcast(broadIntent);
+    }
 
     private Notification createNotification() {
 
@@ -276,6 +305,11 @@ public class MediaNotificationManager extends BroadcastReceiver {
             }
         }
 
+        /*
+        We want to reset the widget if the media notification is dismisssed
+         */
+        Intent deleteIntent = new Intent(ACTION_DEFAULT_BACK);
+        PendingIntent pendDeleteIntent = PendingIntent.getBroadcast(mService, REQ_DELETE, deleteIntent, 0);
 
 
         notificationBuilder
@@ -290,20 +324,11 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setUsesChronometer(true)
                 .setContentIntent(createContentIntent(description))
+                .setDeleteIntent(pendDeleteIntent)
                 .setContentTitle(description.getTitle())
                 .setContentText(description.getSubtitle())
                 .setLargeIcon(art);
 
-        if (mController != null && mController.getExtras() != null) {
-           /* String castName = mController.getExtras().getString(MusicService.EXTRA_CONNECTED_CAST);
-            if (castName != null) {
-                String castInfo = mService.getResources()
-                        .getString(R.string.casting_to_device, castName);
-                notificationBuilder.setSubText(castInfo);
-                notificationBuilder.addAction(R.drawable.ic_close_black_24dp,
-                        mService.getString(R.string.stop_casting), mStopCastIntent);
-            }*/
-        }
 
         setNotificationPlaybackState(notificationBuilder);
         if (fetchArtUrl != null) {

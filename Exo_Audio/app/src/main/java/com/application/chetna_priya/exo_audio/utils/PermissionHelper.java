@@ -9,10 +9,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 
 
-/**
- * Created by chetna_priya on 12/18/2016.
- */
-
 public class PermissionHelper {
 
     public static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_USAGE = 1;
@@ -20,7 +16,7 @@ public class PermissionHelper {
     public static boolean requestForPermission(Context context, String permission) {
         if (ContextCompat.checkSelfPermission(context, permission)
                 != PackageManager.PERMISSION_GRANTED) {
-
+/*
             // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale((Activity) context,
                     permission)) {
@@ -29,7 +25,7 @@ public class PermissionHelper {
                 // this thread waiting for the user's response! After the user
                 // sees the explanation, try again to request the permission.
 
-            } else {
+            } else*/ {
 
                 // No explanation needed, we can request the permission.
                 int requestCode = 0;

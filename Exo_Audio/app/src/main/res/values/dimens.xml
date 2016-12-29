@@ -44,6 +44,14 @@
     <dimen name="profile_image_size">50dp</dimen>
     <dimen name="audio_activity_album_size">150dp</dimen>
     <dimen name="genre_right_margin">0dp</dimen>
+    <dimen name="genre_icon_size">32dp</dimen>
+    <dimen name="widget_current_default_width">80dp</dimen>
+    <dimen name="widget_current_large_width">150dp</dimen>
+    <dimen name="widget_margin">8dp</dimen>
+    <dimen name="list_icon">40dp</dimen>
+    <dimen name="widget_current_min_resize_width">50dp</dimen>
+    <dimen name="widget_current_default_height">20dp</dimen>
+    <dimen name="widget_current_min_resize_height">40dp</dimen>
 
     <!-- Notification related dimens -->
 
