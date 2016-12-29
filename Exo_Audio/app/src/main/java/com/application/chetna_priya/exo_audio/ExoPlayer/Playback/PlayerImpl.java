@@ -155,9 +155,7 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
         exoPlayer.prepare(mediaSource, !shouldRestorePosition);
         // Prepare the exoPlayer with the source.
      //  exoPlayer.prepare(mediaSource);
-        exoPlayer.setPlayWhenReady(true);/*
-        if(mCallback != null)
-            mCallback.onPlaybackStatusChanged(mState);*/
+        exoPlayer.setPlayWhenReady(true);
     }
 
     private MediaSource buildMediaSource(Uri uri, String overrideExtension) {

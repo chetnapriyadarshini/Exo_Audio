@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaButtonReceiver;
@@ -38,15 +39,12 @@ public class CurrentAudioIntentService extends IntentService {
     private MediaControllerCompat mController;
     private MediaControllerCompat.TransportControls mTransportControls;*/
 
-/*
-    private PlaybackStateCompat mPlaybackState;
-    private MediaMetadataCompat mMetadata;
-*/
 
     private static final int REQUEST_CODE = 100;
 
-    private boolean mStarted = false;
-   // private MediaBrowserCompat mMediaBrowser;
+    private static MediaMetadataCompat metadataCompat;
+    private static int state;
+    // private MediaBrowserCompat mMediaBrowser;
 
     public CurrentAudioIntentService() {
         super("CurrentAudioIntentService");
@@ -57,7 +55,10 @@ public class CurrentAudioIntentService extends IntentService {
     protected void onHandleIntent(Intent intent) {
 
         if(intent.getAction() == null) {
-            updateWidgetToDefaultValues();
+            if(metadataCompat == null)
+                updateWidgetToDefaultValues();
+            else
+                updateWidget(null);
             return;
         }
 
@@ -87,7 +88,8 @@ public class CurrentAudioIntentService extends IntentService {
 
         for (int appWidgetId : appWidgetIds) {
           //  MediaDescriptionCompat description = mMetadata.getDescription();
-            MediaMetadataCompat metadataCompat = intent.getParcelableExtra(MediaNotificationManager.METADATA_KEY);
+            if(intent != null)
+                metadataCompat = intent.getParcelableExtra(MediaNotificationManager.METADATA_KEY);
             Bitmap art = null;
             String fetchArtUrl = null;
             String artUrl = metadataCompat.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI);
@@ -119,7 +121,8 @@ public class CurrentAudioIntentService extends IntentService {
 
             views.setImageViewBitmap(R.id.widget_icon, art);
             views.setTextViewText(R.id.widget_description, text);
-            int state = intent.getIntExtra(MediaNotificationManager.PLAYBACK_STATE_KEY, PlaybackStateCompat.STATE_NONE);
+            if(intent != null)
+                state = intent.getIntExtra(MediaNotificationManager.PLAYBACK_STATE_KEY, PlaybackStateCompat.STATE_NONE);
             if(state == PlaybackStateCompat.STATE_PLAYING ||
                     state == PlaybackStateCompat.STATE_BUFFERING) {
                 views.setImageViewResource(R.id.widget_play_pause, R.drawable.exo_controls_pause);

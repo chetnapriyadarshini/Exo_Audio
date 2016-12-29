@@ -13,6 +13,7 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -71,6 +72,7 @@ public class MainActivity extends BaseActivity implements FeaturedFragment.Media
     @BindView(R.id.profile_image)
     ImageView profileImage;
     boolean needReload = false;
+    private LinearLayout linlaHeaderProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,19 +90,22 @@ public class MainActivity extends BaseActivity implements FeaturedFragment.Media
                 .requestEmail()
                 .build();
 
+        linlaHeaderProgress = (LinearLayout) findViewById(R.id.linlaHeaderProgress);
+        linlaHeaderProgress.setVisibility(View.VISIBLE);
+
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
-
+/*
         Cursor cursor = getContentResolver().query(PodcastContract.EpisodeEntry.CONTENT_URI,
                 new String[]{PodcastContract.EpisodeEntry.COLUMN_PODCAST_EPISODE_MEDIA_ID}, null, null,null);
         if(cursor != null && cursor.moveToFirst()) {
             Intent intentBrod = new Intent();
             intentBrod.setAction(getString(R.string.action_db_update));
             sendBroadcast(intentBrod);
-            startSignInActivity();
             cursor.close();
-        }
+        }*/
+        startSignInActivity();
     }
 
     private void startSignInActivity() {
@@ -210,6 +215,7 @@ public class MainActivity extends BaseActivity implements FeaturedFragment.Media
                 public void onChildrenLoaded(@NonNull String parentId,
                                              @NonNull List<MediaBrowserCompat.MediaItem> children) {
                     try {
+                        linlaHeaderProgress.setVisibility(View.GONE);
                         Log.d(TAG, "fragment onChildrenLoaded, parentId=" + parentId +
                                 "  count=" + children.size());
                         /*

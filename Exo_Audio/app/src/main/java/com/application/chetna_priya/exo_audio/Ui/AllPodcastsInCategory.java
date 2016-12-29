@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.application.chetna_priya.exo_audio.R;
@@ -29,6 +30,7 @@ public class AllPodcastsInCategory extends BaseActivity {
     MediaBrowserCompat.MediaItem mMediaItem;
     ArrayList<MediaBrowserCompat.MediaItem> mPodcastMediaItemList = new ArrayList<>();
     private AllpodAdapter allpodAdapter;
+    LinearLayout linlaHeaderProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +40,10 @@ public class AllPodcastsInCategory extends BaseActivity {
             mMediaItem = getIntent().getParcelableExtra(BaseActivity.EXTRA_MEDIA_ITEM);
         }else
             finish();
+
+
+        linlaHeaderProgress = (LinearLayout) findViewById(R.id.linlaHeaderProgress);
+        linlaHeaderProgress.setVisibility(View.VISIBLE);
 
         RecyclerView podcastsRecyclerView = (RecyclerView) findViewById(R.id.allPodcast_recycler_view);
         podcastsRecyclerView.setLayoutManager(new LinearLayoutManager(AllPodcastsInCategory.this));
@@ -62,6 +68,7 @@ public class AllPodcastsInCategory extends BaseActivity {
                     try {
                         Log.d(TAG, "fragment onChildrenLoaded, parentId=" + parentId +
                                 "  count=" + children.size());
+                        linlaHeaderProgress.setVisibility(View.GONE);
                         mPodcastMediaItemList.clear();
                         for (MediaBrowserCompat.MediaItem item : children) {
                             mPodcastMediaItemList.add(item);

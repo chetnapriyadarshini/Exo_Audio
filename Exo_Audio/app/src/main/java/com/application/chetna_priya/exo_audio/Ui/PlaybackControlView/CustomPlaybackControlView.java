@@ -25,7 +25,6 @@ import com.application.chetna_priya.exo_audio.exoPlayer.playerService.PodcastSer
 import com.application.chetna_priya.exo_audio.R;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.util.Util;
 import java.util.Formatter;
 import java.util.Locale;
@@ -42,7 +41,6 @@ import static com.application.chetna_priya.exo_audio.ui.playbackControlView.Smal
 public class CustomPlaybackControlView extends FrameLayout{
 
     private static final int PROGRESS_BAR_MAX = 1000;
-    private static final long MAX_POSITION_FOR_SEEK_TO_PREVIOUS = 3000;
     private static final String TAG = CustomPlaybackControlView.class.getSimpleName();
     private final MediaBrowserCompat mMediaBrowser;
 
@@ -60,7 +58,6 @@ public class CustomPlaybackControlView extends FrameLayout{
 
     private final StringBuilder formatBuilder;
     private final Formatter formatter;
-    private final Timeline.Window currentWindow;
     private final boolean speedViewVisible;
     private final float[] SPEED_ARR = {0.50f,0.60f,0.70f,0.80f,0.90f,1.00f,1.10f,1.20f,1.30f,1.40f,1.50f,
                                         1.60f,1.70f,1.80f,1.90f,2.00f};
@@ -89,7 +86,6 @@ public class CustomPlaybackControlView extends FrameLayout{
     public CustomPlaybackControlView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mContext = context;
-        currentWindow = new Timeline.Window();
         formatBuilder = new StringBuilder();
         formatter = new Formatter(formatBuilder, Locale.getDefault());
         ComponentListener componentListener = new ComponentListener();
@@ -147,29 +143,6 @@ public class CustomPlaybackControlView extends FrameLayout{
             mLastPlaybackState = state;
             updateAll();
         }
-/*
-        @Override
-        public void onSessionEvent(String event, Bundle extras) {
-            super.onSessionEvent(event, extras);
-            switch (event){
-                case EVENT_POSITION_DISCONTINUITY:
-                    updateNavigation();
-                    updateProgress();
-                    break;
-                case EVENT_SPEED_CHANGE:
-                    updateNavigation();
-                    updateProgress();
-                    break;
-                case EVENT_TIME_LINE_CHANGED:
-                    updateNavigation();
-                    updateProgress();
-                    break;
-                case EVENT_PLAYER_CHANGED:
-                    updatePlayPauseButton();
-                    updateProgress();
-                    break;
-            }
-        }*/
     };
 
     private final MediaBrowserCompat.ConnectionCallback mConnectionCallback =
@@ -189,34 +162,11 @@ public class CustomPlaybackControlView extends FrameLayout{
         MediaControllerCompat mediaController = new MediaControllerCompat(
                 mContext, token);
         ((FragmentActivity)mContext).setSupportMediaController(mediaController);
-        
-       /* if (mediaController.getMetadata() == null) {
-            activityCallbacks.finishActivity();
-            return;
-        }*//*
-        activityCallbacks.setSupportMediaControllerForActivity(mediaController);*/
         mediaController.registerCallback(mCallback);
         mLastPlaybackState = mediaController.getPlaybackState();
         updateAll();
-        MediaMetadataCompat metadata = mediaController.getMetadata();
-        if (metadata != null) {
-            //   updateMediaDescription(metadata.getDescription());
-            // updateDuration(metadata);
-        }
-        /*
-        updateProgress();
-        if (state != null && (state.getState() == PlaybackStateCompat.STATE_PLAYING ||
-                state.getState() == PlaybackStateCompat.STATE_BUFFERING)) {
-            scheduleSeekbarUpdate();
-        }*/
     }
 
-/*
-    @Override
-    public void disconnectSession() {
-        if(mMediaBrowser.isConnected())
-            mMediaBrowser.disconnect();
-    }*/
 
     private void updateAll() {
         updatePlayPauseButton();
@@ -243,26 +193,17 @@ public class CustomPlaybackControlView extends FrameLayout{
     private void updateNavigation() {
 
         MediaControllerCompat mediaControllerCompat= ((FragmentActivity)mContext).getSupportMediaController();
-     //   MediaControllerCompat.TransportControls controls =mediaControllerCompat.getTransportControls();
         PlaybackStateCompat state = mediaControllerCompat.getPlaybackState();
         MediaMetadataCompat metadata = mediaControllerCompat.getMetadata();
-        Log.d(TAG, "METADATTTTTTTTTAAAAAAA "+metadata);
         long duration = metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
         long currentPosition = state.getPosition();
-      //  Timeline currentTimeline = player != null ? player.getCurrentTimeline() : null;
-        boolean haveTimeline = currentPosition < duration/*currentTimeline != null*/;
+        boolean haveTimeline = currentPosition < duration;
         boolean isSeekable = false;
         boolean enablePrevious = false;
         boolean enableNext = false;
         if (haveTimeline) {
-          //  int currentWindowIndex = player.getCurrentWindowIndex();
-           // currentTimeline.getWindow(currentWindowIndex, currentWindow);
-            isSeekable = currentPosition < duration /*&&
-                    android.os.SystemClock.elapsedRealtime() - state.getLastPositionUpdateTime()<= 30000*/;
-            /*currentWindow.isSeekable*/;
-         //   enablePrevious = currentWindowIndex > 0 || isSeekable || !currentWindow.isDynamic;
-          //  enableNext = (currentWindowIndex < currentTimeline.getWindowCount() - 1)
-            //        || currentWindow.isDynamic;
+            isSeekable = currentPosition < duration;
+
         }
         setButtonEnabled(enablePrevious , previousButton);
         setButtonEnabled(enableNext, nextButton);
@@ -270,10 +211,6 @@ public class CustomPlaybackControlView extends FrameLayout{
         setButtonEnabled(isSeekable, rewindButton);
         if(speedViewVisible)
             setButtonEnabled(isSeekable,speed);
-    //    Log.d(TAG, "Previous Button "+enablePrevious);
-     //   Log.d(TAG, "Next Button "+enablePrevious);
-      //  Log.d(TAG, "Forward Button "+enablePrevious);
-       // Log.d(TAG, "Rewind Button "+enablePrevious);
         progressBar.setEnabled(isSeekable);
     }
 
@@ -448,12 +385,7 @@ public class CustomPlaybackControlView extends FrameLayout{
             MediaControllerCompat.TransportControls controls =
                     ((FragmentActivity)mContext).getSupportMediaController().getTransportControls();
             controls.seekTo(positionValue(seekBar.getProgress()));
-            //commeting the below code as the updation is automatically called
-            //in onPlaybackstate changed which in turn updates all
-          /*  updateNavigation();
-            updateProgress();
-          */ // player.seekTo(positionValue(seekBar.getProgress()));
-            //hideDeferred();
+
         }
 
         @Override
