@@ -142,13 +142,13 @@ class FeatureRecyViewAdapter extends RecyclerView.Adapter<FeatureRecyViewAdapter
     }
 
      void onStop() {
-        MediaBrowserCompat mediaBrowser = mMediaFragmentListener.getMediaBrowser();
+        /*MediaBrowserCompat mediaBrowser = mMediaFragmentListener.getMediaBrowser();
         if (mediaBrowser != null && mediaBrowser.isConnected() && mediaItem != null) {
             mediaBrowser.unsubscribe(mediaItem.getMediaId());
         }
          for(Listener listener : listeners){
              listener.onStop();
-         }
+         }*/
     }
 
       void onConnected() {
