@@ -2,7 +2,6 @@ package com.application.chetna_priya.exo_audio.ui;
 
 import android.Manifest;
 import android.app.DownloadManager;
-import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,12 +10,10 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
-import android.support.v7.app.NotificationCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -28,16 +25,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.application.chetna_priya.exo_audio.data.PodcastContract;
 import com.application.chetna_priya.exo_audio.model.MediaProviderSource;
 import com.application.chetna_priya.exo_audio.R;
-import com.application.chetna_priya.exo_audio.utils.BitmapHelper;
 import com.application.chetna_priya.exo_audio.utils.DBHelper;
 import com.application.chetna_priya.exo_audio.utils.PathHelper;
 import com.application.chetna_priya.exo_audio.utils.PermissionHelper;
 import com.application.chetna_priya.exo_audio.utils.SortingHelper;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;

@@ -2,7 +2,6 @@ package com.application.chetna_priya.exo_audio;
 
 import android.app.Application;
 
-import com.google.android.exoplayer2.upstream.ContentDataSource;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;

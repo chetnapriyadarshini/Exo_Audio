@@ -2,7 +2,6 @@ package com.application.chetna_priya.exo_audio.ui;
 
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -18,7 +17,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.application.chetna_priya.exo_audio.R;
-import com.application.chetna_priya.exo_audio.data.PodcastContract;
 import com.application.chetna_priya.exo_audio.utils.BitmapHelper;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
