@@ -1,4 +1,4 @@
-package com.application.chetna_priya.exo_audio.exoPlayer.playerService;
+package com.application.chetna_priya.exo_audio.exoplayer.playerservice;
 
 import android.app.Notification;
 import android.app.PendingIntent;

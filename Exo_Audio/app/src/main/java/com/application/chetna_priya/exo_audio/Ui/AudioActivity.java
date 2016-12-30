@@ -14,7 +14,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.application.chetna_priya.exo_audio.R;
-import com.application.chetna_priya.exo_audio.ui.playbackControlView.CustomPlaybackControlView;
+import com.application.chetna_priya.exo_audio.ui.playbackcontrolview.CustomPlaybackControlView;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 

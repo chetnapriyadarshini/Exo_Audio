@@ -4,14 +4,13 @@ import android.content.ComponentName;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.v4.media.MediaBrowserCompat;
-import android.os.Bundle;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
-import com.application.chetna_priya.exo_audio.exoPlayer.playerService.PodcastService;
+import com.application.chetna_priya.exo_audio.exoplayer.playerservice.PodcastService;
 import com.application.chetna_priya.exo_audio.R;
 import com.application.chetna_priya.exo_audio.utils.NetworkHelper;
 

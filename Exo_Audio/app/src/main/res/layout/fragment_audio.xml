@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     tools:context="com.application.chetna_priya.exo_audio.ui.AudioFragment">
 
-    <com.application.chetna_priya.exo_audio.ui.playbackControlView.CustomPlaybackControlView
+    <com.application.chetna_priya.exo_audio.ui.playbackcontrolview.CustomPlaybackControlView
         android:id="@+id/exo_player_control"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

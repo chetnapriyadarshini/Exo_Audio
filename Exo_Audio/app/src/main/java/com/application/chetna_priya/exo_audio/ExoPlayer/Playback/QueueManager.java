@@ -1,4 +1,4 @@
-package com.application.chetna_priya.exo_audio.exoPlayer.playback;
+package com.application.chetna_priya.exo_audio.exoplayer.playback;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;

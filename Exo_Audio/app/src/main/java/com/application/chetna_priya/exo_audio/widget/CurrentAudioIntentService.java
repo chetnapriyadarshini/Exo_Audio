@@ -10,7 +10,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaButtonReceiver;
@@ -21,7 +20,7 @@ import android.util.TypedValue;
 import android.widget.RemoteViews;
 
 import com.application.chetna_priya.exo_audio.R;
-import com.application.chetna_priya.exo_audio.exoPlayer.playerService.MediaNotificationManager;
+import com.application.chetna_priya.exo_audio.exoplayer.playerservice.MediaNotificationManager;
 import com.application.chetna_priya.exo_audio.ui.AudioActivity;
 import com.application.chetna_priya.exo_audio.ui.MainActivity;
 import com.application.chetna_priya.exo_audio.utils.AlbumArtCache;

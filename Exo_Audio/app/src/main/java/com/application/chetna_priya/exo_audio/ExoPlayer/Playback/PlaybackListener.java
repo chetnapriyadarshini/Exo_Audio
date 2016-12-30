@@ -1,4 +1,4 @@
-package com.application.chetna_priya.exo_audio.exoPlayer.playback;
+package com.application.chetna_priya.exo_audio.exoplayer.playback;
 
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -10,7 +10,7 @@ import android.util.Log;
 
 import com.application.chetna_priya.exo_audio.model.PodcastProvider;
 import com.application.chetna_priya.exo_audio.R;
-import com.application.chetna_priya.exo_audio.ui.playbackControlView.SmallPlaybackControlView;
+import com.application.chetna_priya.exo_audio.ui.playbackcontrolview.SmallPlaybackControlView;
 import com.application.chetna_priya.exo_audio.utils.MediaIDHelper;
 
 

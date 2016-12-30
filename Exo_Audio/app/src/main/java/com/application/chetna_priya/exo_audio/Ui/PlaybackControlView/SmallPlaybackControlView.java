@@ -1,4 +1,4 @@
-package com.application.chetna_priya.exo_audio.ui.playbackControlView;
+package com.application.chetna_priya.exo_audio.ui.playbackcontrolview;
 
 import android.content.Context;
 import android.util.AttributeSet;
