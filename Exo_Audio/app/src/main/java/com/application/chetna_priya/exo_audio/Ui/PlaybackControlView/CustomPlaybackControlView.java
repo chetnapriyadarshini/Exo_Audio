@@ -321,7 +321,8 @@ public class CustomPlaybackControlView extends FrameLayout{
     }
 
     private void updateSpeedText() {
-        speed.setText(SPEED_ARR[CURRENT_INDEX]+"x");
+        String text = SPEED_ARR[CURRENT_INDEX]+"x";
+        speed.setText(text);
     }
 
    /* @Override

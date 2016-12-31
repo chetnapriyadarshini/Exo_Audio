@@ -90,16 +90,16 @@ class FeatureRecyViewAdapter extends RecyclerView.Adapter<FeatureRecyViewAdapter
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, final int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.titleView.setText(categoriesList.get(position).getDescription().getTitle());
         holder.seeAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                loadInterstitialAd(position);
+                loadInterstitialAd(holder.getAdapterPosition());
                 if(mInterstitialAd.isLoaded()){
                     mInterstitialAd.show();
                 }else
-                    startDisplayAllPodcastsIntent(position);
+                    startDisplayAllPodcastsIntent(holder.getAdapterPosition());
             }
         });
         Log.d(TAG, "Initializing with media item "+categoriesList.get(position).getMediaId());

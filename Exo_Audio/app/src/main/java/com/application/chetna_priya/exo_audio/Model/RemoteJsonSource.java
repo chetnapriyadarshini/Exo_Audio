@@ -40,7 +40,7 @@ class RemoteJsonSource implements MediaProviderSource {
             LoadAvailablePodcastChannels loadChannels = new LoadAvailablePodcastChannels();
             for(int i = 0; i< genres.size(); i++)
             {
-                ArrayList<Podcast> podsublist = loadChannels.load(GenreHelper.getGenreUrl(genres.get(i), 10), genres.get(i));
+                ArrayList<Podcast> podsublist = loadChannels.load(GenreHelper.getGenreUrl(genres.get(i)), genres.get(i));
                 podcastChannelLists.addAll(podsublist);
             }
 

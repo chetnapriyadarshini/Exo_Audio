@@ -236,7 +236,7 @@ public  class GenreHelper {
     }
 
 
-    public static String getGenreUrl(String category, int limit) {
+    public static String getGenreUrl(String category) {
         /*
         	Available Media : movie, podcast, music, musicVideo, audiobook, shortFilm, tvShow, software, ebook, all
          */
@@ -270,8 +270,8 @@ public  class GenreHelper {
             /*
             This applies for cases when we want all podcasts in a category
              */
-            if(limit != -1)
-                uriBuilder.appendQueryParameter(LIMIT_PARAM, String.valueOf(limit));
+            if(10 != -1)
+                uriBuilder.appendQueryParameter(LIMIT_PARAM, String.valueOf(10));
 
 
             Uri builtUri = uriBuilder.build();
@@ -281,7 +281,7 @@ public  class GenreHelper {
         {
             String BASE_URI  =  "https://itunes.apple.com/us/rss/toppodcasts";
             uriBuilder = Uri.parse(BASE_URI).buildUpon();
-            uriBuilder.appendQueryParameter(LIMIT_PARAM, String.valueOf(limit));
+            uriBuilder.appendQueryParameter(LIMIT_PARAM, String.valueOf(10));
             uriBuilder.appendPath("xml");
             return uriBuilder.build().toString();
         }

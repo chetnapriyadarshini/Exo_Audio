@@ -190,7 +190,7 @@ public class AllEpisodes extends BaseActivity {
             releaseDate = releaseDate.substring(0,releaseDate.length()-6);
             if(release_year == year){
                 //5 - 4 for year eg 1999 and 1 for space
-                releaseDate = String.format(releaseDate.replace(" ", "%n"));
+                releaseDate = (releaseDate.replace(" ", "%n"));
             }else {
                 releaseDate = releaseDate.concat("\n"+release_year);
             }
