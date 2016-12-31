@@ -82,12 +82,12 @@ public class BitmapHelper {
             Log.d(TAG, "Scaling bitmap "+ uri+ " by factor "+ scaleFactor+ " to support "+
                     width+ "x"+ height+ "requested dimension");
             is.reset();
-            is.close();
             return scaleBitmap(scaleFactor, is);
-        }catch (IOException e){
-            e.printStackTrace();
+        } finally {
+            if (is != null) {
+                is.close();
+            }
         }
-        return null;
     }
 
     public static byte[] getBitmapAsByteArray(Bitmap bitmap) {
