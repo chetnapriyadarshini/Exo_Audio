@@ -112,13 +112,16 @@ public class MainActivity extends BaseActivity implements FeaturedFragment.Media
     }
 
     @Override public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "1111111111 "+requestCode);
         super.onActivityResult(requestCode, resultCode, data);
 
         // Result returned from launching the Intent from
         //   GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
+
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             if (result.isSuccess()) {
+                Log.d(TAG, "HEREEEEEEEEEEEEEEEEEEEEEEE");
                 GoogleSignInAccount acct = result.getSignInAccount();
                 final ImageView profileImage = (ImageView) findViewById(R.id.profile_image);
 
@@ -149,6 +152,7 @@ public class MainActivity extends BaseActivity implements FeaturedFragment.Media
             }
         }
         if(requestCode == REQUEST_CODE_ADD_GENRES){
+            linlaHeaderProgress.setVisibility(View.VISIBLE);
             Log.d(TAG, "SHOULD RELOADDDDDDDDDDDDDD HEREEEEEEEEEEEEEEE");
             needReload = true;
         }
@@ -186,6 +190,7 @@ public class MainActivity extends BaseActivity implements FeaturedFragment.Media
         //if (fragment == null || !TextUtils.equals(fragment.getMediaId(), mediaItem))
         if(fragment == null || needReload)
         {
+            needReload = false;
             fragment = new FeaturedFragment();
             fragment.setMediaId(mediaItem);
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();

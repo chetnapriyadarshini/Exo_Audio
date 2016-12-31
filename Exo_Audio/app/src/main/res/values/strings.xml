@@ -79,4 +79,8 @@
     <string name="title_widget_detail">Downloaded Podcasts</string>
     <string name="title_widget_current_audio">Current Audio Widget</string>
     <string name="no_media_played">No media played</string>
+    <string name="podcast_icon">Podcast album icon</string>
+    <string name="genre_icon">genre icon</string>
+    <string name="view_all_episodes">View all episodes</string>
+    <string name="username">Username</string>
 </resources>

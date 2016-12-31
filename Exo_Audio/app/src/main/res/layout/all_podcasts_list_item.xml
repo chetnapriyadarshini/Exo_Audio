@@ -16,7 +16,8 @@
         android:layout_marginLeft="@dimen/album_icon_left_margin"
         android:layout_marginStart="@dimen/album_icon_left_margin"
         android:layout_centerVertical="true"
-        android:layout_marginBottom="@dimen/activity_vertical_margin"/>
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:contentDescription="@string/podcast_icon"/>
 
 
         <TextView
@@ -41,7 +42,8 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="@dimen/activity_vertical_margin"
-        android:layout_marginRight="@dimen/activity_vertical_margin"/>
+        android:layout_marginRight="@dimen/activity_vertical_margin"
+        android:contentDescription="@string/view_all_episodes"/>
 
     <View
         android:layout_width="match_parent"

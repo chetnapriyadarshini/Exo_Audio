@@ -20,6 +20,7 @@
             style="@style/ExoMediaButton.Rewind"/>
 
         <ImageButton android:id="@+id/btn_play"
+            android:contentDescription="@string/play_pause"
             style="@style/ExoMediaButton"/>
 
         <ImageButton android:id="@+id/btn_ffwd"
