@@ -105,27 +105,6 @@ public class AllEpisodes extends BaseActivity {
 
     }
 
-/*
-    private void setDownloadBroadcastReceiver() {
-        BroadcastReceiver receiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String action = intent.getAction();
-                if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
-                    long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
-                    DownloadManager.Query query = new DownloadManager.Query();
-                    query.setFilterById(enqueue);
-                    Cursor c = dm.query(query);
-                    if (c.moveToFirst()) {
-                        int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI);
-                        Log.d(TAG, "COLUMMMMMMMNNNNNNNNN "+columnIndex);
-
-                    }
-                }
-            }
-        };
-    }*/
-
     @Override
     protected void onMediaControllerConnected() {
         super.onMediaControllerConnected();
