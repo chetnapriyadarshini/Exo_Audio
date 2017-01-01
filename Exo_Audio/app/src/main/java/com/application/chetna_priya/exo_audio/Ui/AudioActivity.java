@@ -49,7 +49,7 @@ public class AudioActivity extends AppCompatActivity{
             metadataCompat = getIntent().getParcelableExtra(MainActivity.EXTRA_CURRENT_MEDIA_DESCRIPTION);
         /*
         Handling crash on pressing playback controls fragment and directly putting the playback controls fragment
-        metadata in parcel. We try to wrap the metadata in the bundle and send it across
+        metadata in parcel. We try to extract the metadata title and image uri and send it across
          */
         else if(getIntent().hasExtra(PlaybackControlsFragment.EXTRA_TITLE)
                 && getIntent().hasExtra(PlaybackControlsFragment.EXTRA_IMAGE_URI)) {

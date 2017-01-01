@@ -83,7 +83,8 @@
 
         <activity android:name=".ui.AllEpisodes"
             android:parentActivityName=".ui.AllPodcastsInCategory"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
             <meta-data
             android:name="android.support.PARENT_ACTIVITY"
             android:value=".ui.AllPodcastsInCategory" />
