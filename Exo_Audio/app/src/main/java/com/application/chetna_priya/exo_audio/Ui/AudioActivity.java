@@ -32,6 +32,9 @@ public class AudioActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_audio);
         customPlaybackControlView = (CustomPlaybackControlView) findViewById(R.id.exo_player_control);
+
+        Uri imageUri = null;
+        String title = null;
         /*
         Handles case when this activity is started from AllEpisodes Actovoty on selection of an episode
         In this case have access to the mediaId
@@ -44,8 +47,15 @@ public class AudioActivity extends AppCompatActivity{
         */
         else if(getIntent().hasExtra(MainActivity.EXTRA_CURRENT_MEDIA_DESCRIPTION))
             metadataCompat = getIntent().getParcelableExtra(MainActivity.EXTRA_CURRENT_MEDIA_DESCRIPTION);
-        Uri imageUri = null;
-        String title = null;
+        /*
+        Handling crash on pressing playback controls fragment and directly putting the playback controls fragment
+        metadata in parcel. We try to wrap the metadata in the bundle and send it across
+         */
+        else if(getIntent().hasExtra(PlaybackControlsFragment.EXTRA_TITLE)
+                && getIntent().hasExtra(PlaybackControlsFragment.EXTRA_IMAGE_URI)) {
+            title = getIntent().getStringExtra(PlaybackControlsFragment.EXTRA_TITLE);
+            imageUri = Uri.parse(getIntent().getStringExtra(PlaybackControlsFragment.EXTRA_IMAGE_URI));
+        }
 
         if(mediaItem != null){
             imageUri = Uri.parse(mediaItem.getDescription().getExtras().getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI));

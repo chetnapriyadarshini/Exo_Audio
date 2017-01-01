@@ -54,6 +54,9 @@ public class PlaybackControlsFragment extends Fragment {
         // Required empty public constructor
     }
 
+    static final String EXTRA_TITLE = "extra_title";
+    static final String EXTRA_IMAGE_URI = "extra_image_uri";
+
 
     // Receive callbacks from the MediaController. Here we update our state such as which queue
     // is being shown, the current title and description and the PlaybackState.
@@ -93,7 +96,11 @@ public class PlaybackControlsFragment extends Fragment {
                         .getSupportMediaController();
                 MediaMetadataCompat metadata = controller.getMetadata();
                 if (metadata != null) {
-                    intent.putExtra(MainActivity.EXTRA_CURRENT_MEDIA_DESCRIPTION, metadata);
+                    String imageUri = metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI);
+                    String title = metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE);
+                    intent.putExtra(EXTRA_TITLE,title);
+                    intent.putExtra(EXTRA_IMAGE_URI, imageUri);
+                  //  intent.putExtra(MainActivity.EXTRA_CURRENT_MEDIA_DESCRIPTION, metadata);
                 }
                 startActivity(intent);
             }
