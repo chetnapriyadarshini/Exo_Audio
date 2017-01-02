@@ -53,23 +53,23 @@ public class CurrentAudioIntentService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
 
-        if(intent.getAction() == null) {
-            if(metadataCompat == null)
+        if (intent.getAction() == null) {
+            if (metadataCompat == null)
                 updateWidgetToDefaultValues();
             else
                 updateWidget(null);
             return;
         }
 
-        switch (intent.getAction()){
+        switch (intent.getAction()) {
 
             case MediaNotificationManager.ACTION_DEFAULT_BACK:
                 updateWidgetToDefaultValues();
                 break;
 
             case MediaNotificationManager.ACTION_PLAYBACK_STATE_CHANGED:
-             //   mPlaybackState = intent.getParcelableExtra(MediaNotificationManager.PLAYBACK_STATE_KEY);
-              //  mMetadata = intent.getParcelableExtra(MediaNotificationManager.METADATA_KEY);
+                //   mPlaybackState = intent.getParcelableExtra(MediaNotificationManager.PLAYBACK_STATE_KEY);
+                //  mMetadata = intent.getParcelableExtra(MediaNotificationManager.METADATA_KEY);
                 updateWidget(intent);
                 break;
 
@@ -86,8 +86,8 @@ public class CurrentAudioIntentService extends IntentService {
 
 
         for (int appWidgetId : appWidgetIds) {
-          //  MediaDescriptionCompat description = mMetadata.getDescription();
-            if(intent != null)
+            //  MediaDescriptionCompat description = mMetadata.getDescription();
+            if (intent != null)
                 metadataCompat = intent.getParcelableExtra(MediaNotificationManager.METADATA_KEY);
             Bitmap art = null;
             String fetchArtUrl = null;
@@ -104,7 +104,7 @@ public class CurrentAudioIntentService extends IntentService {
                             R.drawable.ic_launcher);
                 }
             }
-            int layoutId = getLayoutId(appWidgetManager,appWidgetId);
+            int layoutId = getLayoutId(appWidgetManager, appWidgetId);
             RemoteViews views = new RemoteViews(getPackageName(), layoutId);
 
             if (fetchArtUrl != null) {
@@ -112,25 +112,25 @@ public class CurrentAudioIntentService extends IntentService {
             }
             int maxLength = getResources().getInteger(R.integer.max_podcast_title_length);
             String text = metadataCompat.getString(MediaMetadataCompat.METADATA_KEY_ALBUM);
-            if(text == null)
+            if (text == null)
                 text = getString(R.string.no_media_played);
 
-            if(text.length() > maxLength)
+            if (text.length() > maxLength)
                 text = text.substring(0, maxLength).concat("...");
 
             views.setImageViewBitmap(R.id.widget_icon, art);
             views.setTextViewText(R.id.widget_description, text);
-            if(intent != null)
+            if (intent != null)
                 state = intent.getIntExtra(MediaNotificationManager.PLAYBACK_STATE_KEY, PlaybackStateCompat.STATE_NONE);
-            if(state == PlaybackStateCompat.STATE_PLAYING ||
+            if (state == PlaybackStateCompat.STATE_PLAYING ||
                     state == PlaybackStateCompat.STATE_BUFFERING) {
                 views.setImageViewResource(R.id.widget_play_pause, R.drawable.exo_controls_pause);
                 views.setOnClickPendingIntent(R.id.widget_play_pause,
                         MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_PAUSE));
-            }else {
+            } else {
                 views.setImageViewResource(R.id.widget_play_pause, R.drawable.exo_controls_play);
                 views.setOnClickPendingIntent(R.id.widget_play_pause,
-                        MediaButtonReceiver.buildMediaButtonPendingIntent(this,PlaybackStateCompat.ACTION_PLAY));
+                        MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_PLAY));
             }
 
             views.setOnClickPendingIntent(R.id.widget, createContentIntent(metadataCompat.getDescription()));
@@ -213,8 +213,6 @@ public class CurrentAudioIntentService extends IntentService {
     }
 
 
-
-
     private int getWidgetWidth(AppWidgetManager appWidgetManager, int appWidgetId) {
         // Prior to Jelly Bean, widgets were always their default size
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
@@ -235,7 +233,7 @@ public class CurrentAudioIntentService extends IntentService {
             return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, minWidthDp,
                     displayMetrics);
         }
-        return  getResources().getDimensionPixelSize(R.dimen.widget_current_default_width);
+        return getResources().getDimensionPixelSize(R.dimen.widget_current_default_width);
     }
 
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)

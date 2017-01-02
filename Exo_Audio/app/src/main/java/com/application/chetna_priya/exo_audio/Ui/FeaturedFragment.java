@@ -59,7 +59,7 @@ public class FeaturedFragment extends Fragment {
         This is the view consisting of many recycler view diff category podcast and a cardview of add
         new categories all enclosed in a scroll view
          */
-        if(savedInstanceState != null && savedInstanceState.getParcelable(FRAGMENT_MEDIA_ID) != null) {
+        if (savedInstanceState != null && savedInstanceState.getParcelable(FRAGMENT_MEDIA_ID) != null) {
             mMediaId = savedInstanceState.getParcelable(FRAGMENT_MEDIA_ID);
             setMediaId(mMediaId);
         }
@@ -77,7 +77,7 @@ public class FeaturedFragment extends Fragment {
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.album_category_recycler_view);
         recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mRecyViewAdapter  = new FeatureRecyViewAdapter(getActivity(), getMediaId(), mMediaFragmentListener);
+        mRecyViewAdapter = new FeatureRecyViewAdapter(getActivity(), getMediaId(), mMediaFragmentListener);
         recyclerView.setAdapter(mRecyViewAdapter);
         return rootView;
     }
@@ -88,7 +88,6 @@ public class FeaturedFragment extends Fragment {
         outState.putParcelable(FRAGMENT_MEDIA_ID, mMediaId);
         super.onSaveInstanceState(outState);
     }
-
 
 
     @Override
@@ -134,7 +133,7 @@ public class FeaturedFragment extends Fragment {
         setArguments(args);
     }
 
-    public void onConnected(){
+    public void onConnected() {
         mMediaId = getMediaId();
         updateTitle();
         mRecyViewAdapter.onConnected();

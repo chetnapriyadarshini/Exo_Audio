@@ -15,10 +15,10 @@ public class SmallPlaybackControlView extends FrameLayout {
 
     private static final String TAG = SmallPlaybackControlView.class.getSimpleName();
     //private final MediaBrowserCompat mMediaBrowser;
-  //  @BindView(R.id.play_pause) ImageButton playButton;
+    //  @BindView(R.id.play_pause) ImageButton playButton;
     public static final String CUSTOM_ACTION_SPEED_CHANGE = "custom_action_speed_changed";
     public static final String SPEED = "speed";
- //   private Context mContext;
+    //   private Context mContext;
 
     public SmallPlaybackControlView(Context context) {
         this(context, null);
@@ -30,7 +30,7 @@ public class SmallPlaybackControlView extends FrameLayout {
 
     public SmallPlaybackControlView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-     //   this.mContext = context;
+        //   this.mContext = context;
         //ComponentListener componentListener = new SmallPlaybackControlView.ComponentListener();
 
         LayoutInflater.from(context).inflate(R.layout.layout_current_audio, this);

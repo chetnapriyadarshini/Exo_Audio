@@ -15,8 +15,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.application.chetna_priya.exo_audio.R;
 import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,9 +38,9 @@ public class AllPodcastsInCategory extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_all_albums);
-        if(getIntent().hasExtra(BaseActivity.EXTRA_MEDIA_ITEM)){
+        if (getIntent().hasExtra(BaseActivity.EXTRA_MEDIA_ITEM)) {
             mMediaItem = getIntent().getParcelableExtra(BaseActivity.EXTRA_MEDIA_ITEM);
-        }else
+        } else
             finish();
 
 
@@ -108,7 +110,7 @@ public class AllPodcastsInCategory extends BaseActivity {
 
             String text = mPodcastMediaItemList.get(position).getDescription().getTitle().toString();
             int maxLength = getResources().getInteger(R.integer.max_podcast_title_length);
-            if(text.length() > maxLength)
+            if (text.length() > maxLength)
                 text = text.substring(0, maxLength).concat("...");
             holder.albumTitle.setText(text);
 

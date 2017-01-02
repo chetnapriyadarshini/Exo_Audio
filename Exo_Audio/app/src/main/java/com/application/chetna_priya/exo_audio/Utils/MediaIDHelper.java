@@ -20,26 +20,27 @@ public class MediaIDHelper {
     private static final char LEAF_SEPARATOR = '|';
 
     static final String TAG = MediaIDHelper.class.getSimpleName();
+
     /**
      * Create a String value that represents a playable or a browsable media.
-     *
+     * <p>
      * Encode the media browseable categories, if any, and the unique podcast ID, if any,
      * into a single String mediaID.
-     *
+     * <p>
      * MediaIDs are of the form <categoryType>/<categoryValue>-podcastTitle|<podcastEpisodeUniqueId>, to make it easy
      * to find the category (like genre) that a podcast was selected from, so we
      * can correctly build the playing queue. This is specially useful when
      * one podcast can appear in more than one list, like "by genre -> genre_1"
      * and "by artist -> artist_1".
-
-     * @param podcastId Unique podcast ID for playable items, or null for browseable items.
+     *
+     * @param podcastId  Unique podcast ID for playable items, or null for browseable items.
      * @param categories hierarchy of categories representing this item's browsing parents
      * @return a hierarchy-aware media ID
      */
     public static String createMediaID(String podcastId, String... categories) {
         StringBuilder sb = new StringBuilder();
         if (categories != null) {
-            for (int i=0; i < categories.length; i++) {
+            for (int i = 0; i < categories.length; i++) {
                 if (!isValidCategory(categories[i])) {
                     throw new IllegalArgumentException("Invalid category: " + categories[0]);
                 }
@@ -51,7 +52,7 @@ public class MediaIDHelper {
         }
         if (podcastId != null) {
             sb.append(LEAF_SEPARATOR).append(podcastId);
-        }else {
+        } else {
             sb.append(CATEGORY_SEPARATOR);
         }
 
@@ -79,7 +80,7 @@ public class MediaIDHelper {
     public static String extractPodcastIDFromMediaID(@NonNull String mediaID) {
         int pos = mediaID.indexOf(LEAF_SEPARATOR);
         if (pos >= 0) {
-            return mediaID.substring(pos+1);
+            return mediaID.substring(pos + 1);
         }
         return null;
     }
@@ -93,9 +94,11 @@ public class MediaIDHelper {
      *
      * @param mediaID that contains a category and categoryValue.
      */
-    public static @NonNull String[] getHierarchy(@NonNull String mediaID) {
+    public static
+    @NonNull
+    String[] getHierarchy(@NonNull String mediaID) {
         //__ROOT__BY_GENRE__/COMEDY/_BY_CHANNEL__/COMEDY BANG BANG|EP 1
-     //   Log.d(TAG, "MEDIA    IDDDDDDD _____ "+mediaID);
+        //   Log.d(TAG, "MEDIA    IDDDDDDD _____ "+mediaID);
         int pos = mediaID.indexOf(LEAF_SEPARATOR);
         if (pos >= 0) {
             mediaID = mediaID.substring(0, (pos));
@@ -124,7 +127,7 @@ public class MediaIDHelper {
         if (hierarchy.length <= 1) {
             return MEDIA_ID_ROOT;
         }
-        String[] parentHierarchy = Arrays.copyOf(hierarchy, hierarchy.length-1);
+        String[] parentHierarchy = Arrays.copyOf(hierarchy, hierarchy.length - 1);
         Log.d(TAG, Arrays.asList(parentHierarchy).toString());
         return createMediaID(null, parentHierarchy);
     }

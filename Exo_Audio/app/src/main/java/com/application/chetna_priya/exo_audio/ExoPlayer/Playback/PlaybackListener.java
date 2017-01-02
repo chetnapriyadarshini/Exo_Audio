@@ -1,17 +1,25 @@
 package com.application.chetna_priya.exo_audio.exoplayer.playback;
 
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
+import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
+import com.application.chetna_priya.exo_audio.entity.MetadataEntity;
+import com.application.chetna_priya.exo_audio.model.MutableMediaMetadata;
 import com.application.chetna_priya.exo_audio.model.PodcastProvider;
 import com.application.chetna_priya.exo_audio.R;
+import com.application.chetna_priya.exo_audio.ui.DownloadFragment;
 import com.application.chetna_priya.exo_audio.ui.playbackcontrolview.SmallPlaybackControlView;
+import com.application.chetna_priya.exo_audio.utils.DBHelper;
 import com.application.chetna_priya.exo_audio.utils.MediaIDHelper;
+import com.application.chetna_priya.exo_audio.utils.MetadataHelper;
 
 
 /**
@@ -36,7 +44,7 @@ public class PlaybackListener implements Playback.Callback {
                             Resources resources,
                             PodcastProvider podcastProvider,
                             QueueManager queueManager,
-                            Playback playback){
+                            Playback playback) {
         mPodcastProvider = podcastProvider;
         mServiceCallback = playbackServiceCallback;
         mResources = resources;
@@ -86,7 +94,7 @@ public class PlaybackListener implements Playback.Callback {
      *                  MediaController clients.
      */
     public void handleStopRequest(String withError) {
-        Log.d(TAG, "handleStopRequest: mState=" + mPlayback.getState() + " error="+ withError);
+        Log.d(TAG, "handleStopRequest: mState=" + mPlayback.getState() + " error=" + withError);
         mPlayback.stop(true);
         mServiceCallback.onPlaybackStop();
         updatePlaybackState(withError);
@@ -128,11 +136,11 @@ public class PlaybackListener implements Playback.Callback {
         if (currentMusic != null) {
             stateBuilder.setActiveQueueItemId(currentMusic.getQueueId());
         }
-         mServiceCallback.onPlaybackStateUpdated(stateBuilder.build());
+        mServiceCallback.onPlaybackStateUpdated(stateBuilder.build());
 
         if (state == PlaybackStateCompat.STATE_PLAYING || state == PlaybackStateCompat.STATE_BUFFERING ||
                 state == PlaybackStateCompat.STATE_PAUSED) {
-           // Log.d(TAG, "DISPLAY NOTIFICATIONNNNNNNNNNNNNNNNNNNNNNNN");
+            // Log.d(TAG, "DISPLAY NOTIFICATIONNNNNNNNNNNNNNNNNNNNNNNN");
             mServiceCallback.onNotificationRequired();
         }
     }
@@ -200,6 +208,7 @@ public class PlaybackListener implements Playback.Callback {
             handleStopRequest(null);
         }
     }
+
     /**
      * Switch to a different Playback instance, maintaining all playback state, if possible.
      *
@@ -239,13 +248,13 @@ public class PlaybackListener implements Playback.Callback {
             case PlaybackStateCompat.STATE_NONE:
                 break;
             default:
-                Log.d(TAG, "Default called. Old state is "+ oldState);
+                Log.d(TAG, "Default called. Old state is " + oldState);
         }
     }
 
     @Override
     public void onPlaybackStatusChanged(int state) {
-      //  Log.d(TAG, "ON PLAYBACK STATUS CHANGEDDDDDDDDDDDDDDDDDDDDDD");
+        //  Log.d(TAG, "ON PLAYBACK STATUS CHANGEDDDDDDDDDDDDDDDDDDDDDD");
         updatePlaybackState(null);
     }
 
@@ -256,7 +265,7 @@ public class PlaybackListener implements Playback.Callback {
 
     @Override
     public void setCurrentMediaId(String mediaId) {
-        Log.d(TAG, "setCurrentMediaId"+ mediaId);
+        Log.d(TAG, "setCurrentMediaId" + mediaId);
         mQueueManager.setQueueFromPodcast(mediaId);
     }
 
@@ -285,14 +294,25 @@ public class PlaybackListener implements Playback.Callback {
 
         @Override
         public void onSeekTo(long position) {
-           // LogHelper.d(TAG, "onSeekTo:", position);
-           mPlayback.seekTo((int) position);
+            // LogHelper.d(TAG, "onSeekTo:", position);
+            mPlayback.seekTo((int) position);
         }
 
         @Override
         public void onPlayFromMediaId(String mediaId, Bundle extras) {
-            Log.d(TAG, "playFromMediaId mediaId:"+ mediaId+ "  extras="+ extras);
+            Log.d(TAG, "playFromMediaId mediaId:" + mediaId + "  extras=" + extras);
             mQueueManager.setQueueFromPodcast(mediaId);
+            handlePlayRequest();
+        }
+
+        @Override
+        public void onPlayFromUri(Uri uri, Bundle extras) {
+            super.onPlayFromUri(uri, extras);
+            Bitmap bitmap = extras.getParcelable(DownloadFragment.EXTRA_IMAGE);
+            MetadataEntity metadataEntity = (MetadataEntity) extras.getSerializable(DownloadFragment.EXTRA_METADATA_OBJ);
+            MediaMetadataCompat mediaMetadataCompat = MetadataHelper.buildMetadataFromEntity(metadataEntity, bitmap);
+            mPodcastProvider.createNewPodcastListById(mediaMetadataCompat);
+            mQueueManager.setQueueFromPodcast(metadataEntity.getMetadataMediaId(), mediaMetadataCompat);
             handlePlayRequest();
         }
 
@@ -342,13 +362,12 @@ public class PlaybackListener implements Playback.Callback {
 
         @Override
         public void onCustomAction(@NonNull String action, Bundle extras) {
-            if(action.equals(SmallPlaybackControlView.CUSTOM_ACTION_SPEED_CHANGE)){
+            if (action.equals(SmallPlaybackControlView.CUSTOM_ACTION_SPEED_CHANGE)) {
                 mPlayback.changeSpeed((Float) extras.get(SmallPlaybackControlView.SPEED));
             }
         }
 
     }
-
 
 
     public interface PlaybackServiceCallback {

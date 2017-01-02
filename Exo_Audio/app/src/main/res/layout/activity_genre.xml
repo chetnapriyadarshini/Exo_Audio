@@ -5,57 +5,57 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-<android.support.v4.widget.NestedScrollView
-    android:id="@+id/scrollView"
-    android:layout_height="wrap_content"
-    android:layout_width="match_parent">
-
-    <RelativeLayout
-        android:id="@+id/activity_genre"
-        android:layout_width="match_parent"
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/scrollView"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        tools:context="com.application.chetna_priya.exo_audio.ui.GenreActivity">
+        android:layout_width="match_parent">
 
-
-        <TextView
-            android:id="@+id/genre_header"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="@dimen/genre_hello_text_top_margin"
-            style="@style/Base.TextAppearance.AppCompat.Large"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            android:text="@string/hello_know_more"
-            android:contentDescription="@string/hello_know_more"/>
-
-        <TextView
-            android:id="@+id/genre_sub_header"
-            android:layout_gravity="center_horizontal"
-            android:layout_below="@id/genre_header"
-            android:gravity="center_horizontal"
-            android:layout_centerHorizontal="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/genre_hello_text_top_margin"
-            style="@style/Base.TextAppearance.AppCompat.Medium"
-            android:text="@string/tell_interest"
-            android:contentDescription="@string/tell_interest"/>
-
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/my_recycler_view"
-            android:layout_below="@id/genre_sub_header"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="@dimen/genre_hello_text_top_margin"
-            android:paddingBottom="@dimen/genre_recycler_view_bottom_pad"
+        <RelativeLayout
+            android:id="@+id/activity_genre"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            tools:context="com.application.chetna_priya.exo_audio.ui.GenreActivity">
 
-    </RelativeLayout>
 
-</android.support.v4.widget.NestedScrollView>
+            <TextView
+                android:id="@+id/genre_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/genre_hello_text_top_margin"
+                style="@style/Base.TextAppearance.AppCompat.Large"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:text="@string/hello_know_more"
+                android:contentDescription="@string/hello_know_more" />
+
+            <TextView
+                android:id="@+id/genre_sub_header"
+                android:layout_gravity="center_horizontal"
+                android:layout_below="@id/genre_header"
+                android:gravity="center_horizontal"
+                android:layout_centerHorizontal="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/genre_hello_text_top_margin"
+                style="@style/Base.TextAppearance.AppCompat.Medium"
+                android:text="@string/tell_interest"
+                android:contentDescription="@string/tell_interest" />
+
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/my_recycler_view"
+                android:layout_below="@id/genre_sub_header"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/genre_hello_text_top_margin"
+                android:paddingBottom="@dimen/genre_recycler_view_bottom_pad"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
+
+    </android.support.v4.widget.NestedScrollView>
 
     <Button
         android:id="@+id/btn_genre"
@@ -67,24 +67,23 @@
         android:contentDescription="@string/label_next"
         android:textAllCaps="false"
         style="@style/Base.TextAppearance.AppCompat.Large"
-        android:layout_alignParentBottom="true"
-        />
+        android:layout_alignParentBottom="true" />
 
-<!--
-    <android.support.v7.widget.CardView
-        android:id="@+id/controls_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        app:cardElevation="8dp">
-
-        <fragment android:name="com.application.chetna_priya.exo_audio.Ui.PlaybackControlsFragment"
-            android:id="@+id/fragment_playback_controls"
+    <!--
+        <android.support.v7.widget.CardView
+            android:id="@+id/controls_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            tools:layout="@layout/fragment_playback_controls" />
+            app:cardElevation="8dp">
 
-    </android.support.v7.widget.CardView>-->
+            <fragment android:name="com.application.chetna_priya.exo_audio.Ui.PlaybackControlsFragment"
+                android:id="@+id/fragment_playback_controls"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                tools:layout="@layout/fragment_playback_controls" />
+
+        </android.support.v7.widget.CardView>-->
 </RelativeLayout>
 

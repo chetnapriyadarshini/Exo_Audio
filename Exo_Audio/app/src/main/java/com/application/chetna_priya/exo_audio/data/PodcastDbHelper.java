@@ -3,6 +3,7 @@ package com.application.chetna_priya.exo_audio.data;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
 import com.application.chetna_priya.exo_audio.data.PodcastContract.PodcastEntry;
 import com.application.chetna_priya.exo_audio.data.PodcastContract.EpisodeEntry;
 
@@ -60,8 +61,8 @@ public class PodcastDbHelper extends SQLiteOpenHelper {
                 " UNIQUE (" + EpisodeEntry.COLUMN_PODCAST_EPISODE_RELEASE_DATE + ", " +
                 EpisodeEntry.COLUMN_PODCAST_ALBUM_KEY + ") ON CONFLICT REPLACE);";
 
-                 sqLiteDatabase.execSQL(SQL_CREATE_PODCAST_ALBUM_TABLE);
-                 sqLiteDatabase.execSQL(SQL_CREATE_ALBUM_EPISODE_TABLE);
+        sqLiteDatabase.execSQL(SQL_CREATE_PODCAST_ALBUM_TABLE);
+        sqLiteDatabase.execSQL(SQL_CREATE_ALBUM_EPISODE_TABLE);
     }
 
     @Override

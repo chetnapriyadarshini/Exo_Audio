@@ -10,7 +10,7 @@ import java.util.Comparator;
 
 public class SortingHelper {
 
-    public void sortArrayList(ArrayList<MediaBrowserCompat.MediaItem> mediaItemArrayList){
+    public void sortArrayList(ArrayList<MediaBrowserCompat.MediaItem> mediaItemArrayList) {
         Collections.sort(mediaItemArrayList, new Comparator<MediaBrowserCompat.MediaItem>() {
             @Override
             public int compare(MediaBrowserCompat.MediaItem mediaItem1, MediaBrowserCompat.MediaItem mediaItem2) {
@@ -22,14 +22,14 @@ public class SortingHelper {
                 int relyear1 = Integer.parseInt(dateArr1[2]);
                 int relyear2 = Integer.parseInt(dateArr2[2]);
                 //if the year is same check for the month
-                if(relyear1 == relyear2){
+                if (relyear1 == relyear2) {
                     int compare = new MonthComparator().compare(dateArr1[1], dateArr2[1]);
                     //If months are equal we check for day
-                    if(compare == 0){
+                    if (compare == 0) {
                         return new DateComaprator().compare(dateArr1[0], dateArr2[0]);
-                    }else
-                        return  compare;
-                }else
+                    } else
+                        return compare;
+                } else
                     return relyear1 < relyear2 ? 1 : -1;
             }
         });
@@ -39,6 +39,7 @@ public class SortingHelper {
     private String[] monthList = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
             "Aug", "Sept", "Oct", "Nov", "Dec"};
     private ArrayList<String> monthArrayList = new ArrayList<>(Arrays.asList(monthList));
+
     private class MonthComparator implements Comparator<String> {
 
         @Override

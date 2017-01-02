@@ -17,6 +17,8 @@ public interface MediaProviderSource {
     String CUSTOM_METADATA_EPISODE_TRACK_SUMMARY = "__SUMMARY__";
     String CUSTOM_METADATA_PODCAST_SUMMARY = "__PODSUMMARY__";
     String CUSTOM_METADATA_PODCASTID = "__PODID__";
+
     Iterator<MediaMetadataCompat> iterator(Context context);
+
     Iterator<Podcast> albumsIterator();
 }

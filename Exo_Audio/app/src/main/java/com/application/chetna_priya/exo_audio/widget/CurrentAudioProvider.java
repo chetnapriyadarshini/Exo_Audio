@@ -11,8 +11,7 @@ import android.util.Log;
 
 import com.application.chetna_priya.exo_audio.exoplayer.playerservice.MediaNotificationManager;
 
-public class CurrentAudioProvider extends AppWidgetProvider
-{
+public class CurrentAudioProvider extends AppWidgetProvider {
 
     private static final String TAG = CurrentAudioProvider.class.getSimpleName();
 
@@ -31,7 +30,7 @@ public class CurrentAudioProvider extends AppWidgetProvider
     public void onReceive(@NonNull Context context, @NonNull Intent intent) {
         super.onReceive(context, intent);
         Intent serviceIntent = new Intent(context, CurrentAudioIntentService.class);
-        switch (intent.getAction()){
+        switch (intent.getAction()) {
             case MediaNotificationManager.ACTION_DEFAULT_BACK:
                 serviceIntent.setAction(intent.getAction());
                 context.startService(serviceIntent);
@@ -40,12 +39,12 @@ public class CurrentAudioProvider extends AppWidgetProvider
             case MediaNotificationManager.ACTION_PLAYBACK_STATE_CHANGED:
                 serviceIntent.setAction(intent.getAction());
                 String stateKey = MediaNotificationManager.PLAYBACK_STATE_KEY;
-              //  String metadataKeyAlbum = MediaMetadataCompat.METADATA_KEY_ALBUM;
-               // String metadataKeyUri = MediaMetadataCompat.METADATA_KEY_ART_URI;
+                //  String metadataKeyAlbum = MediaMetadataCompat.METADATA_KEY_ALBUM;
+                // String metadataKeyUri = MediaMetadataCompat.METADATA_KEY_ART_URI;
                 String metadata_key = MediaNotificationManager.METADATA_KEY;
                 serviceIntent.putExtra(stateKey, intent.getIntExtra(stateKey, PlaybackStateCompat.STATE_NONE));
                 serviceIntent.putExtra(metadata_key, intent.getParcelableExtra(metadata_key));
-            //    serviceIntent.putExtra(metadataKeyUri, intent.getStringExtra(metadataKeyUri));
+                //    serviceIntent.putExtra(metadataKeyUri, intent.getStringExtra(metadataKeyUri));
                 context.startService(serviceIntent);
                 break;
 

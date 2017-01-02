@@ -27,7 +27,7 @@ public class PodcastContentProvider extends ContentProvider {
 
     private static final SQLiteQueryBuilder sEpisodebyPodcastAlbumQueryBuilder;
 
-    static{
+    static {
         sEpisodebyPodcastAlbumQueryBuilder = new SQLiteQueryBuilder();
 
         //This is an inner join which looks like
@@ -42,7 +42,7 @@ public class PodcastContentProvider extends ContentProvider {
     }
 
     private static final String sPodcastEpisodeByTrackIdselection =
-            PodcastContract.PodcastEntry.TABLE_NAME+
+            PodcastContract.PodcastEntry.TABLE_NAME +
                     "." + PodcastContract.PodcastEntry.COLUMN_PODCAST_TRACK_ID + " = ? ";
 
     private static final String sPodcastAlbumKeyAndReleaseDateSelection =
@@ -73,7 +73,7 @@ public class PodcastContentProvider extends ContentProvider {
             Uri uri, String[] projection, String sortOrder) {
         String albumId = PodcastContract.EpisodeEntry.getPodcastIdFromUri(uri);
         String date = PodcastContract.EpisodeEntry.getDateFromUri(uri);
-       // String title = PodcastContract.EpisodeEntry.getTitleFromUri(uri);
+        // String title = PodcastContract.EpisodeEntry.getTitleFromUri(uri);
 
         return sEpisodebyPodcastAlbumQueryBuilder.query(mOpenHelper.getReadableDatabase(),
                 projection,
@@ -117,7 +117,7 @@ public class PodcastContentProvider extends ContentProvider {
             }
 
             case PODCAST_EPISODE_WITH_ALBUM_KEY_AND_DATE: {
-                retCursor = getEpisodeByAlbumIDAndDate(uri, projection,sortOrder);
+                retCursor = getEpisodeByAlbumIDAndDate(uri, projection, sortOrder);
                 break;
             }
             // "podacst"
@@ -170,9 +170,9 @@ public class PodcastContentProvider extends ContentProvider {
         Uri returnUri;
         switch (match) {
             case PODCAST_ALBUM: {
-             //   normalizeDate(values);
+                //   normalizeDate(values);
                 long _id = db.insert(PodcastContract.PodcastEntry.TABLE_NAME, null, values);
-                if ( _id > 0 )
+                if (_id > 0)
                     returnUri = PodcastContract.PodcastEntry.buildPodcastUri(_id);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
@@ -180,7 +180,7 @@ public class PodcastContentProvider extends ContentProvider {
             }
             case PODCAST_EPISODE: {
                 long _id = db.insert(PodcastContract.EpisodeEntry.TABLE_NAME, null, values);
-                if ( _id > 0 )
+                if (_id > 0)
                     returnUri = PodcastContract.EpisodeEntry.buildPodcastEpisodeUri(_id);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
@@ -199,7 +199,7 @@ public class PodcastContentProvider extends ContentProvider {
         final int match = sUriMatcher.match(uri);
         int rowsDeleted;
         // this makes delete all rows return the number of rows deleted
-        if ( null == selection ) selection = "1";
+        if (null == selection) selection = "1";
         switch (match) {
             case PODCAST_EPISODE:
                 rowsDeleted = db.delete(
@@ -218,6 +218,7 @@ public class PodcastContentProvider extends ContentProvider {
         }
         return rowsDeleted;
     }
+
     @Override
     public int update(
             Uri uri, ContentValues values, String selection, String[] selectionArgs) {

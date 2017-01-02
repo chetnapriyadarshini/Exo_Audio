@@ -12,8 +12,7 @@ import java.util.List;
 import static com.application.chetna_priya.exo_audio.utils.MediaIDHelper.MEDIA_ID_PODCASTS_BY_GENRE_AND_CHANNEL_NAME;
 import static com.application.chetna_priya.exo_audio.utils.MediaIDHelper.MEDIA_ID_PODCASTS_BY_SEARCH;
 
-public class QueueHelper
-{
+public class QueueHelper {
 
     private static final String TAG = QueueHelper.class.getSimpleName();
 
@@ -26,13 +25,13 @@ public class QueueHelper
         String[] hierarchy = MediaIDHelper.getHierarchy(mediaId);
 
         if (hierarchy.length != 2) {
-            Log.e(TAG, "Could not build a playing queue for this mediaId: "+ mediaId);
+            Log.e(TAG, "Could not build a playing queue for this mediaId: " + mediaId);
             return null;
         }
 
         String categoryType = hierarchy[0];
         String categoryValue = hierarchy[1];
-        Log.d(TAG, "Creating playing queue for "+ categoryType + categoryValue);
+        Log.d(TAG, "Creating playing queue for " + categoryType + categoryValue);
 
         Iterable<MediaMetadataCompat> tracks = null;
         // This sample only supports genre and by_search category types.
@@ -43,15 +42,32 @@ public class QueueHelper
         }
 
         if (tracks == null) {
-            Log.e(TAG, "Unrecognized category type: "+ categoryType+ " for media "+ mediaId);
+            Log.e(TAG, "Unrecognized category type: " + categoryType + " for media " + mediaId);
             return null;
         }
 
         return convertToQueue(tracks, hierarchy[0], hierarchy[1]);
     }
 
+    public static List<MediaSessionCompat.QueueItem> getQueueForSingleSource(String mediaId, MediaMetadataCompat metadataCompat) {
+        // extract the browsing hierarchy from the media ID:
+        String[] hierarchy = MediaIDHelper.getHierarchy(mediaId);
+
+        if (hierarchy.length != 2) {
+            Log.e(TAG, "Could not build a playing queue for this mediaId: " + mediaId);
+            return null;
+        }
+
+        String categoryType = hierarchy[0];
+        String categoryValue = hierarchy[1];
+        Log.d(TAG, "Creating playing queue for " + categoryType + categoryValue);
+        ArrayList<MediaMetadataCompat> tracks = new ArrayList<>();
+        tracks.add(metadataCompat);
+        return convertToQueue(tracks, hierarchy[0], hierarchy[1]);
+    }
+
     public static int getPodcastIndexOnQueue(Iterable<MediaSessionCompat.QueueItem> queue,
-                                           String mediaId) {
+                                             String mediaId) {
         int index = 0;
         for (MediaSessionCompat.QueueItem item : queue) {
             if (mediaId.equals(item.getDescription().getMediaId())) {
@@ -63,7 +79,7 @@ public class QueueHelper
     }
 
     public static int getPodcastIndexOnQueue(Iterable<MediaSessionCompat.QueueItem> queue,
-                                           long queueId) {
+                                             long queueId) {
         int index = 0;
         for (MediaSessionCompat.QueueItem item : queue) {
             if (queueId == item.getQueueId()) {
@@ -108,13 +124,13 @@ public class QueueHelper
     public static List<MediaSessionCompat.QueueItem> getRandomQueue(PodcastProvider podcastProvider) {
         List<MediaMetadataCompat> result = new ArrayList<>(RANDOM_QUEUE_SIZE);
         Iterable<MediaMetadataCompat> shuffled = podcastProvider.getShuffledPodcast();
-        for (MediaMetadataCompat metadata: shuffled) {
+        for (MediaMetadataCompat metadata : shuffled) {
             if (result.size() == RANDOM_QUEUE_SIZE) {
                 break;
             }
             result.add(metadata);
         }
-        Log.d(TAG, "getRandomQueue: result.size="+ result.size());
+        Log.d(TAG, "getRandomQueue: result.size=" + result.size());
 
         return convertToQueue(result, MEDIA_ID_PODCASTS_BY_SEARCH, "random");
     }

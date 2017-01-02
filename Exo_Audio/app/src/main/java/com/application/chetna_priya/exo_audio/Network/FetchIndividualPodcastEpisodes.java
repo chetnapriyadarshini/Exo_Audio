@@ -15,7 +15,7 @@ public class FetchIndividualPodcastEpisodes {
 
     final String TAG = FetchIndividualPodcastEpisodes.class.getSimpleName();
 
-    public ArrayList<Episode> load(Podcast podcast){
+    public ArrayList<Episode> load(Podcast podcast) {
 
         //for(int i=0; i<podList.size();i++)
         {
@@ -23,7 +23,7 @@ public class FetchIndividualPodcastEpisodes {
                 OkHttpClient client = new OkHttpClient();
                 Request request = new Request.Builder().url(new URL(podcast.getTrackUri())).build();
                 Response response = client.newCall(request).execute();
-               // Log.d(TAG, "Returninggggggg somethinggggggggggg");
+                // Log.d(TAG, "Returninggggggg somethinggggggggggg");
                 return new FeedParser().parseEpisodes(response.body().byteStream(), podcast);
 
             } catch (IOException e) {
@@ -31,7 +31,7 @@ public class FetchIndividualPodcastEpisodes {
                 e.printStackTrace();
             }
         }
-      //  Log.d(TAG, "Returning nulllllllllllll");
+        //  Log.d(TAG, "Returning nulllllllllllll");
         return null;
     }
 

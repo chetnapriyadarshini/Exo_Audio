@@ -8,9 +8,9 @@ public class Podcast implements Serializable {
 
     final String TAG = Podcast.class.getSimpleName();
 
-   // private String id;
+    // private String id;
     private String album_title;
- //   private String album_cover_link;
+    //   private String album_cover_link;
     private long trackNumber;
     private String trackUri;
     private String artist;
@@ -20,10 +20,10 @@ public class Podcast implements Serializable {
     private String podcast_summary;
 
     public Podcast(long trackNumber, @NonNull String album_title, /*@NonNull String album_cover_link,*/ @NonNull String track_uri,
-                   @NonNull String artist, @NonNull String genre, long totalTrackCount, @NonNull String artwork_uri){
+                   @NonNull String artist, @NonNull String genre, long totalTrackCount, @NonNull String artwork_uri) {
         this.trackNumber = trackNumber;
         this.album_title = album_title;
-       // this.album_cover_link = album_cover_link;
+        // this.album_cover_link = album_cover_link;
         this.trackUri = track_uri;
         this.artist = artist;
         this.artwork_uri = artwork_uri;
@@ -72,14 +72,14 @@ public class Podcast implements Serializable {
 
     @Override
     public String toString() {
-        return "PODCAST : \n"+" TITLE: "+ album_title;
+        return "PODCAST : \n" + " TITLE: " + album_title;
     }
 
     public void setSummary(String summary) {
         this.podcast_summary = summary;
     }
 
-    public String getSummary(){
+    public String getSummary() {
         return podcast_summary;
     }
 }

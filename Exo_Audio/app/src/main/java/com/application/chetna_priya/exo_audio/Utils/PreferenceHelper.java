@@ -28,7 +28,7 @@ public class PreferenceHelper {
     public static ArrayList<String> getSavedGenres(Context context) {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
         HashSet<String> set = (HashSet<String>) sharedPref.getStringSet(SAVED_GENRES, null);
-        if(set == null) {
+        if (set == null) {
             return null;
         }
 

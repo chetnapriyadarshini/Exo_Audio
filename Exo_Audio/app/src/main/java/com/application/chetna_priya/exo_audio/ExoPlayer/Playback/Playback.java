@@ -6,9 +6,9 @@ import android.support.v4.media.session.MediaSessionCompat;
  * Created by chetna_priya on 11/1/2016.
  */
 
-public interface Playback  {
+public interface Playback {
 
-    void play(MediaSessionCompat.QueueItem item );
+    void play(MediaSessionCompat.QueueItem item);
 
     /**
      * Pause the current playing item
@@ -33,6 +33,7 @@ public interface Playback  {
 
     /**
      * Stop the playback. All resources can be de-allocated by implementations here.
+     *
      * @param notifyListeners if true and a callback has been set by setCallback,
      *                        callback.onPlaybackStatusChanged will be called after changing
      *                        the state.
@@ -68,7 +69,6 @@ public interface Playback  {
     void setCurrentMediaId(String mediaId);
 
     /**
-     *
      * @return the current media Id being processed in any state or null.
      */
     String getCurrentMediaId();
@@ -78,6 +78,7 @@ public interface Playback  {
          * On current music completed.
          */
         void onCompletion();
+
         /**
          * on Playback status changed
          * Implementations can use this callback to update

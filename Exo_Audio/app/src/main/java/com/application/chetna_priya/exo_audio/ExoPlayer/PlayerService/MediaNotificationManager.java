@@ -42,7 +42,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
     public static final String ACTION_PREV = "com.application.chetna_priya.exo_audio.prev";
     public static final String ACTION_NEXT = "com.application.chetna_priya.exo_audio.next";
     public static final String ACTION_DEFAULT_BACK = "com.application.chetna_priya.exo_audio.default_back";
-    public static final String ACTION_PLAYBACK_STATE_CHANGED  = "com.application.chetna_priya.exo_audio.playback_state_changed";
+    public static final String ACTION_PLAYBACK_STATE_CHANGED = "com.application.chetna_priya.exo_audio.playback_state_changed";
     public static final String PLAYBACK_STATE_KEY = "playback_state_key";
     public static final String METADATA_KEY = "metadata_key";
 
@@ -55,15 +55,15 @@ public class MediaNotificationManager extends BroadcastReceiver {
     private PlaybackStateCompat mPlaybackState;
     private MediaMetadataCompat mMetadata;
 
-    private  NotificationManagerCompat mNotificationManager;
+    private NotificationManagerCompat mNotificationManager;
 
-    private  PendingIntent mPauseIntent;
-    private  PendingIntent mPlayIntent;
-    private  PendingIntent mPreviousIntent;
-    private  PendingIntent mNextIntent;
+    private PendingIntent mPauseIntent;
+    private PendingIntent mPlayIntent;
+    private PendingIntent mPreviousIntent;
+    private PendingIntent mNextIntent;
 
 
-    private  int mNotificationColor;
+    private int mNotificationColor;
 
     private boolean mStarted = false;
 
@@ -72,8 +72,8 @@ public class MediaNotificationManager extends BroadcastReceiver {
         updateSessionToken();
 
         mNotificationColor =
-        ResourceHelper.getThemeColor(mService, R.attr.colorPrimary,
-                Color.DKGRAY);
+                ResourceHelper.getThemeColor(mService, R.attr.colorPrimary,
+                        Color.DKGRAY);
 
         mNotificationManager = NotificationManagerCompat.from(service);
 
@@ -204,7 +204,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
         @Override
         public void onPlaybackStateChanged(@NonNull PlaybackStateCompat state) {
             mPlaybackState = state;
-           // Log.d(TAG, "Received new playback state" + state);
+            // Log.d(TAG, "Received new playback state" + state);
             if (state.getState() == PlaybackStateCompat.STATE_STOPPED ||
                     state.getState() == PlaybackStateCompat.STATE_NONE) {
                 stopNotification();
@@ -237,7 +237,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
         @Override
         public void onSessionDestroyed() {
             super.onSessionDestroyed();
-       //     Log.d(TAG, "Session was destroyed, resetting to the new session token");
+            //     Log.d(TAG, "Session was destroyed, resetting to the new session token");
             try {
                 Intent broadIntent = new Intent(ACTION_DEFAULT_BACK);
                 mService.sendBroadcast(broadIntent);
@@ -260,14 +260,13 @@ public class MediaNotificationManager extends BroadcastReceiver {
         if (mMetadata == null || mPlaybackState == null) {
             return null;
         }
-  //      Log.d(TAG, "updateNotificationMetadata. mMetadata=" + mMetadata);
+        //      Log.d(TAG, "updateNotificationMetadata. mMetadata=" + mMetadata);
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(mService);
         int playPauseButtonPosition = 0;
 
         // If skip to previous action is enabled
-        if ((mPlaybackState.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS) != 0)
-        {
+        if ((mPlaybackState.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS) != 0) {
             notificationBuilder.addAction(R.drawable.ic_skip_previous_white_24dp,
                     mService.getString(R.string.label_previous), mPreviousIntent);
 
@@ -281,8 +280,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
         addPlayPauseAction(notificationBuilder);
 
         // If skip to next action is enabled
-        if ((mPlaybackState.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_NEXT) != 0)
-        {
+        if ((mPlaybackState.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_NEXT) != 0) {
             notificationBuilder.addAction(R.drawable.ic_skip_next_white_24dp,
                     mService.getString(R.string.label_next), mNextIntent);
         }
@@ -339,12 +337,12 @@ public class MediaNotificationManager extends BroadcastReceiver {
     }
 
     private void addPlayPauseAction(NotificationCompat.Builder builder) {
-    //    Log.d(TAG, "updatePlayPauseAction");
+        //    Log.d(TAG, "updatePlayPauseAction");
         String label;
         int icon;
         PendingIntent intent;
         if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING
-                ||mPlaybackState.getState()== PlaybackStateCompat.STATE_BUFFERING) {
+                || mPlaybackState.getState() == PlaybackStateCompat.STATE_BUFFERING) {
             label = mService.getString(R.string.label_pause);
             icon = R.drawable.uamp_ic_pause_white_24dp;
             intent = mPauseIntent;
@@ -357,9 +355,9 @@ public class MediaNotificationManager extends BroadcastReceiver {
     }
 
     private void setNotificationPlaybackState(NotificationCompat.Builder builder) {
-   //     Log.d(TAG, "updateNotificationPlaybackState. mPlaybackState=" + mPlaybackState);
+        //     Log.d(TAG, "updateNotificationPlaybackState. mPlaybackState=" + mPlaybackState);
         if (mPlaybackState == null || !mStarted) {
-          //  Log.d(TAG, "updateNotificationPlaybackState. cancelling notification!");
+            //  Log.d(TAG, "updateNotificationPlaybackState. cancelling notification!");
             mService.stopForeground(true);
             return;
         }
@@ -368,12 +366,13 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 && mPlaybackState.getPosition() >= 0) {
        /*     Log.d(TAG, "updateNotificationPlaybackState. updating playback position to " +
                     (System.currentTimeMillis() - mPlaybackState.getPosition()) / 1000 + " seconds");
-      */      builder
+      */
+            builder
                     .setWhen(System.currentTimeMillis() - mPlaybackState.getPosition())
                     .setShowWhen(true)
                     .setUsesChronometer(true);
         } else {
-         //   Log.d(TAG, "updateNotificationPlaybackState. hiding playback position");
+            //   Log.d(TAG, "updateNotificationPlaybackState. hiding playback position");
             builder
                     .setWhen(0)
                     .setShowWhen(false)

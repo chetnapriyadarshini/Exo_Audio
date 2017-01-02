@@ -5,8 +5,9 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
@@ -24,7 +25,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.AllEpisodes" />
         </activity>
-        <activity android:name=".ui.LauncherActivity"
+        <activity
+            android:name=".ui.LauncherActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -81,18 +83,23 @@
                 android:value=".ui.MainActivity" />
         </activity>
 
-        <activity android:name=".ui.AllEpisodes"
+        <activity
+            android:name=".ui.AllEpisodes"
             android:parentActivityName=".ui.AllPodcastsInCategory"
             android:screenOrientation="portrait"
             android:launchMode="singleTop">
             <meta-data
-            android:name="android.support.PARENT_ACTIVITY"
-            android:value=".ui.AllPodcastsInCategory" />
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.AllPodcastsInCategory" />
         </activity>
-        <receiver android:name=".ui.AllEpisodes$DownloadListener"
+
+        <receiver
+            android:name=".ui.AllEpisodes$DownloadListener"
             android:exported="true">
             <intent-filter>
-                <action android:enabled="true" android:name="android.intent.action.DOWNLOAD_COMPLETE" />
+                <action
+                    android:enabled="true"
+                    android:name="android.intent.action.DOWNLOAD_COMPLETE" />
             </intent-filter>
         </receiver>
 
@@ -100,7 +107,7 @@
             android:name=".data.PodcastContentProvider"
             android:authorities="@string/content_authority"
             android:exported="false"
-            android:syncable="true"/>
+            android:syncable="true" />
 
 
         <!-- Today Widget -->
@@ -110,7 +117,7 @@
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="com.application.chetna_priya.exo_audio.default_back" />
-                <action android:name="com.application.chetna_priya.exo_audio.playback_state_changed"/>
+                <action android:name="com.application.chetna_priya.exo_audio.playback_state_changed" />
             </intent-filter>
 
             <meta-data

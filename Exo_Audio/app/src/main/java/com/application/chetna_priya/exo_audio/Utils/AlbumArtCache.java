@@ -29,7 +29,7 @@ import java.io.IOException;
 public final class AlbumArtCache {
     private static final String TAG = AlbumArtCache.class.getSimpleName();
 
-    private static final int MAX_ALBUM_ART_CACHE_SIZE = 12*1024*1024;  // 12 MB
+    private static final int MAX_ALBUM_ART_CACHE_SIZE = 12 * 1024 * 1024;  // 12 MB
     private static final int MAX_ART_WIDTH = 800;  // pixels
     private static final int MAX_ART_HEIGHT = 480;  // pixels
 
@@ -55,12 +55,12 @@ public final class AlbumArtCache {
         // Holds no more than MAX_ALBUM_ART_CACHE_SIZE bytes, bounded by maxmemory/4 and
         // Integer.MAX_VALUE:
         int maxSize = Math.min(MAX_ALBUM_ART_CACHE_SIZE,
-            (int) (Math.min(Integer.MAX_VALUE, Runtime.getRuntime().maxMemory()/4)));
+                (int) (Math.min(Integer.MAX_VALUE, Runtime.getRuntime().maxMemory() / 4)));
         mCache = new LruCache<String, Bitmap[]>(maxSize) {
             @Override
             protected int sizeOf(String key, Bitmap[] value) {
                 return value[BIG_BITMAP_INDEX].getByteCount()
-                    + value[ICON_BITMAP_INDEX].getByteCount();
+                        + value[ICON_BITMAP_INDEX].getByteCount();
             }
         };
     }
@@ -82,11 +82,11 @@ public final class AlbumArtCache {
         // a proper image loading library, like Glide.
         Bitmap[] bitmap = mCache.get(artUrl);
         if (bitmap != null) {
-            Log.d(TAG, "getOrFetch: album art is in cache, using it"+ artUrl);
+            Log.d(TAG, "getOrFetch: album art is in cache, using it" + artUrl);
             listener.onFetched(artUrl, bitmap[BIG_BITMAP_INDEX], bitmap[ICON_BITMAP_INDEX]);
             return;
         }
-        Log.d(TAG, "getOrFetch: starting asynctask to fetch "+ artUrl);
+        Log.d(TAG, "getOrFetch: starting asynctask to fetch " + artUrl);
 
         new AsyncTask<Void, Void, Bitmap[]>() {
             @Override
@@ -94,16 +94,16 @@ public final class AlbumArtCache {
                 Bitmap[] bitmaps;
                 try {
                     Bitmap bitmap = BitmapHelper.fetchAndRescaleBitmap(artUrl,
-                        MAX_ART_WIDTH, MAX_ART_HEIGHT);
+                            MAX_ART_WIDTH, MAX_ART_HEIGHT);
                     Bitmap icon = BitmapHelper.scaleBitmap(bitmap,
-                        MAX_ART_WIDTH_ICON, MAX_ART_HEIGHT_ICON);
-                    bitmaps = new Bitmap[] {bitmap, icon};
+                            MAX_ART_WIDTH_ICON, MAX_ART_HEIGHT_ICON);
+                    bitmaps = new Bitmap[]{bitmap, icon};
                     mCache.put(artUrl, bitmaps);
                 } catch (IOException e) {
                     return null;
                 }
                 Log.d(TAG, "doInBackground: putting bitmap in cache. cache size=" +
-                    mCache.size());
+                        mCache.size());
                 return bitmaps;
             }
 
@@ -113,7 +113,7 @@ public final class AlbumArtCache {
                     listener.onError(artUrl, new IllegalArgumentException("got null bitmaps"));
                 } else {
                     listener.onFetched(artUrl,
-                        bitmaps[BIG_BITMAP_INDEX], bitmaps[ICON_BITMAP_INDEX]);
+                            bitmaps[BIG_BITMAP_INDEX], bitmaps[ICON_BITMAP_INDEX]);
                 }
             }
         }.execute();
@@ -121,8 +121,9 @@ public final class AlbumArtCache {
 
     public static abstract class FetchListener {
         public abstract void onFetched(String artUrl, Bitmap bigImage, Bitmap iconImage);
+
         public void onError(String artUrl, Exception e) {
-            Log.e(TAG, e+ "AlbumArtFetchListener: error while downloading " + artUrl);
+            Log.e(TAG, e + "AlbumArtFetchListener: error while downloading " + artUrl);
         }
     }
 }

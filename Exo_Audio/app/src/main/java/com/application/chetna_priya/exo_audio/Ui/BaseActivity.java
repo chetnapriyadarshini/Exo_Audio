@@ -144,7 +144,7 @@ public abstract class BaseActivity extends DrawerActivity implements MediaBrowse
                         showPlaybackControls();
                     } else {
                         Log.d(TAG, "mediaControllerCallback.onPlaybackStateChanged: " +
-                                "hiding controls because state is "+ state.getState());
+                                "hiding controls because state is " + state.getState());
                         hidePlaybackControls();
                     }
                 }
@@ -165,11 +165,11 @@ public abstract class BaseActivity extends DrawerActivity implements MediaBrowse
             new MediaBrowserCompat.ConnectionCallback() {
                 @Override
                 public void onConnected() {
-                  //  Log.d(TAG, "onConnected11111111111111111111111111111111");
+                    //  Log.d(TAG, "onConnected11111111111111111111111111111111");
                     try {
                         connectToSession(mMediaBrowser.getSessionToken());
                     } catch (RemoteException e) {
-                        Log.e(TAG, e+ "could not connect media controller");
+                        Log.e(TAG, e + "could not connect media controller");
                         hidePlaybackControls();
                     }
                 }

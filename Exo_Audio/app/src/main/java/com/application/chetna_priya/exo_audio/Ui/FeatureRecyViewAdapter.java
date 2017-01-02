@@ -38,7 +38,7 @@ class FeatureRecyViewAdapter extends RecyclerView.Adapter<FeatureRecyViewAdapter
     private InterstitialAd mInterstitialAd;
 
     FeatureRecyViewAdapter(Context context, MediaBrowserCompat.MediaItem mediaItem,
-                           FeaturedFragment.MediaFragmentListener mediaFragmentListener){
+                           FeaturedFragment.MediaFragmentListener mediaFragmentListener) {
         //We expect to be sent genre root over here
         //The above root will be expanded to load the list of the genres
         this.mContext = context;
@@ -81,8 +81,7 @@ class FeatureRecyViewAdapter extends RecyclerView.Adapter<FeatureRecyViewAdapter
 
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
-    {
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.featured_category_list_item, parent, false);
         // set the view's size, margins, paddings and layout parameters
@@ -96,13 +95,13 @@ class FeatureRecyViewAdapter extends RecyclerView.Adapter<FeatureRecyViewAdapter
             @Override
             public void onClick(View view) {
                 loadInterstitialAd(holder.getAdapterPosition());
-                if(mInterstitialAd.isLoaded()){
+                if (mInterstitialAd.isLoaded()) {
                     mInterstitialAd.show();
-                }else
+                } else
                     startDisplayAllPodcastsIntent(holder.getAdapterPosition());
             }
         });
-        Log.d(TAG, "Initializing with media item "+categoriesList.get(position).getMediaId());
+        Log.d(TAG, "Initializing with media item " + categoriesList.get(position).getMediaId());
         holder.albumAdapter = new AlbumAdapter(categoriesList.get(position),
                 mContext, numAlbums, mMediaFragmentListener);
         holder.albumRecyclerView.setAdapter(holder.albumAdapter);
@@ -141,7 +140,7 @@ class FeatureRecyViewAdapter extends RecyclerView.Adapter<FeatureRecyViewAdapter
         return categoriesList.size();
     }
 
-     void onStop() {
+    void onStop() {
         /*MediaBrowserCompat mediaBrowser = mMediaFragmentListener.getMediaBrowser();
         if (mediaBrowser != null && mediaBrowser.isConnected() && mediaItem != null) {
             mediaBrowser.unsubscribe(mediaItem.getMediaId());
@@ -151,9 +150,9 @@ class FeatureRecyViewAdapter extends RecyclerView.Adapter<FeatureRecyViewAdapter
          }*/
     }
 
-      void onConnected() {
+    void onConnected() {
         mMediaFragmentListener.getMediaBrowser().unsubscribe(mediaItem.getMediaId());
-        Log.d(TAG, "Subscribeeeeeee to "+mediaItem.getMediaId());
+        Log.d(TAG, "Subscribeeeeeee to " + mediaItem.getMediaId());
         mMediaFragmentListener.getMediaBrowser().subscribe(mediaItem.getMediaId(), mSubscriptionCallback);
     }
 
@@ -184,7 +183,7 @@ class FeatureRecyViewAdapter extends RecyclerView.Adapter<FeatureRecyViewAdapter
              */
             albumRecyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
             albumRecyclerView.setNestedScrollingEnabled(false);
-            seeAll.setContentDescription(mContext.getString(R.string.see_all_pod)+titleView.getText());
+            seeAll.setContentDescription(mContext.getString(R.string.see_all_pod) + titleView.getText());
             titleView.setContentDescription(titleView.getText());
         }
     }

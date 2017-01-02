@@ -15,7 +15,7 @@
         android:layout_alignParentStart="true"
         android:layout_marginStart="@dimen/featured_margin"
         android:layout_marginBottom="@dimen/activity_vertical_margin"
-        tools:text="Top Podcasts"/>
+        tools:text="Top Podcasts" />
 
     <TextView
         android:id="@+id/see_all_link"
@@ -32,7 +32,7 @@
         android:layout_marginBottom="@dimen/activity_vertical_margin"
         android:text="@string/see_all"
         style="@style/Base.TextAppearance.AppCompat.Medium"
-        android:textColor="@color/colorAccent"/>
+        android:textColor="@color/colorAccent" />
 
 
     <android.support.v7.widget.RecyclerView
@@ -43,6 +43,6 @@
         android:paddingBottom="@dimen/genre_text_bottom_padding"
         android:layout_marginLeft="@dimen/album_right_margin"
         android:layout_marginStart="@dimen/album_right_margin"
-        android:scrollbars="horizontal"/>
+        android:scrollbars="horizontal" />
 
 </RelativeLayout>

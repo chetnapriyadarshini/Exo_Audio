@@ -63,7 +63,7 @@ public class PlaybackControlsFragment extends Fragment {
     private final MediaControllerCompat.Callback mCallback = new MediaControllerCompat.Callback() {
         @Override
         public void onPlaybackStateChanged(@NonNull PlaybackStateCompat state) {
-            Log.d(TAG, "Received playback state change to state "+ state.getState());
+            Log.d(TAG, "Received playback state change to state " + state.getState());
             PlaybackControlsFragment.this.onPlaybackStateChanged(state);
         }
 
@@ -72,9 +72,9 @@ public class PlaybackControlsFragment extends Fragment {
             if (metadata == null) {
                 return;
             }
-            Log.d(TAG, "Received metadata state change to mediaId="+
-                    metadata.getDescription().getMediaId()+
-                    " song="+ metadata.getDescription().getTitle());
+            Log.d(TAG, "Received metadata state change to mediaId=" +
+                    metadata.getDescription().getMediaId() +
+                    " song=" + metadata.getDescription().getTitle());
             PlaybackControlsFragment.this.onMetadataChanged(metadata);
         }
     };
@@ -83,7 +83,7 @@ public class PlaybackControlsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_playback_controls, container, false);
-        ButterKnife.bind(this,rootView);
+        ButterKnife.bind(this, rootView);
         mPlayPause.setEnabled(true);
         mPlayPause.setOnClickListener(mButtonListener);
 
@@ -98,9 +98,9 @@ public class PlaybackControlsFragment extends Fragment {
                 if (metadata != null) {
                     String imageUri = metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI);
                     String title = metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE);
-                    intent.putExtra(EXTRA_TITLE,title);
+                    intent.putExtra(EXTRA_TITLE, title);
                     intent.putExtra(EXTRA_IMAGE_URI, imageUri);
-                  //  intent.putExtra(MainActivity.EXTRA_CURRENT_MEDIA_DESCRIPTION, metadata);
+                    //  intent.putExtra(MainActivity.EXTRA_CURRENT_MEDIA_DESCRIPTION, metadata);
                 }
                 startActivity(intent);
             }
@@ -134,7 +134,7 @@ public class PlaybackControlsFragment extends Fragment {
     public void onConnected() {
         MediaControllerCompat controller = ((FragmentActivity) getActivity())
                 .getSupportMediaController();
-        Log.d(TAG, "onConnected, mediaController==null? "+ (controller == null));
+        Log.d(TAG, "onConnected, mediaController==null? " + (controller == null));
         if (controller != null) {
             onMetadataChanged(controller.getMetadata());
             onPlaybackStateChanged(controller.getPlaybackState());
@@ -144,7 +144,7 @@ public class PlaybackControlsFragment extends Fragment {
 
 
     private void onMetadataChanged(MediaMetadataCompat metadata) {
-        Log.d(TAG, "onMetadataChanged "+ metadata);
+        Log.d(TAG, "onMetadataChanged " + metadata);
         if (getActivity() == null) {
             Log.w(TAG, "onMetadataChanged called when getActivity null," +
                     "this should not happen if the callback was properly unregistered. Ignoring.");
@@ -176,8 +176,8 @@ public class PlaybackControlsFragment extends Fragment {
                             @Override
                             public void onFetched(String artUrl, Bitmap bitmap, Bitmap icon) {
                                 if (icon != null) {
-                                    Log.d(TAG, "album art icon of w="+ icon.getWidth()+
-                                            " h="+ icon.getHeight());
+                                    Log.d(TAG, "album art icon of w=" + icon.getWidth() +
+                                            " h=" + icon.getHeight());
                                     if (isAdded()) {
                                         mAlbumArt.setImageBitmap(icon);
                                     }
@@ -191,7 +191,7 @@ public class PlaybackControlsFragment extends Fragment {
 
 
     private void onPlaybackStateChanged(PlaybackStateCompat state) {
-        Log.d(TAG, "onPlaybackStateChanged "+ state);
+        Log.d(TAG, "onPlaybackStateChanged " + state);
         if (getActivity() == null) {
             Log.w(TAG, "onPlaybackStateChanged called when getActivity null," +
                     "this should not happen if the callback was properly unregistered. Ignoring.");
@@ -207,7 +207,7 @@ public class PlaybackControlsFragment extends Fragment {
                 enablePlay = true;
                 break;
             case PlaybackStateCompat.STATE_ERROR:
-                Log.e(TAG, "error playbackstate: "+ state.getErrorMessage());
+                Log.e(TAG, "error playbackstate: " + state.getErrorMessage());
                 Toast.makeText(getActivity(), state.getErrorMessage(), Toast.LENGTH_LONG).show();
                 break;
         }

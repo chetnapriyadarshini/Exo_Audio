@@ -39,7 +39,7 @@ public class DrawerActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(getIntent().hasExtra(OPEN_DOWNLOAD)&& getIntent().getBooleanExtra(OPEN_DOWNLOAD, false)){
+        if (getIntent().hasExtra(OPEN_DOWNLOAD) && getIntent().getBooleanExtra(OPEN_DOWNLOAD, false)) {
             openDownloadFragment();
         }
     }
@@ -179,7 +179,7 @@ public class DrawerActivity extends AppCompatActivity {
             throw new IllegalStateException("Layout is required to include a Toolbar with id " +
                     "'toolbar'");
         }*/
-      //  mToolbar.inflateMenu(R.menu.main);
+        //  mToolbar.inflateMenu(R.menu.main);
 
         mDrawerLayout = (DrawerLayout) findViewById(drawer_layout);
         if (mDrawerLayout != null) {
@@ -193,7 +193,7 @@ public class DrawerActivity extends AppCompatActivity {
             mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                     mToolbar, R.string.open_content_drawer, R.string.close_content_drawer);
             mDrawerLayout.addDrawerListener(mDrawerListener);
-           // mDrawerLayout.setDrawerListener(mDrawerListener);
+            // mDrawerLayout.setDrawerListener(mDrawerListener);
             populateDrawerItems(navigationView);
 //            setSupportActionBar(mToolbar);
             updateDrawerToggle();
@@ -218,9 +218,7 @@ public class DrawerActivity extends AppCompatActivity {
                 });
         if (MainActivity.class.isAssignableFrom(getClass())) {
             navigationView.setCheckedItem(R.id.navigation_featured);
-        }
-        else if (DownloadFragment.class.isAssignableFrom(getClass()))
-        {
+        } else if (DownloadFragment.class.isAssignableFrom(getClass())) {
             navigationView.setCheckedItem(R.id.navigation_downloaded);
         }
        /* else if (SubscribedFragment.class.isAssignableFrom(getClass()))

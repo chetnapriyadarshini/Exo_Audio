@@ -25,7 +25,8 @@ public class PermissionHelper {
                 // this thread waiting for the user's response! After the user
                 // sees the explanation, try again to request the permission.
 
-            } else*/ {
+            } else*/
+            {
 
                 // No explanation needed, we can request the permission.
                 int requestCode = 0;

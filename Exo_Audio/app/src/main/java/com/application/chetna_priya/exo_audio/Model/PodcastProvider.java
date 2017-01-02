@@ -11,6 +11,7 @@ import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.util.Log;
 
+import com.application.chetna_priya.exo_audio.entity.MetadataEntity;
 import com.application.chetna_priya.exo_audio.entity.Podcast;
 import com.application.chetna_priya.exo_audio.R;
 import com.application.chetna_priya.exo_audio.ui.BaseActivity;
@@ -49,6 +50,7 @@ public class PodcastProvider {
     public interface Callback {
         void onPodcastCatalogReady(boolean success);
     }
+
     public PodcastProvider() {
         this(new RemoteJsonSource());
     }
@@ -90,10 +92,11 @@ public class PodcastProvider {
         return mPodcastListByChannelName.get(podcastName);
     }
 /*
-    *//**
+    */
+
+    /**
      * Very basic implementation of a search that filter music tracks with title containing
      * the given query.
-     *
      */
     public Iterable<MediaMetadataCompat> searchPodcastByEpisodeTitle(String query) {
         return searchPodcast(MediaMetadataCompat.METADATA_KEY_TITLE, query);
@@ -102,7 +105,6 @@ public class PodcastProvider {
     /**
      * Very basic implementation of a search that filter music tracks with album containing
      * the given query.
-     *
      */
     public Iterable<MediaMetadataCompat> searchPodcastByAlbum(String query) {
         return searchPodcast(MediaMetadataCompat.METADATA_KEY_ALBUM, query);
@@ -111,7 +113,6 @@ public class PodcastProvider {
     /**
      * Very basic implementation of a search that filter music tracks with artist containing
      * the given query.
-     *
      */
     public Iterable<MediaMetadataCompat> searchPodcastByArtist(String query) {
         return searchPodcast(MediaMetadataCompat.METADATA_KEY_ARTIST, query);
@@ -149,7 +150,7 @@ public class PodcastProvider {
             return Collections.emptyList();
         }
         List<MediaMetadataCompat> shuffled = new ArrayList<>(mPodcastListById.size());
-        for (MutableMediaMetadata mutableMetadata: mPodcastListById.values()) {
+        for (MutableMediaMetadata mutableMetadata : mPodcastListById.values()) {
             shuffled.add(mutableMetadata.metadata);
         }
         Collections.shuffle(shuffled);
@@ -180,11 +181,11 @@ public class PodcastProvider {
         mutableMetadata.metadata = metadata;
     }
 
-    public synchronized void updatePodcastDuration(String podcastId, long duration){
+    public synchronized void updatePodcastDuration(String podcastId, long duration) {
         MediaMetadataCompat metadata = getPodcast(podcastId);
         metadata = new MediaMetadataCompat.Builder(metadata)
                 .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration)
-        .build();
+                .build();
         MutableMediaMetadata mutableMetadata = mPodcastListById.get(podcastId);
         if (mutableMetadata == null) {
             throw new IllegalStateException("Unexpected error: Inconsistent data structures in " +
@@ -246,7 +247,7 @@ public class PodcastProvider {
         ConcurrentMap<String, List<Podcast>> newPodcastListByGenre = new ConcurrentHashMap<>();
 
         Iterator<Podcast> tracks = mSource.albumsIterator();
-        while (tracks.hasNext()){
+        while (tracks.hasNext()) {
             Podcast podcast = tracks.next();
             List<Podcast> list = newPodcastListByGenre.get(podcast.getGenre());
             if (list == null) {
@@ -290,14 +291,16 @@ public class PodcastProvider {
                 mCurrentState = State.INITIALIZING;
 
                 Iterator<MediaMetadataCompat> tracks = mSource.iterator(context);
-                while (tracks.hasNext()) {
-                    MediaMetadataCompat item = tracks.next();
-                    String podcastId = item.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
-                    mPodcastListById.put(podcastId, new MutableMediaMetadata(podcastId, item));
+                if (tracks != null) {
+                    while (tracks.hasNext()) {
+                        MediaMetadataCompat item = tracks.next();
+                        String podcastId = item.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
+                        mPodcastListById.put(podcastId, new MutableMediaMetadata(podcastId, item));
+                    }
+                    buildListsByGenre();
+                    buildListsByChannelName();
+                    mCurrentState = State.INITIALIZED;
                 }
-                buildListsByGenre();
-                buildListsByChannelName();
-                mCurrentState = State.INITIALIZED;
             }
         } finally {
             if (mCurrentState != State.INITIALIZED) {
@@ -308,6 +311,14 @@ public class PodcastProvider {
         }
     }
 
+
+    public synchronized void createNewPodcastListById(MediaMetadataCompat mediaMetadataCompat) {
+        mPodcastListById.clear();
+        String podcastId = mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
+        mPodcastListById.put(podcastId,
+                new MutableMediaMetadata(podcastId, mediaMetadataCompat));
+    }
+
     public List<MediaBrowserCompat.MediaItem> getChildren(String mediaId, Resources resources) {
         List<MediaBrowserCompat.MediaItem> mediaItems = new ArrayList<>();
 
@@ -315,30 +326,30 @@ public class PodcastProvider {
             return mediaItems;
         }
 
-        Log.d(TAG, "MEDIA IDD RECEIVEDDDD "+mediaId);
+        Log.d(TAG, "MEDIA IDD RECEIVEDDDD " + mediaId);
         /*
         Log.d(TAG, MediaIDHelper.getParentMediaID(mediaId).concat(MEDIA_ID_PODCASTS_BY_GENRE_AND_CHANNEL_NAME));*/
         if (MEDIA_ID_ROOT.equals(mediaId)) {
             mediaItems.add(createBrowsableMediaItemForRoot(resources));
 
-        }else if (MEDIA_ID_PODCASTS_BY_GENRE.equals(mediaId)) {
+        } else if (MEDIA_ID_PODCASTS_BY_GENRE.equals(mediaId)) {
             for (String genre : getGenres()) {
                 mediaItems.add(createBrowsableMediaItemForGenre(genre, resources));
             }
-        }else if(mediaId.startsWith(MEDIA_ID_PODCASTS_BY_GENRE)) {//return podcast list by channel
+        } else if (mediaId.startsWith(MEDIA_ID_PODCASTS_BY_GENRE)) {//return podcast list by channel
             String genre = MediaIDHelper.getHierarchy(mediaId)[1];
             for (Podcast album : getPodcastByGenre(genre)) {
-              //  Log.d(TAG, "For Genreeeeee "+genre+" addingggggggg "+album.getAlbum_title());
+                //  Log.d(TAG, "For Genreeeeee "+genre+" addingggggggg "+album.getAlbum_title());
                 mediaItems.add(createBrowsableMediaItemForPodcast(album, resources));
             }
-        }else if (mediaId.startsWith(MEDIA_ID_PODCASTS_BY_GENRE_AND_CHANNEL_NAME)) {
+        } else if (mediaId.startsWith(MEDIA_ID_PODCASTS_BY_GENRE_AND_CHANNEL_NAME)) {
             String channel = MediaIDHelper.getHierarchy(mediaId)[1];
-            Log.d(TAG, "Channneeeeeeeel  "+channel);
+            Log.d(TAG, "Channneeeeeeeel  " + channel);
             for (MediaMetadataCompat metadata : getEpisodeByChannelName(channel)) {
                 mediaItems.add(createMediaItem(metadata));
             }
         } else {
-            Log.w(TAG, "Skipping unmatched mediaId: "+ mediaId);
+            Log.w(TAG, "Skipping unmatched mediaId: " + mediaId);
         }
         return mediaItems;
     }
@@ -350,7 +361,7 @@ public class PodcastProvider {
                 .setSubtitle(resources.getString(R.string.browse_genre_subtitle))
                 /*.setIconUri(Uri.parse("android.resource://" +
                         "com.example.android.uamp/drawable/ic_by_genre"))
-               */ .build();
+               */.build();
         return new MediaBrowserCompat.MediaItem(description,
                 MediaBrowserCompat.MediaItem.FLAG_BROWSABLE);
     }
@@ -368,18 +379,18 @@ public class PodcastProvider {
     }
 
     private MediaBrowserCompat.MediaItem createBrowsableMediaItemForPodcast(Podcast album,
-                                                                          Resources resources) {
+                                                                            Resources resources) {
         String albumTitle = album.getAlbum_title();
-      //  Log.d(TAG, "TITLEEEEEEEEEEEEEEEEEEE beforeeeeeeeeeeeee"+albumTitle);
+        //  Log.d(TAG, "TITLEEEEEEEEEEEEEEEEEEE beforeeeeeeeeeeeee"+albumTitle);
         /*
         |  & / is an invalid character that is leading to crash as it is used in
         creating thr media item, we remove this char if found in media title
          */
-        if(albumTitle.indexOf('|') > -1){
-            albumTitle = albumTitle.replaceAll("[\\|\\/]","");
+        if (albumTitle.indexOf('|') > -1) {
+            albumTitle = albumTitle.replaceAll("[\\|\\/]", "");
 
         }
-      //  Log.d(TAG, "TITLEEEEEEEEEEEEEEEEEEE"+albumTitle);
+        //  Log.d(TAG, "TITLEEEEEEEEEEEEEEEEEEE"+albumTitle);
 
         Bundle bundle = new Bundle();
         bundle.putString(BaseActivity.EXTRA_SUMMARY, album.getSummary());
@@ -418,7 +429,7 @@ public class PodcastProvider {
                 .setTitle(metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE))*/
                 .setExtras(bundle).build();
 
-      //  Log.d(TAG, "Media Item created!!!!!");
+        //  Log.d(TAG, "Media Item created!!!!!");
         return new MediaBrowserCompat.MediaItem(mediaDescriptionCompat,
                 MediaBrowserCompat.MediaItem.FLAG_PLAYABLE);
 

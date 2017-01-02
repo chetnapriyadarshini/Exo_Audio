@@ -39,13 +39,14 @@ public class FeedParser {
     private final String ATTRIBUTE_TAG_EPISODE_PUBLISHED_DATE = "pubDate";
     private final String ATTRIBUTE_TAG_EPISODE_SUMMARY = "itunes:summary";
     private final String ATTRIBUTE_TAG_EPISODE_DURATION = "itunes:duration";
-  //  private final String ATTRIBUTE_TAG_EPISODE_IMAGE_URL = "media:thumbnail";
+    //  private final String ATTRIBUTE_TAG_EPISODE_IMAGE_URL = "media:thumbnail";
     private final String MAIN_ATTRIBUTE_TAG_POD_AUDIO_URL = "enclosure";
 
     private static final String TAG = FeedParser.class.getSimpleName();
     private String podsummary;
 
-    /** Parse an Atom feed, returning a collection of Episode objects.
+    /**
+     * Parse an Atom feed, returning a collection of Episode objects.
      *
      * @param in Atom feed, as a stream.
      * @throws IOException on I/O error.
@@ -83,18 +84,17 @@ public class FeedParser {
             if (parser.getName().equals(PODCAST_EPISODE_START_TAG)) {
 
                 Episode episode = readEpisodes(parser, podcast);
-                if(episode != null) {
+                if (episode != null) {
                     episodes.add(episode);
                 }
-            }else if(parser.getName().equals(ATTRIBUTE_TAG_EPISODE_SUMMARY)) {
+            } else if (parser.getName().equals(ATTRIBUTE_TAG_EPISODE_SUMMARY)) {
                 podsummary = readTag(parser, TAG_SUMMARY);
                 podcast.setSummary(podsummary);
-            }else
+            } else
                 skip(parser);
         }
         return episodes;
     }
-
 
 
     private Episode readEpisodes(XmlPullParser parser, Podcast podcast)
@@ -106,8 +106,7 @@ public class FeedParser {
         String episode_pod_url = null;
         String publishedOn = null;
         parser.require(XmlPullParser.START_TAG, ns, PODCAST_EPISODE_START_TAG);
-        while (parser.next() != XmlPullParser.END_TAG)
-        {
+        while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
                 continue;
             }
@@ -125,12 +124,12 @@ public class FeedParser {
                     episode_pod_url = readTag(parser, TAG_POD_AUDIO_LINK);
                     break;
                 case ATTRIBUTE_TAG_EPISODE_PUBLISHED_DATE:
-                   // Time t = new Time();
-                    String date =  readTag(parser, TAG_PUBLISHED);
+                    // Time t = new Time();
+                    String date = readTag(parser, TAG_PUBLISHED);
 
                     //DateFormat dateFormat = new DateFormat();
 
-                  //  t.parse(readTag(parser, TAG_PUBLISHED));
+                    //  t.parse(readTag(parser, TAG_PUBLISHED));
                     publishedOn = getDateString(date);
                     break;
                 default:
@@ -138,28 +137,28 @@ public class FeedParser {
             }
 
         }
-        return new Episode(podcast, episode_title, episode_duration,episode_summary,episode_pod_url,publishedOn,
+        return new Episode(podcast, episode_title, episode_duration, episode_summary, episode_pod_url, publishedOn,
                 podsummary);
     }
 
     private String getDateString(String date) throws Exception {
         String[] dateStringArr = date.split(" ");//Eg Date: Tue, 04 Dec 2007 24:00:00 EST
-        if(dateStringArr == null)// date us in some other format
+        if (dateStringArr == null)// date us in some other format
             throw new Exception("Wrong Date Format Exception");
-        String newDate="";
-        for(int i=1; i <= 3; i++){
-            newDate = newDate.concat(dateStringArr[i])+" ";
+        String newDate = "";
+        for (int i = 1; i <= 3; i++) {
+            newDate = newDate.concat(dateStringArr[i]) + " ";
         }
-       // Log.d(TAG, newDate);
+        // Log.d(TAG, newDate);
         return newDate;
     }
 
     private String readTag(XmlPullParser parser, int tagType) throws IOException, XmlPullParserException {
         String tag = null;
         String endTag = null;
-        switch (tagType){
+        switch (tagType) {
             case TAG_SUMMARY:
-                return readBasicTag(parser,ATTRIBUTE_TAG_SUMMARY);
+                return readBasicTag(parser, ATTRIBUTE_TAG_SUMMARY);
             case TAG_POD_DURATION:
                 return readBasicTag(parser, ATTRIBUTE_TAG_EPISODE_DURATION);
             case TAG_TITLE:
@@ -183,12 +182,12 @@ public class FeedParser {
             throws IOException, XmlPullParserException {
         final String SUB_ATTRIBUTE_TAG_POD_AUDIO_URL = "url";
         String link = null;
-      //  parser.require(XmlPullParser.START_TAG, ns, "link");
+        //  parser.require(XmlPullParser.START_TAG, ns, "link");
         String tag = parser.getName();
-        switch (tag){
+        switch (tag) {
             case MAIN_ATTRIBUTE_URL_TAG:
                 parser.require(XmlPullParser.START_TAG, ns, MAIN_ATTRIBUTE_URL_TAG);
-                link = parser.getAttributeValue(ns,SUB_ATTRIBUTE_HREF_URL_TAG);
+                link = parser.getAttributeValue(ns, SUB_ATTRIBUTE_HREF_URL_TAG);
                 break;
             case MAIN_ATTRIBUTE_TAG_POD_AUDIO_URL:
                 parser.require(XmlPullParser.START_TAG, ns, MAIN_ATTRIBUTE_TAG_POD_AUDIO_URL);

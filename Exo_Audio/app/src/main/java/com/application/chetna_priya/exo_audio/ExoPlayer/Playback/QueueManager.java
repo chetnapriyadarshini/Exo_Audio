@@ -22,8 +22,7 @@ import java.util.List;
  * Created by chetna_priya on 11/23/2016.
  */
 
-public class QueueManager
-{
+public class QueueManager {
     private static final String TAG = QueueManager.class.getSimpleName();
 
     private PodcastProvider mPodcastProvider;
@@ -88,8 +87,8 @@ public class QueueManager
             index %= mPlayingQueue.size();
         }
         if (!QueueHelper.isIndexPlayable(index, mPlayingQueue)) {
-            Log.e(TAG, "Cannot increment queue index by "+ amount+
-                    ". Current="+ mCurrentIndex+ " queue length="+ mPlayingQueue.size());
+            Log.e(TAG, "Cannot increment queue index by " + amount +
+                    ". Current=" + mCurrentIndex + " queue length=" + mPlayingQueue.size());
             return false;
         }
         mCurrentIndex = index;
@@ -97,7 +96,7 @@ public class QueueManager
     }
 
     public void setQueueFromPodcast(String mediaId) {
-        Log.d(TAG, "setQueueFromPodcast"+ mediaId);
+        Log.d(TAG, "setQueueFromPodcast" + mediaId);
 
         // The mediaId used here is not the unique podcastId. This one comes from the
         // MediaBrowser, and is actually a "hierarchy-aware mediaID": a concatenation of
@@ -113,6 +112,30 @@ public class QueueManager
                     MediaIDHelper.extractBrowseCategoryValueFromMediaID(mediaId));
             setCurrentQueue(queueTitle,
                     QueueHelper.getPlayingQueue(mediaId, mPodcastProvider), mediaId);
+        }
+        updateMetadata();
+    }
+
+    /*
+    Set current queue for source downloaded on the device
+     */
+    public void setQueueFromPodcast(String mediaId, MediaMetadataCompat mediaMetadataCompat) {
+        Log.d(TAG, "setQueueFromPodcast" + mediaId);
+
+        // The mediaId used here is not the unique podcastId. This one comes from the
+        // MediaBrowser, and is actually a "hierarchy-aware mediaID": a concatenation of
+        // the hierarchy in MediaBrowser and the actual unique podcastID. This is necessary
+        // so we can build the correct playing queue, based on where the track was
+        // selected from.
+        boolean canReuseQueue = false;
+        if (isSameBrowsingCategory(mediaId)) {
+            canReuseQueue = setCurrentQueueItem(mediaId);
+        }
+        if (!canReuseQueue) {
+            String queueTitle = mResources.getString(R.string.browse_podcast_by_genre_subtitle,
+                    MediaIDHelper.extractBrowseCategoryValueFromMediaID(mediaId));
+            setCurrentQueue(queueTitle,
+                    QueueHelper.getQueueForSingleSource(mediaId, mediaMetadataCompat), mediaId);
         }
         updateMetadata();
     }
@@ -166,6 +189,7 @@ public class QueueManager
         if (metadata == null) {
             throw new IllegalArgumentException("Invalid podcastId " + podcastId);
         }
+        Log.d(TAG, "POD IDDDDDDDDDDDDD " + metadata);
 
         mListener.onMetadataChanged(metadata);
 
@@ -196,8 +220,11 @@ public class QueueManager
 
     public interface MetadataUpdateListener {
         void onMetadataChanged(MediaMetadataCompat metadata);
+
         void onMetadataRetrieveError();
+
         void onCurrentQueueIndexUpdated(int queueIndex);
+
         void onQueueUpdated(String title, List<MediaSessionCompat.QueueItem> newQueue);
     }
 }

@@ -18,12 +18,12 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 
-public class LoadAvailablePodcastChannels{
+public class LoadAvailablePodcastChannels {
 
     private static final String TAG = LoadAvailablePodcastChannels.class.getSimpleName();
 
     //https://itunes.apple.com/us/rss/topaudiobooks/limit=10/xml
-    public ArrayList<Podcast> load(String url, String genre){
+    public ArrayList<Podcast> load(String url, String genre) {
 
         OkHttpClient client = new OkHttpClient();
 //        Log.d(TAG, url);
@@ -44,14 +44,14 @@ public class LoadAvailablePodcastChannels{
                 if(url == null)
             url = builtUri.toString();
             }*/
-            Log.d(TAG, "URLLLLLLLLLLL "+url);
+            Log.d(TAG, "URLLLLLLLLLLL " + url);
 
             Request request = new Request.Builder()
                     .url(new URL(url)).build();
 
             Response response = client.newCall(request).execute();
 
-            return  parseFeedUrlFromJSON(response.body().string(), genre);
+            return parseFeedUrlFromJSON(response.body().string(), genre);
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
@@ -64,36 +64,35 @@ public class LoadAvailablePodcastChannels{
         final String OWM_FEED_URL = "feedUrl";
         final String OWM_TRACK_ID = "trackId";
         final String OWM_ALBUM = "trackName";
-        final String OWM_ARTIST="artistName";
-        final String OWM_ARTWORK_URI="artworkUrl100";
-        final String OWM_TOTAL_TRACKS="trackCount";
-        final String OWM_GENRE= "primaryGenreName";
+        final String OWM_ARTIST = "artistName";
+        final String OWM_ARTWORK_URI = "artworkUrl100";
+        final String OWM_TOTAL_TRACKS = "trackCount";
+        final String OWM_GENRE = "primaryGenreName";
 
         JSONArray resultArray = jsonObject.getJSONArray(OWM_RESULTS);
-       // Log.d(TAG, "RESULT ARRAY LENGTHHHHHHH:::: "+resultArray.length());
+        // Log.d(TAG, "RESULT ARRAY LENGTHHHHHHH:::: "+resultArray.length());
         ArrayList<Podcast> podcastList = new ArrayList<>();
-        for(int i = 0; i<resultArray.length(); i++)
-        {
+        for (int i = 0; i < resultArray.length(); i++) {
             int trackId = -1;
-            String album =null;
-            String artist=null;
+            String album = null;
+            String artist = null;
             String artWorkUri = null;
             int totalTracks = -1;
-            String result_genre =null;
+            String result_genre = null;
 
-            if(resultArray.getJSONObject(i).has(OWM_TRACK_ID)){
+            if (resultArray.getJSONObject(i).has(OWM_TRACK_ID)) {
                 trackId = (int) resultArray.getJSONObject(i).get(OWM_TRACK_ID);
             }
-            if(resultArray.getJSONObject(i).has(OWM_ALBUM)){
+            if (resultArray.getJSONObject(i).has(OWM_ALBUM)) {
                 album = (String) resultArray.getJSONObject(i).get(OWM_ALBUM);
             }
-            if(resultArray.getJSONObject(i).has(OWM_ARTIST)){
+            if (resultArray.getJSONObject(i).has(OWM_ARTIST)) {
                 artist = (String) resultArray.getJSONObject(i).get(OWM_ARTIST);
             }
-            if(resultArray.getJSONObject(i).has(OWM_ARTWORK_URI)){
+            if (resultArray.getJSONObject(i).has(OWM_ARTWORK_URI)) {
                 artWorkUri = (String) resultArray.getJSONObject(i).get(OWM_ARTWORK_URI);
             }
-            if(resultArray.getJSONObject(i).has(OWM_GENRE)){
+            if (resultArray.getJSONObject(i).has(OWM_GENRE)) {
                 //First read the primary genre name from the json result
                 result_genre = (String) resultArray.getJSONObject(i).get(OWM_GENRE);
                 //Get the main genre name, sometimes sub genres are returned
@@ -103,20 +102,20 @@ public class LoadAvailablePodcastChannels{
                   and do not add this podcast to the category. This is done to rule out
                   irrelevant results and add only the podcasts whose primary genre
                   is the genre we are fetching for or at least belongs to its sub genre categories*/
-                if(!(category.equals(mainGenre))){
+                if (!(category.equals(mainGenre))) {
                     result_genre = null;
-                }else {
+                } else {
                     result_genre = mainGenre;
                 }
             }
-            if(resultArray.getJSONObject(i).has(OWM_TOTAL_TRACKS)){
+            if (resultArray.getJSONObject(i).has(OWM_TOTAL_TRACKS)) {
                 totalTracks = (int) resultArray.getJSONObject(i).get(OWM_TOTAL_TRACKS);
             }
-            if(resultArray.getJSONObject(i).has(OWM_FEED_URL)) {
+            if (resultArray.getJSONObject(i).has(OWM_FEED_URL)) {
                 final String feedObj = (String) resultArray.getJSONObject(i).get(OWM_FEED_URL);
-           //     Log.d(TAG, feedObj);
-              //  Log.d(TAG, "INDEXXXXXXXXXXXXX "+(i+1));
-                if(result_genre != null) {
+                //     Log.d(TAG, feedObj);
+                //  Log.d(TAG, "INDEXXXXXXXXXXXXX "+(i+1));
+                if (result_genre != null) {
                     Podcast podcast = new Podcast(trackId, album, feedObj, artist, result_genre, totalTracks, artWorkUri);
                     podcastList.add(podcast);
                 }

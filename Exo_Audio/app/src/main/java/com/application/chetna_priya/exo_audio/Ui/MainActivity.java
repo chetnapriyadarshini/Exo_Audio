@@ -59,12 +59,12 @@ public class MainActivity extends BaseActivity implements FeaturedFragment.Media
      * may be best to switch to a
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
-   // private PodcastPagerAdapter mPodcastPagerAdapter;
+    // private PodcastPagerAdapter mPodcastPagerAdapter;
 
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-   // private ViewPager mViewPager;
+    // private ViewPager mViewPager;
     private static final int RC_SIGN_IN = 1;
     private GoogleApiClient mGoogleApiClient;
     @BindView(R.id.profile_image)
@@ -111,8 +111,9 @@ public class MainActivity extends BaseActivity implements FeaturedFragment.Media
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
-    @Override public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(TAG, "1111111111 "+requestCode);
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "1111111111 " + requestCode);
         super.onActivityResult(requestCode, resultCode, data);
 
         // Result returned from launching the Intent from
@@ -151,7 +152,7 @@ public class MainActivity extends BaseActivity implements FeaturedFragment.Media
                 });
             }
         }
-        if(requestCode == REQUEST_CODE_ADD_GENRES){
+        if (requestCode == REQUEST_CODE_ADD_GENRES) {
             linlaHeaderProgress.setVisibility(View.VISIBLE);
             Log.d(TAG, "SHOULD RELOADDDDDDDDDDDDDD HEREEEEEEEEEEEEEEE");
             needReload = true;
@@ -167,7 +168,7 @@ public class MainActivity extends BaseActivity implements FeaturedFragment.Media
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        if(savedInstanceState.getString(MEDIA_ID) != null) {
+        if (savedInstanceState.getString(MEDIA_ID) != null) {
             mMediaId = savedInstanceState.getString(MEDIA_ID);
         }
     }
@@ -188,8 +189,7 @@ public class MainActivity extends BaseActivity implements FeaturedFragment.Media
         FeaturedFragment fragment = getBrowseFragment();
 
         //if (fragment == null || !TextUtils.equals(fragment.getMediaId(), mediaItem))
-        if(fragment == null || needReload)
-        {
+        if (fragment == null || needReload) {
             needReload = false;
             fragment = new FeaturedFragment();
             fragment.setMediaId(mediaItem);
@@ -197,7 +197,8 @@ public class MainActivity extends BaseActivity implements FeaturedFragment.Media
             /*transaction.setCustomAnimations(
                     R.animator.slide_in_from_right, R.animator.slide_out_to_left,
                     R.animator.slide_in_from_left, R.animator.slide_out_to_right);
-           */ transaction.replace(R.id.container, fragment, FRAGMENT_TAG);
+           */
+            transaction.replace(R.id.container, fragment, FRAGMENT_TAG);
             // If this is not the top level media (root), we add it to the fragment back stack,
             // so that actionbar toggle and Back will work appropriately:
             if (mediaItem != null) {
@@ -224,8 +225,9 @@ public class MainActivity extends BaseActivity implements FeaturedFragment.Media
                         /*
                         We just have the genre here, we load genre as root and pass it to fragment
                          */
-                        MediaBrowserCompat.MediaItem genreRoot  = children.get(0);
-                        navigateToBrowser(genreRoot);;
+                        MediaBrowserCompat.MediaItem genreRoot = children.get(0);
+                        navigateToBrowser(genreRoot);
+                        ;
                     } catch (Throwable t) {
                         Log.e(TAG, "Error on childrenloaded", t);
                     }
@@ -237,8 +239,6 @@ public class MainActivity extends BaseActivity implements FeaturedFragment.Media
                     Toast.makeText(MainActivity.this, R.string.error_loading_media, Toast.LENGTH_LONG).show();
                 }
             };
-
-
 
 
     @Override

@@ -9,13 +9,13 @@ import com.application.chetna_priya.exo_audio.entity.Podcast;
 import com.application.chetna_priya.exo_audio.network.FetchIndividualPodcastEpisodes;
 import com.application.chetna_priya.exo_audio.network.LoadAvailablePodcastChannels;
 import com.application.chetna_priya.exo_audio.utils.GenreHelper;
+import com.application.chetna_priya.exo_audio.utils.NetworkHelper;
 import com.application.chetna_priya.exo_audio.utils.PreferenceHelper;
 
 import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-
 
 
 class RemoteJsonSource implements MediaProviderSource {
@@ -32,14 +32,15 @@ class RemoteJsonSource implements MediaProviderSource {
     @Override
     public Iterator<MediaMetadataCompat> iterator(Context context) {
         try {
+            if (!NetworkHelper.isOnline(context))
+                return null;
             ArrayList<MediaMetadataCompat> tracks = new ArrayList<>();
             ArrayList<String> genres = PreferenceHelper.getSavedGenres(context);
             Log.d(TAG, genres.toString());
-            if(genres == null)
+            if (genres == null)
                 return tracks.iterator();
             LoadAvailablePodcastChannels loadChannels = new LoadAvailablePodcastChannels();
-            for(int i = 0; i< genres.size(); i++)
-            {
+            for (int i = 0; i < genres.size(); i++) {
                 ArrayList<Podcast> podsublist = loadChannels.load(GenreHelper.getGenreUrl(genres.get(i)), genres.get(i));
                 podcastChannelLists.addAll(podsublist);
             }
@@ -50,23 +51,22 @@ class RemoteJsonSource implements MediaProviderSource {
              */
             FetchIndividualPodcastEpisodes fetchEpisodes = new FetchIndividualPodcastEpisodes();
             ArrayList<Episode> episodeList = new ArrayList<>();
-            for(int i = 0; i< podcastChannelLists.size(); i++)
-            {
+            for (int i = 0; i < podcastChannelLists.size(); i++) {
                 ArrayList<Episode> episodeSubList = fetchEpisodes.load(podcastChannelLists.get(i));
-                if(episodeSubList != null) {
+                if (episodeSubList != null) {
                     for (int j = 0; j < episodeSubList.size(); j++) {
                         episodeList.add(episodeSubList.get(j));
                     }
-                }else{
+                } else {
                     Log.d(TAG, "DO NOT ADDDDDDDDDDDD");
                 }
             }
             /*
             Finally build the metadata from the episodes and add it to the tracks
              */
-            for(int i=0; i<episodeList.size();i++) {
+            for (int i = 0; i < episodeList.size(); i++) {
                 MediaMetadataCompat metadata = buildFromPodcastEntity(episodeList.get(i));
-                if(metadata != null)
+                if (metadata != null)
                     tracks.add(metadata);
             }
             Log.d(TAG, "Returningggggggggg iterator -----------------");
@@ -88,11 +88,11 @@ class RemoteJsonSource implements MediaProviderSource {
         long duration;
         try {
             duration = convertStringDurationToMs(episode.getEpisode_duration());
-        }catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             e.printStackTrace();
             return null;
         }
-        if(duration == -1)
+        if (duration == -1)
             return null;
 
         ///*Long.parseLong(episode.getEpisode_duration())**/1000;//ms
@@ -115,7 +115,7 @@ class RemoteJsonSource implements MediaProviderSource {
     }
 
     private long convertStringDurationToMs(String episode_duration) {
-      //  Log.d(TAG, "RECEIVEDDDDDD episode_duration for parsingggggggg "+episode_duration);
+        //  Log.d(TAG, "RECEIVEDDDDDD episode_duration for parsingggggggg "+episode_duration);
 
         /*
         The tag can be formatted HH:MM:SS, H:MM:SS, MM:SS, or M:SS (H = hours, M = minutes, S = seconds).
@@ -124,31 +124,31 @@ class RemoteJsonSource implements MediaProviderSource {
         and the number to the right is assumed to be seconds.
         If more than two colons are present, the numbers furthest to the right are ignored.
          */
-        if(episode_duration == null)
+        if (episode_duration == null)
             return -1;
-        if(!episode_duration.contains(":")){
+        if (!episode_duration.contains(":")) {
             /*
             Accounts for condition: If an integer is provided (no colon present), the value is assumed to be in seconds.
              */
-            return Long.parseLong(episode_duration)*1000;
+            return Long.parseLong(episode_duration) * 1000;
         }
 
         long duration = 0;
         String[] durArr = episode_duration.split(":");
 
-        long hr =  0;
+        long hr = 0;
         long min = 0;
         long sec = 0;
         int currIndex = 0;
 
-        if(durArr.length == 3) {
+        if (durArr.length == 3) {
             durArr[currIndex] = durArr[currIndex].trim();
             hr = Long.parseLong(durArr[currIndex]) * 60 * 60 * 1000;//in msecs
             currIndex++;
         }
 
 
-        if(durArr.length >= 2) {
+        if (durArr.length >= 2) {
             durArr[currIndex] = durArr[currIndex].trim();
             min = Long.parseLong(durArr[currIndex]) * 60 * 1000;//in msecs
             currIndex++;
@@ -156,11 +156,11 @@ class RemoteJsonSource implements MediaProviderSource {
 
 
         durArr[currIndex] = durArr[currIndex].trim();
-        sec = Long.parseLong(durArr[currIndex])*1000;//in msecs
+        sec = Long.parseLong(durArr[currIndex]) * 1000;//in msecs
 
         duration = hr + min + sec;
 
-       // Log.d(TAG, "Returning durationnnnnnnnnn "+duration);
+        // Log.d(TAG, "Returning durationnnnnnnnnn "+duration);
 
         return duration;
     }

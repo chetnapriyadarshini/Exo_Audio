@@ -25,7 +25,7 @@ import java.util.List;
 
 import static com.application.chetna_priya.exo_audio.utils.MediaIDHelper.MEDIA_ID_ROOT;
 
-public class PodcastService extends MediaBrowserServiceCompat implements PlaybackListener.PlaybackServiceCallback{
+public class PodcastService extends MediaBrowserServiceCompat implements PlaybackListener.PlaybackServiceCallback {
 
     private static final String TAG = PodcastService.class.getSimpleName();
     private MediaSessionCompat mSession;
@@ -44,13 +44,13 @@ public class PodcastService extends MediaBrowserServiceCompat implements Playbac
                 new QueueManager.MetadataUpdateListener() {
                     @Override
                     public void onMetadataChanged(MediaMetadataCompat metadata) {
-                     //   Log.d(TAG, "SET METADATAAAAAAAAAAAAAAAAAAA");
+                        //   Log.d(TAG, "SET METADATAAAAAAAAAAAAAAAAAAA");
                         mSession.setMetadata(metadata);
                     }
 
                     @Override
                     public void onMetadataRetrieveError() {
-                     //   Log.d(TAG, "METADATA RETEIVE ERRRRRRRORRRRRRRRRRRR");
+                        //   Log.d(TAG, "METADATA RETEIVE ERRRRRRRORRRRRRRRRRRR");
                         mPlaybackListener.updatePlaybackState(
                                 getString(R.string.error_no_metadata));
                     }
@@ -63,14 +63,14 @@ public class PodcastService extends MediaBrowserServiceCompat implements Playbac
                     @Override
                     public void onQueueUpdated(String title,
                                                List<MediaSessionCompat.QueueItem> newQueue) {
-                      //  Log.d(TAG, "QUEUE UPDATEDDDDDDDDDDDDDDDDDDDDDD "+newQueue);
+                        //  Log.d(TAG, "QUEUE UPDATEDDDDDDDDDDDDDDDDDDDDDD "+newQueue);
                         mSession.setQueue(newQueue);
                         mSession.setQueueTitle(title);
                     }
                 });
 
         PlayerImpl player = new PlayerImpl(getApplicationContext(), mPodcastProvider);
-        mPlaybackListener = new PlaybackListener(this, getResources(),mPodcastProvider,
+        mPlaybackListener = new PlaybackListener(this, getResources(), mPodcastProvider,
                 queueManager, player);
         mSession = new MediaSessionCompat(this, "PodcastService");
         setSessionToken(mSession.getSessionToken());
@@ -115,8 +115,8 @@ public class PodcastService extends MediaBrowserServiceCompat implements Playbac
     @Override
     public BrowserRoot onGetRoot(@NonNull String clientPackageName, int clientUid,
                                  Bundle rootHints) {
-        Log.d(TAG, "OnGetRoot: clientPackageName=" + clientPackageName+
-                "; clientUid=" + clientUid + " ; rootHints="+ rootHints);
+        Log.d(TAG, "OnGetRoot: clientPackageName=" + clientPackageName +
+                "; clientUid=" + clientUid + " ; rootHints=" + rootHints);
         // To ensure you are not allowing any arbitrary app to browse your app's contents, you
         // need to check the origin:
         /*if (!mPackageValidator.isCallerAllowed(this, clientPackageName, clientUid)) {
@@ -139,7 +139,7 @@ public class PodcastService extends MediaBrowserServiceCompat implements Playbac
     @Override
     public void onLoadChildren(@NonNull final String parentMediaId,
                                @NonNull final Result<List<MediaBrowserCompat.MediaItem>> result) {
-        Log.d(TAG, "OnLoadChildren: parentMediaId="+ parentMediaId+" resulttttt "+result.toString());
+        Log.d(TAG, "OnLoadChildren: parentMediaId=" + parentMediaId + " resulttttt " + result.toString());
         if (mPodcastProvider.isInitialized()) {
             // if podcast library is ready, return immediately
             result.sendResult(mPodcastProvider.getChildren(parentMediaId, getResources()));
@@ -156,8 +156,6 @@ public class PodcastService extends MediaBrowserServiceCompat implements Playbac
 
 
     }
-
-
 
 
     @Override

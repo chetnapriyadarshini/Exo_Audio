@@ -4,9 +4,13 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -18,14 +22,27 @@ import android.widget.TextView;
 
 import com.application.chetna_priya.exo_audio.R;
 import com.application.chetna_priya.exo_audio.data.PodcastContract;
+import com.application.chetna_priya.exo_audio.entity.Episode;
+import com.application.chetna_priya.exo_audio.entity.MetadataEntity;
+import com.application.chetna_priya.exo_audio.entity.Podcast;
+import com.application.chetna_priya.exo_audio.utils.PathHelper;
+
+import java.io.Serializable;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class DownloadFragment extends Fragment
-{
+import static com.application.chetna_priya.exo_audio.ui.PlaybackControlsFragment.EXTRA_IMAGE_URI;
+import static com.application.chetna_priya.exo_audio.ui.PlaybackControlsFragment.EXTRA_TITLE;
 
-    private Cursor cursor;
+public class DownloadFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    private static final int DOWNLOAD_LOADER = 1;
+    public static final String PLAY_FORM_CURSOR_BUNDLE = "play_from_cursor_bundle";
+    public static final String EXTRA_IMAGE = "extra_image";
+    public static final String EXTRA_TITLE = "extra_title";
+    public static final String EXTRA_METADATA_OBJ = "extra_metadata_obj";
+    private Cursor mCursor;
     private DownloadEpisodesAdapter adapter;
     String TAG = DownloadFragment.class.getSimpleName();
     private TextView mEmptyView;
@@ -46,25 +63,69 @@ public class DownloadFragment extends Fragment
 
 
     @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        // Now create and return a CursorLoader that will take care of
+        // creating a Cursor for the data being displayed.
+        return new CursorLoader(
+                getActivity(),
+                PodcastContract.EpisodeEntry.CONTENT_URI,
+                null,
+                null,
+                null,
+                null
+        );
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        getLoaderManager().initLoader(DOWNLOAD_LOADER, null, this);
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        this.mCursor = data;
+
+        if (mCursor != null && mCursor.moveToFirst()) {
+            //  mCursor.close();
+            adapter.notifyDataSetChanged();
+            mEmptyView.setVisibility(View.GONE);
+        } else
+            mEmptyView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
-        if(cursor != null)
-            cursor.close();
+        if (mCursor != null)
+            mCursor.close();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        cursor = getActivity().getContentResolver().query(
+        getLoaderManager().restartLoader(DOWNLOAD_LOADER, null, this);
+    }
+
+    /*
+    @Override
+    public void onResume() {
+        super.onResume();
+        mCursor = getActivity().getContentResolver().query(
                 PodcastContract.EpisodeEntry.CONTENT_URI,
                 null, null, null, null);
-        if(cursor!= null && cursor.moveToFirst()) {
-            //  cursor.close();
+        if(mCursor!= null && mCursor.moveToFirst()) {
+            //  mCursor.close();
             adapter.notifyDataSetChanged();
             mEmptyView.setVisibility(View.GONE);
         }else
             mEmptyView.setVisibility(View.VISIBLE);
-    }
+    }*/
 
     private class DownloadEpisodesAdapter extends RecyclerView.Adapter<ViewHolder> {
 
@@ -78,23 +139,61 @@ public class DownloadFragment extends Fragment
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            if(cursor == null)
+            if (mCursor == null)
                 return;
-            cursor.moveToPosition(position);
-            byte[] imgByte = cursor.getBlob(cursor.getColumnIndex(PodcastContract.EpisodeEntry.COLUMN_PODCAST_ALBUM_COVER_IMAGE));
-            Bitmap bitmap = BitmapFactory.decodeByteArray(imgByte, 0, imgByte.length);
+            mCursor.moveToPosition(position);
+            byte[] imgByte = mCursor.getBlob(mCursor.getColumnIndex(PodcastContract.EpisodeEntry.COLUMN_PODCAST_ALBUM_COVER_IMAGE));
+            final Bitmap bitmap = BitmapFactory.decodeByteArray(imgByte, 0, imgByte.length);
             holder.icon_view.setImageBitmap(bitmap);
-            holder.albumTitle.setText(cursor.getString(cursor.getColumnIndex
+            holder.albumTitle.setText(mCursor.getString(mCursor.getColumnIndex
                     (PodcastContract.EpisodeEntry.COLUMN_PODCAST_EPISODE_TITLE)));
-           // cursor.close();
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String name = mCursor.getString(mCursor.getColumnIndex(PodcastContract.EpisodeEntry.COLUMN_PODCAST_EPISODE_NAME));
+                    String path = PathHelper.getDownloadPodcastPath(getActivity());
+                    String source = path + "/" + name;
+                    Log.d(TAG, "SAVED IN PATH " + source + " MEDIA ID " +
+                            mCursor.getString(mCursor.getColumnIndex(PodcastContract.EpisodeEntry.COLUMN_PODCAST_EPISODE_MEDIA_ID)));
+                    /*
+                    Set up bundle with extra information required to set up the queue
+                    for the downloaded episode
+                     */
+                    Bundle playBundle = new Bundle();
+                    playBundle.putParcelable(EXTRA_IMAGE, bitmap);
+                    playBundle.putSerializable(EXTRA_METADATA_OBJ, createMetadataObjFromCursor());
+
+                    getActivity().getSupportMediaController().getTransportControls()
+                            .playFromUri(Uri.parse(source), playBundle);
+
+                    Intent audioIntent = new Intent(getActivity(), AudioActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putByteArray(EXTRA_IMAGE,
+                            mCursor.getBlob(mCursor.getColumnIndex(PodcastContract.EpisodeEntry.COLUMN_PODCAST_ALBUM_COVER_IMAGE)));
+                    bundle.putString(EXTRA_TITLE, mCursor.getString(mCursor.getColumnIndex
+                            (PodcastContract.EpisodeEntry.COLUMN_PODCAST_EPISODE_TITLE)));
+                    audioIntent.putExtra(PLAY_FORM_CURSOR_BUNDLE, bundle);
+                    startActivity(audioIntent);
+                }
+            });
+            // mCursor.close();
+        }
+
+        private MetadataEntity createMetadataObjFromCursor() {
+
+            return new MetadataEntity(mCursor.getString(mCursor.getColumnIndex(PodcastContract.EpisodeEntry.COLUMN_PODCAST_EPISODE_TITLE)),
+                    mCursor.getString(mCursor.getColumnIndex(PodcastContract.EpisodeEntry.COLUMN_PODCAST_EPISODE_LINK)),
+                    mCursor.getString(mCursor.getColumnIndex(PodcastContract.EpisodeEntry.COLUMN_PODCAST_EPISODE_SUMMARY)),
+                    mCursor.getLong(mCursor.getColumnIndex(PodcastContract.EpisodeEntry.COLUMN_PODCAST_EPISODE_DURATION)),
+                    mCursor.getString(mCursor.getColumnIndex(PodcastContract.EpisodeEntry.COLUMN_PODCAST_EPISODE_RELEASE_DATE)),
+                    mCursor.getString(mCursor.getColumnIndex(PodcastContract.EpisodeEntry.COLUMN_PODCAST_EPISODE_MEDIA_ID)));
         }
 
         @Override
-        public int getItemCount()
-        {
-            if(cursor == null)
-                return  0;
-            return cursor.getCount();
+        public int getItemCount() {
+            if (mCursor == null)
+                return 0;
+            return mCursor.getCount();
         }
     }
 
@@ -105,23 +204,9 @@ public class DownloadFragment extends Fragment
         @BindView(R.id.album_title)
         TextView albumTitle;
 
-        public ViewHolder(View itemView) {
+        public ViewHolder(final View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    cursor.moveToPosition(getAdapterPosition());
-                    String mediaId = cursor.getString(
-                            (cursor.getColumnIndex(PodcastContract.EpisodeEntry.COLUMN_PODCAST_EPISODE_MEDIA_ID)));
-
-                    getActivity().getSupportMediaController().getTransportControls()
-                            .playFromMediaId(mediaId, null);
-
-                    Intent audioIntent = new Intent(getActivity(), AudioActivity.class);
-                    startActivity(audioIntent);
-                }
-            });
             itemView.setContentDescription(albumTitle.getText());
         }
     }

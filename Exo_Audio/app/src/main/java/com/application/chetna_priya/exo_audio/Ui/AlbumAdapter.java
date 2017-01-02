@@ -53,12 +53,12 @@ class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHolder> im
     private MediaBrowserCompat.MediaItem mMediaItem;
 
     AlbumAdapter(MediaBrowserCompat.MediaItem mediaItem, Context context, int num_albums,
-                 FeaturedFragment.MediaFragmentListener mediaFragmentListener){
+                 FeaturedFragment.MediaFragmentListener mediaFragmentListener) {
         this.mContext = context;
         this.mMediaFragmentListener = mediaFragmentListener;
         this.mMediaItem = mediaItem;
         NUM_ALBUMS = /*mContext.getResources().getInteger(R.integer.num_albums)*/ num_albums;
-        Log.d(TAG, "Subscribeddd to "+mediaItem.getMediaId());
+        Log.d(TAG, "Subscribeddd to " + mediaItem.getMediaId());
         mMediaFragmentListener.getMediaBrowser().unsubscribe(mediaItem.getMediaId());
         mMediaFragmentListener.getMediaBrowser().subscribe(mediaItem.getMediaId(), mSubscriptionCallback);
         // Add MediaController callback so we can redraw the list when metadata changes:
@@ -84,14 +84,14 @@ class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHolder> im
                     if (metadata == null) {
                         return;
                     }
-                    Log.d(TAG, "Received metadata change to media "+metadata.getDescription().getMediaId());
+                    Log.d(TAG, "Received metadata change to media " + metadata.getDescription().getMediaId());
                     notifyDataSetChanged();
                 }
 
                 @Override
                 public void onPlaybackStateChanged(@NonNull PlaybackStateCompat state) {
                     super.onPlaybackStateChanged(state);
-                    Log.d(TAG, "Received state change: "+ state);
+                    Log.d(TAG, "Received state change: " + state);
 
                     notifyDataSetChanged();
                 }
@@ -107,8 +107,8 @@ class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHolder> im
                     "  count=" + children.size());
             itemArrayList.clear();
             //We only want to load first three for the main page
-            int max=  NUM_ALBUMS;
-            if(max > children.size())
+            int max = NUM_ALBUMS;
+            if (max > children.size())
                 max = children.size();
 
             for (int i = 0; i < max; i++) {
@@ -173,7 +173,7 @@ class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHolder> im
 
     @Override
     public int getItemCount() {
-        return  itemArrayList.size();
+        return itemArrayList.size();
     }
 
     @Override
@@ -210,14 +210,14 @@ class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHolder> im
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    loadInterstitialAd(album_img,getAdapterPosition());
-                    if(mInterstitialAd.isLoaded()){
+                    loadInterstitialAd(album_img, getAdapterPosition());
+                    if (mInterstitialAd.isLoaded()) {
                         mInterstitialAd.show();
-                    }else
-                        startDisplayAllEpisodedIntent(album_img,getAdapterPosition());
+                    } else
+                        startDisplayAllEpisodedIntent(album_img, getAdapterPosition());
                 }
             });
-            itemView.setContentDescription(album_info.getText()+mContext.getString(R.string.by)+album_artist.getText());
+            itemView.setContentDescription(album_info.getText() + mContext.getString(R.string.by) + album_artist.getText());
         }
     }
 

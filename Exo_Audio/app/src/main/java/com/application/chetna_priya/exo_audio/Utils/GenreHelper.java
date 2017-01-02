@@ -8,13 +8,13 @@ import com.application.chetna_priya.exo_audio.R;
 import java.util.ArrayList;
 
 
-public  class GenreHelper {
+public class GenreHelper {
 
     public static final int TOTAL_ITEM_COUNT = 16;
     private static final String ARTS = "Arts";
     private static final String COMEDY = "Comedy";
     private static final String EDUCATION = "Education";
-    private static final String KIDS_FAMILY= "Kids & Family";
+    private static final String KIDS_FAMILY = "Kids & Family";
     private static final String HEALTH = "Health";
     private static final String TV_FILM = "TV & Film";
     private static final String MUSIC = "Music";
@@ -37,7 +37,7 @@ public  class GenreHelper {
      */
     public static String getMainGenreName(String genre) {
 
-        switch (genre){
+        switch (genre) {
             case ARTS:
             case "Food":
             case "Literature":
@@ -56,7 +56,7 @@ public  class GenreHelper {
             case "Educational Technology":
             case "Language Courses":
             case "Training":
-                return  EDUCATION;
+                return EDUCATION;
 
             case KIDS_FAMILY:
                 return KIDS_FAMILY;
@@ -70,7 +70,7 @@ public  class GenreHelper {
 
 
             case TV_FILM:
-                return  TV_FILM;
+                return TV_FILM;
 
             case MUSIC:
                 return MUSIC;
@@ -145,7 +145,7 @@ public  class GenreHelper {
     }
 
     private static int getGenreId(String category) {
-        switch (category){
+        switch (category) {
             case ARTS:
                 return 1301;
             case COMEDY:
@@ -182,23 +182,23 @@ public  class GenreHelper {
         return -1;
     }
 
-    public ArrayList<Genre> getGenreList(){
+    public ArrayList<Genre> getGenreList() {
         ArrayList<Genre> genreArrayList = new ArrayList<>();
 
-        for(int i = 0; i< TOTAL_ITEM_COUNT; i++){
+        for (int i = 0; i < TOTAL_ITEM_COUNT; i++) {
             Genre genre = new Genre(getGenre(i), getGenreImage(i));
             genreArrayList.add(genre);
         }
 
-        return  genreArrayList;
+        return genreArrayList;
     }
 
     private int getGenreImage(int position) {
         return resId;
     }
 
-    private String getGenre(int position){
-        switch (position){
+    private String getGenre(int position) {
+        switch (position) {
             case 0:
                 return ARTS;
             case 1:
@@ -238,22 +238,22 @@ public  class GenreHelper {
 
     public static String getGenreUrl(String category) {
         /*
-        	Available Media : movie, podcast, music, musicVideo, audiobook, shortFilm, tvShow, software, ebook, all
+            Available Media : movie, podcast, music, musicVideo, audiobook, shortFilm, tvShow, software, ebook, all
          */
         String LIMIT_PARAM = "limit";
         Uri.Builder uriBuilder;
 
-        if(!(category.equals(TOP_PODCASTS))) {
+        if (!(category.equals(TOP_PODCASTS))) {
             final String ITUNES_BASE_URL = "https://itunes.apple.com/search?";
             final String TERM_PARAM = "term";
             final String ENTITY_PARAM = "entity";
             //final String ATTRIBUTE_PARAM = "attribute";
             //final String MEDIA_PARAM = "media";
             final String podcastmediaVal = "podcast";
-          //  final String attributeVal = "primaryGenreName";
+            //  final String attributeVal = "primaryGenreName";
             final String GENRE_PARAM = "genreId";
-          //  final String musicmediaVal = "music";
-          //  final String audiobookmediaVal = "audiobook";
+            //  final String musicmediaVal = "music";
+            //  final String audiobookmediaVal = "audiobook";
 
             uriBuilder = Uri.parse(ITUNES_BASE_URL).buildUpon();
 
@@ -263,23 +263,21 @@ public  class GenreHelper {
 
             uriBuilder.appendQueryParameter(TERM_PARAM, podcastmediaVal);
             uriBuilder.appendQueryParameter("genreId", String.valueOf(getGenreId(category)));
-          //  uriBuilder.appendQueryParameter(MEDIA_PARAM, podcastmediaVal);
+            //  uriBuilder.appendQueryParameter(MEDIA_PARAM, podcastmediaVal);
             //uriBuilder.appendQueryParameter(ENTITY_PARAM, podcastmediaVal);
             //uriBuilder.appendQueryParameter(ATTRIBUTE_PARAM, attributeVal);
 
             /*
             This applies for cases when we want all podcasts in a category
              */
-            if(10 != -1)
+            if (10 != -1)
                 uriBuilder.appendQueryParameter(LIMIT_PARAM, String.valueOf(10));
 
 
             Uri builtUri = uriBuilder.build();
             return builtUri.toString();
-        }
-        else
-        {
-            String BASE_URI  =  "https://itunes.apple.com/us/rss/toppodcasts";
+        } else {
+            String BASE_URI = "https://itunes.apple.com/us/rss/toppodcasts";
             uriBuilder = Uri.parse(BASE_URI).buildUpon();
             uriBuilder.appendQueryParameter(LIMIT_PARAM, String.valueOf(10));
             uriBuilder.appendPath("xml");

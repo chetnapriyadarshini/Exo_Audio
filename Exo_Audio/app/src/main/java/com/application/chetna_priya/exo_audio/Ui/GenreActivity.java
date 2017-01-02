@@ -30,7 +30,7 @@ public class GenreActivity extends AppCompatActivity implements GenreAdapter.Lis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_genre);
         ButterKnife.bind(this);
-      //  mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
+        //  mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
 
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
@@ -47,7 +47,7 @@ public class GenreActivity extends AppCompatActivity implements GenreAdapter.Lis
         mRecyclerView.setFocusable(false);
 
         boolean shouldStartMainActivity = false;
-        if(getIntent().getBooleanExtra(IS_FIRST_TIME, true)) {
+        if (getIntent().getBooleanExtra(IS_FIRST_TIME, true)) {
             shouldStartMainActivity = true;
             genreButton.setEnabled(false);
             onGenreSaved(0);
@@ -65,11 +65,11 @@ public class GenreActivity extends AppCompatActivity implements GenreAdapter.Lis
                 Log.d(AudioActivity.class.getSimpleName(), "GENREEEEEEEEE SIZEEEEEE NOWWWWWWWWW"+
                         PreferenceHelper.getSavedGenres(GenreActivity.this));*/
 
-                if(finalShouldStartMainActivity) {
+                if (finalShouldStartMainActivity) {
                     Intent intent = new Intent(GenreActivity.this, MainActivity.class);
                     intent.putExtra(BaseActivity.EXTRA_GENRE_CHANGED, true);
                     startActivity(intent);
-                }else {
+                } else {
                     setResult(RESULT_OK);
                     finish();
                 }
@@ -79,9 +79,9 @@ public class GenreActivity extends AppCompatActivity implements GenreAdapter.Lis
 
     @Override
     public void onGenreSaved(int selectedGenres) {
-        if(selectedGenres < MIN_SELECTED_GENRES) {
-          //  genreButton.setBackgroundColor(R.color.white);
-          //  genreButton.setTextColor(R.color.white);
+        if (selectedGenres < MIN_SELECTED_GENRES) {
+            //  genreButton.setBackgroundColor(R.color.white);
+            //  genreButton.setTextColor(R.color.white);
             switch (selectedGenres) {
                 case 0:
                     genreButton.setText(getResources().getString(R.string.select_three_genre));
@@ -93,12 +93,11 @@ public class GenreActivity extends AppCompatActivity implements GenreAdapter.Lis
                     genreButton.setText(getResources().getString(R.string.almost_there));
                     break;
             }
-        }else
-        {
+        } else {
             genreButton.setEnabled(true);
             genreButton.setText(R.string.label_next);
-        //    genreButton.setBackgroundColor(R.color.colorAccent);
-         //   genreButton.setTextColor(R.color.white);
+            //    genreButton.setBackgroundColor(R.color.colorAccent);
+            //   genreButton.setTextColor(R.color.white);
         }
         genreButton.setContentDescription(genreButton.getText());
     }

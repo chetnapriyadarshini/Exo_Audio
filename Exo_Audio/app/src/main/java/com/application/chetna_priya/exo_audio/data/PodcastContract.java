@@ -59,12 +59,11 @@ public class PodcastContract {
         public static final String COLUMN_PODCAST_SUMMARY = "podcast_summary";
 
 
-
         public static Uri buildPodcastUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
 
-        public static Uri buildPodcastUrifromTitle(String title){
+        public static Uri buildPodcastUrifromTitle(String title) {
             return CONTENT_URI.buildUpon().appendQueryParameter(COLUMN_PODCAST_TITLE, title).build();
         }
 
@@ -98,7 +97,7 @@ public class PodcastContract {
 
         public static final int INDEX_PODCAST_KEY = 0;
         public static final int INDEX_PODCAST_EPISODE_TITLE = 1;
-        public static final int INDEX_PODCAST_EPISODE_LINK= 2;
+        public static final int INDEX_PODCAST_EPISODE_LINK = 2;
         public static final int INDEX_PODCAST_EPISODE_SUMMARY = 3;
         public static final int INDEX_PODCAST_EPISODE_DURATION = 4;
         public static final int INDEX_PODCAST_EPISODE_RELEASE_DATE = 5;
@@ -112,20 +111,21 @@ public class PodcastContract {
 
         public static Uri buildPodcastEpisodeFromTrackIdAndDate(long trackId, String date) {
             return CONTENT_URI.buildUpon().appendPath(Long.toString(trackId))
-                    .appendQueryParameter(COLUMN_PODCAST_EPISODE_RELEASE_DATE,date).build();
+                    .appendQueryParameter(COLUMN_PODCAST_EPISODE_RELEASE_DATE, date).build();
         }
 
-        public static Uri buildPodcastEpisodeFromTrackId(long trackId){
+        public static Uri buildPodcastEpisodeFromTrackId(long trackId) {
             return CONTENT_URI.buildUpon().appendPath(Long.toString(trackId)).build();
         }
 
-        public static String getPodcastIdFromUri(Uri uri){
+        public static String getPodcastIdFromUri(Uri uri) {
             return uri.getPathSegments().get(0);
         }
 
-        public static String getPodcastTrackIdFromUri(Uri uri){
+        public static String getPodcastTrackIdFromUri(Uri uri) {
             return uri.getPathSegments().get(1);
         }
+
         public static String getDateFromUri(Uri uri) {
             return uri.getPathSegments().get(2);
         }

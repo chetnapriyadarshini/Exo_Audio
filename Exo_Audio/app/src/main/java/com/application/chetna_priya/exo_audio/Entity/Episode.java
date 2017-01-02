@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 /**
  * This class represents a single entry (post) in the XML feed.
- *
+ * <p>
  * <p>It includes the data members "title," "link," and "summary."
  */
 public class Episode implements Serializable {
@@ -61,10 +61,10 @@ public class Episode implements Serializable {
 
     @Override
     public String toString() {
-        return "NEW EPISODE: \n"+" TITLE: "+episode_title+"\n SUMMARY: "+episode_summary
-                +"\n DURATION "+episode_duration
-                +"\n PODCAST LINK: "+episode_pod_link
-                +"\n RELEASE DATE: "+episode_published_on;
+        return "NEW EPISODE: \n" + " TITLE: " + episode_title + "\n SUMMARY: " + episode_summary
+                + "\n DURATION " + episode_duration
+                + "\n PODCAST LINK: " + episode_pod_link
+                + "\n RELEASE DATE: " + episode_published_on;
     }
 
     public String getId() {

@@ -17,7 +17,7 @@
         android:scaleType="centerInside"
         android:layout_gravity="center_vertical"
         tools:src="@drawable/ic_launcher"
-        android:contentDescription="@string/podcast_icon"/>
+        android:contentDescription="@string/podcast_icon" />
 
     <TextView
         android:id="@+id/widget_description"
@@ -28,8 +28,7 @@
         android:layout_gravity="center_vertical"
         android:textColor="@color/white"
         android:textStyle="bold"
-        tools:text="This is the current albummmmm"
-        />
+        tools:text="This is the current albummmmm" />
 
 
     <ImageView
@@ -40,6 +39,6 @@
         android:layout_gravity="center_vertical"
         android:layout_marginRight="@dimen/album_right_margin"
         android:layout_marginEnd="@dimen/album_right_margin"
-        android:contentDescription="@string/play_pause"/>
+        android:contentDescription="@string/play_pause" />
 
 </LinearLayout>

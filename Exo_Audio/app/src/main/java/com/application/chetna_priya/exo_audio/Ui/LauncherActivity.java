@@ -19,13 +19,13 @@ public class LauncherActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(!PreferenceHelper.isInitialGenrePreferenceSet(this)){
-            Intent genreIntent = new Intent(this,GenreActivity.class);
+        if (!PreferenceHelper.isInitialGenrePreferenceSet(this)) {
+            Intent genreIntent = new Intent(this, GenreActivity.class);
             Bundle bundle = new Bundle();
             bundle.putBoolean(GenreActivity.IS_FIRST_TIME, true);
-            startActivity(genreIntent,bundle);
-        }else {
-            Intent genreIntent = new Intent(this,MainActivity.class);
+            startActivity(genreIntent, bundle);
+        } else {
+            Intent genreIntent = new Intent(this, MainActivity.class);
             startActivity(genreIntent);
             //performIntialization();
         }

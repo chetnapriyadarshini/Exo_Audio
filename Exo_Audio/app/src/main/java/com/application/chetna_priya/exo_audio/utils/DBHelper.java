@@ -3,6 +3,7 @@ package com.application.chetna_priya.exo_audio.utils;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,13 +11,14 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 
 import com.application.chetna_priya.exo_audio.data.PodcastContract;
+import com.application.chetna_priya.exo_audio.entity.MetadataEntity;
 import com.application.chetna_priya.exo_audio.model.MediaProviderSource;
 
 public class DBHelper {
 
-    public static Uri insertInDb(Context context, MediaBrowserCompat.MediaItem mediaItem, Bitmap iconBitmap, String epName){
+    public static Uri insertInDb(Context context, MediaBrowserCompat.MediaItem mediaItem, Bitmap iconBitmap, String epName) {
         Bundle epBundle = mediaItem.getDescription().getExtras();
-        if(epBundle == null)
+        if (epBundle == null)
             throw new IllegalArgumentException("Bundle sent is nulll");
         String podcastTitle = epBundle.getString(MediaMetadataCompat.METADATA_KEY_ALBUM);
         String podcastSummary = epBundle.getString(MediaProviderSource.CUSTOM_METADATA_PODCAST_SUMMARY);
@@ -41,11 +43,11 @@ public class DBHelper {
         ContentValues episodeValues = new ContentValues();
 
         byte[] data = new byte[0];
-        if(iconBitmap != null)
+        if (iconBitmap != null)
             data = BitmapHelper.getBitmapAsByteArray(iconBitmap);
         episodeValues.put(PodcastContract.EpisodeEntry.COLUMN_PODCAST_ALBUM_COVER_IMAGE, data);
         episodeValues.put(PodcastContract.EpisodeEntry.COLUMN_PODCAST_EPISODE_TITLE,
-            title == null ? "" : title);
+                title == null ? "" : title);
         episodeValues.put(PodcastContract.EpisodeEntry.COLUMN_PODCAST_EPISODE_RELEASE_DATE,
                 epBundle.getString(MediaMetadataCompat.METADATA_KEY_DATE));
         episodeValues.put(PodcastContract.EpisodeEntry.COLUMN_PODCAST_EPISODE_DURATION,
@@ -57,8 +59,6 @@ public class DBHelper {
         episodeValues.put(PodcastContract.EpisodeEntry.COLUMN_PODCAST_ALBUM_KEY, podcastId);
         episodeValues.put(PodcastContract.EpisodeEntry.COLUMN_PODCAST_EPISODE_MEDIA_ID, mediaItem.getMediaId());
         episodeValues.put(PodcastContract.EpisodeEntry.COLUMN_PODCAST_EPISODE_NAME, epName);
-        /*
-        episodeValues.put(PodcastContract.EpisodeEntry.COLUMN_PODCAST_EPISODE_URI_DEVICE, localUri);*/
 
         return context.getContentResolver().insert(
                 PodcastContract.EpisodeEntry.CONTENT_URI,

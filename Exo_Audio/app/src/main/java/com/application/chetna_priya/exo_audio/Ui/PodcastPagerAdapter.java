@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+
 import com.application.chetna_priya.exo_audio.R;
 
 class PodcastPagerAdapter extends FragmentPagerAdapter {
@@ -20,8 +21,8 @@ class PodcastPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         // getItem is called to instantiate the fragment for the given page.
         // Return a MyPlaceholderFragment (defined as a static inner class below).
-       // Log.d(TAG, "INSTANIATEEEEEEEEEEEE "+position);
-        switch (position){
+        // Log.d(TAG, "INSTANIATEEEEEEEEEEEE "+position);
+        switch (position) {
             case 0:
                 return new FeaturedFragment();
             case 1:
@@ -30,7 +31,7 @@ class PodcastPagerAdapter extends FragmentPagerAdapter {
                 return new NetworksFragment();
         }
         return null;
-     //   return MyPlaceholderFragment.newInstance(position + 1);
+        //   return MyPlaceholderFragment.newInstance(position + 1);
     }
 
     @Override
@@ -57,18 +58,18 @@ class PodcastPagerAdapter extends FragmentPagerAdapter {
      *//*
     public static class MyPlaceholderFragment extends Fragment {
         *//**
-         * The fragment argument representing the section number for this
-         * fragment.
-         *//*
+     * The fragment argument representing the section number for this
+     * fragment.
+     *//*
         private static final String ARG_SECTION_NUMBER = "section_number";
 
         public MyPlaceholderFragment() {
         }
 
         *//**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         *//*
+     * Returns a new instance of this fragment for the given section
+     * number.
+     *//*
         public static MyPlaceholderFragment newInstance(int sectionNumber) {
             MyPlaceholderFragment fragment = new MyPlaceholderFragment();
             Bundle args = new Bundle();

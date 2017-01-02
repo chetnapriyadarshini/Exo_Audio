@@ -37,21 +37,23 @@ class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.ViewHolder> {
     interface Listener {
         void onGenreSaved(int totalGenreSaved);
     }
+
     private ArrayList<Genre> genreArrayList;
     private Context mContext;
     private static final String TAG = GenreAdapter.class.getSimpleName();
 
-    GenreAdapter(Context context){
+    GenreAdapter(Context context) {
         listener = (Listener) context;
         mContext = context;
         GenreHelper helper = new GenreHelper();
         this.genreArrayList = helper.getGenreList();
         savedGenres = PreferenceHelper.getSavedGenres(context);
-        if(savedGenres == null)
+        if (savedGenres == null)
             savedGenres = new ArrayList<>();
         else
-            Log.d(TAG, "GENREEEEEEEEE SIZEEEEEE "+savedGenres.size());
+            Log.d(TAG, "GENREEEEEEEEE SIZEEEEEE " + savedGenres.size());
     }
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // create a new view
@@ -64,24 +66,23 @@ class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position)
-    {
-            holder.genreImage.setImageResource(genreArrayList.get(position).getGenre_icon());
-            String genreDesc = genreArrayList.get(position).getGenre_desc();
-            holder.genreInfo.setText(genreDesc);
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        holder.genreImage.setImageResource(genreArrayList.get(position).getGenre_icon());
+        String genreDesc = genreArrayList.get(position).getGenre_desc();
+        holder.genreInfo.setText(genreDesc);
             /*
             Set color for selected genre in OnBindViewHolder
              */
-            if(holder.isGenreSelected(genreDesc)){
-                holder.itemView.setBackgroundColor(R.color.colorAccent);
-            }
+        if (holder.isGenreSelected(genreDesc)) {
+            holder.itemView.setBackgroundColor(R.color.colorAccent);
+        }
 
-        if(holder.isGenreSelected(genreArrayList.get(position).getGenre_desc()))
-            holder.itemView.setContentDescription(mContext.getString(R.string.remove)+genreArrayList.get(position).getGenre_desc()
-                    +mContext.getString(R.string.genre));
+        if (holder.isGenreSelected(genreArrayList.get(position).getGenre_desc()))
+            holder.itemView.setContentDescription(mContext.getString(R.string.remove) + genreArrayList.get(position).getGenre_desc()
+                    + mContext.getString(R.string.genre));
         else
-            holder.itemView.setContentDescription(mContext.getString(R.string.select)+genreArrayList.get(position).getGenre_desc()
-                    +mContext.getString(R.string.genre));
+            holder.itemView.setContentDescription(mContext.getString(R.string.select) + genreArrayList.get(position).getGenre_desc()
+                    + mContext.getString(R.string.genre));
     }
 
     @Override
@@ -108,7 +109,7 @@ class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.ViewHolder> {
                 @Override
                 public void onClick(View view) {
                     String desc = (genreArrayList.get(getAdapterPosition()).getGenre_desc());
-                    if(savedGenres.contains(desc))
+                    if (savedGenres.contains(desc))
                         savedGenres.remove(desc);
                     else {
                         savedGenres.add(desc);
