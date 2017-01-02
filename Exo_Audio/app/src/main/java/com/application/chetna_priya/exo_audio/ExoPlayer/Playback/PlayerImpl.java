@@ -427,21 +427,21 @@ public class PlayerImpl implements ExoPlayer.EventListener, AudioManager.OnAudio
                         new String[]{PodcastContract.EpisodeEntry.COLUMN_PODCAST_EPISODE_NAME},
                         PodcastContract.EpisodeEntry.COLUMN_PODCAST_EPISODE_MEDIA_ID + " = ?",
                         new String[]{mediaId}, null);
-                Log.d(TAG, "MEDIA IDDDDDDDDD " + mediaId);
+              //  Log.d(TAG, "MEDIA IDDDDDDDDD " + mediaId);
                 if (cursor != null && cursor.moveToFirst()) {
                     String name = cursor.getString(cursor.getColumnIndex(PodcastContract.EpisodeEntry.COLUMN_PODCAST_EPISODE_NAME));
                     String path = Environment.getExternalStoragePublicDirectory(mContext.getString(R.string.app_name)).getPath();
                     source = path + "/" + name;
                     cursor.close();
-                    Log.d(TAG, "SOURCEEEEEEEE IN CURSORRRRRRRRRRRRRR " + source);
+                //    Log.d(TAG, "SOURCEEEEEEEE IN CURSORRRRRRRRRRRRRR " + source);
                     //We want the exoplayer to play from local resources so we have to do a new setup
                     dataSource = LOCAL;
-                }
-            } else if (NetworkHelper.isOnline(mContext)) {
+                }else
+                    return;
+            } else {
                 dataSource = NETWORK;
                 source = track.getString(MediaProviderSource.CUSTOM_METADATA_TRACK_SOURCE);
-            } else
-                return;
+            }
             //If the data source has changed we need to reinitialize the exoplayer
             /*
             We need to check here if the exoplayer has changed its data source
